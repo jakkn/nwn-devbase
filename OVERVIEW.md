@@ -1,8 +1,8 @@
-# BoP Development Overview
-This document aims to give an overview of Bastion of Peace module development in regard to workflow and the systems involved.
+# Development Overview
+This document aims to give an introduction to how module development is structured at Bastion of Peace. It introduces the systems and describes desired workflow. BoP is the basis for the document, but the framework in this repository has been made as generic as possible so that it may be used by anyone on any system.
 
 If you either cannot, or struggle to, answer any of the following questions, then please read on.
-- Why do we use these systems?
+- Why use these systems?
 - What is git and why do we use it?
 - What is module unpacking and why do we use it?
 - How do we use git?
@@ -10,7 +10,7 @@ If you either cannot, or struggle to, answer any of the following questions, the
 - What is Docker and why do we use it?
 - How do we use Docker?
 
-#### Why do we use these systems?
+#### Why use these systems?
 Because the tools for developing module content were not created with collaboration in mind. If this is still unclear, consider the following scenario:
 
 ![](https://docs.google.com/drawings/d/1wbBEAzqj6b7Bu9CmyRTxZ_zWPwHEgPWIuh9_453H_xU/pub?w=1950&h=1362)

@@ -1,0 +1,35 @@
+{
+	"folders":
+	[
+		{
+			"file_exclude_patterns":
+			[
+				"*.sublime-project"
+			],
+			"folder_exclude_patterns":
+			[
+				".svn",
+				".git",
+				".hg",
+				"CVS",
+				"NWN",
+				"are",
+				"dlg",
+				"fac",
+				"gic",
+				"git",
+				"ifo",
+				"itp",
+				"jrl",
+				"ncs",
+				"utc",
+				"ute",
+				"uti",
+				"utm",
+				"utp",
+				"utw"
+			],
+			"path": "."
+		}
+	]
+}
