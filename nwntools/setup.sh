@@ -14,7 +14,7 @@ java -cp nwn-tools.jar org.progeeks.util.PathTool java -cp "$dir"/nwn-tools.jar 
 echo "Creating MiniMapExport script."
 java -cp nwn-tools.jar org.progeeks.util.PathTool java -cp "$dir"/nwn-tools.jar org.progeeks.nwn.MiniMapExporter \$1 \$2 > MiniMapExport
 echo "Creating setpath script."
-java -cp nwn-tools.jar org.progeeks.util.PathTool export PATH=\$PATH:"$dir" > setpath
+java -cp nwn-tools.jar org.progeeks.util.PathTool export PATH=\$PATH:"$dir" > setpath.sh
 echo "Done."
 
 chmod +x ModPacker
@@ -23,4 +23,5 @@ chmod +x ModToXml
 chmod +x GffToXml
 chmod +x XmlToGff
 chmod +x MiniMapExport
+chmod +x setpath.sh
 
