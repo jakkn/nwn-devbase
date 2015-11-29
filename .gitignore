@@ -9,10 +9,10 @@ unpacked/nss/*.ndb
 *.swp
 Makefile
 tmp/
-modpacker/setpath*
-modpacker/G*
-modpacker/X*
-modpacker/M*
+nwntools/setpath*
+nwntools/G*
+nwntools/X*
+nwntools/M*
 *.sublime-workspace
 NWN
 

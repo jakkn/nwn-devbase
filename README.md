@@ -1,34 +1,61 @@
 # nwn-devbase
-This repository is meant to function as a base setup for anyone who wants to version control their module development for the game Neverwinter Nights (NWN), using git. It also contains instructions for setting up a local testing environment using Docker, which can easily be distributed to the development team.
+This repository is meant to function as a base setup for anyone who wants to version control their module development for the game Neverwinter Nights (NWN), using git. It also contains instructions for setting up a local test environment using Docker, which can easily be distributed to the development team.
 
-If all you are wondering is "why", please read [OVERVIEW](https://github.com/jakkn/nwn-devbase/blob/master/OVERVIEW.md), which explains why version control and local testing environments are a good thing to have.
+In addition, the texts here are meant to function as a reference for the users who might be unfamiliar with the practice of git and Docker, as is the case with some of my team members. Thus, if all you are wondering is *why*, please read [OVERVIEW](https://github.com/jakkn/nwn-devbase/blob/master/OVERVIEW.md). That file attempts to explain why version control and local test environments are a good thing to have.
 
 
-## What's the point?
-Can't people just version control their sources without this? Of course they can, however, it is not a straight forward process. The Aurora Toolset stores all module content in file archives with the *.mod* extension. git does not handle *.mod* archives, so for git to be of any use the archive must first be unpacked. The process of unpacking and repacking module content may be cumbersome to some, which is why I have created this repository. It is an attempt at sharing the work I have done so that anyone who may want to do the same can do so with minimal effort. The basis for this work is what I have already done on an existing server - Bastion of Peace. For further details, please see [OVERVIEW](https://github.com/jakkn/nwn-devbase/blob/master/OVERVIEW.md).
+## But seriously, what's the point?
+Can't people just version control their sources without this? Of course they can. However, it is not a straight forward process. The Aurora Toolset stores all module content in file archives with the *.mod* extension. git does not handle *.mod* archives, so for git to be of any use the archive must first be unpacked. The process of unpacking and repacking module content may be cumbersome to some, which is why I have created this repository. It is an attempt at sharing the work I have done so that anyone who may want to do the same can do so with minimal effort. The basis for this work is what I have already done on an existing server - [Bastion of Peace](http://bastionofpeace.freeforums.net/). For further details, please see [OVERVIEW](https://github.com/jakkn/nwn-devbase/blob/master/OVERVIEW.md).
 
 
 ## Intended audience
-- **Admin** Instructions on how to set things up for the first time can be found in [SETUP](https://github.com/jakkn/nwn-devbase/blob/master/SETUP.md).
-- **Developers** Instructions on how to use and run can be found below.
+- **Admin** - Please see [SETUP](https://github.com/jakkn/nwn-devbase/blob/master/SETUP.md). It contains instructions on how to initialize version control and the local test environment.
+- **Developers** - Continue reading. You will find instructions on how to initialize and use these tools below.
 
+---
 
 ## git
-Some git basics and best practices are covered and referenced in [OVERVIEW](https://github.com/jakkn/nwn-devbase/blob/master/OVERVIEW.md). Using a git client like SourceTree or ----TODO: add alternatives---- is nice if you prefer a gui, but git may also be run via the command line.
 
-**Useful cli git commands**
+First you must clone the repository. You need only do this once, and your module admin should have provided you with a link to the repository. Run `git clone <repository-url>` to clone the repository to your local computer, or clone with a gui client.
+
+For general usage, some git basics and best practices are covered and referenced in [OVERVIEW](https://github.com/jakkn/nwn-devbase/blob/master/OVERVIEW.md). Using a git client like [SourceTree](https://www.sourcetreeapp.com/) or [another](https://git-scm.com/download/gui/linux) is nice if you prefer a gui, but git may also be run via the command line.
+
+**Useful git commands**
 
 | Function  | Command  |
 | :-------------------- |:---------------------- |
 | Pull latest from repo | `git pull` |
 | Push local changes to repo | `git push` |
 | Current status of local repo | `git status` |
-| Stage file | `git add FILE` |
-| Unstage file | `git checkout FILE` |
+| Stage a file | `git add <file>` |
+| Unstage a file | `git reset HEAD <file>` |
 | Commit staged files | `git commit` |
+| Discard changes in working directory | `git checkout -- <file>` |
 
-Your module admin should have provided you with a link to the repository. If you have not done so already, run `git clone REPOSITORY-URL` to clone the repository to your local computer, or use a git client to do it in a gui.
 
+---
+
+## ModPacker
+The ModPacker and ModUnpacker utilities found in *nwntools* will pack and unpack the *.mod* archive. They are Java applications and will need [JRE](http://www.oracle.com/technetwork/java/javase/install-windows-64-142952.html) to run. Please make sure it is installed before proceeding.
+
+### Usage
+
+Run these scripts, located in *scripts/*
+| OS  | Pack *src/* into *.mod* | Unpack *.mod* to *src/* |
+| :-------------------- |:---------------------- |:---------------------- |
+| Windows | `pack.cmd` | `unpack.cmd` |
+| Linux | `pack.sh` | `unpack.sh` |
+
+TODO: Modify scripts to check for modpacker installed
+
+1. *nwntools must be initialized* by running the setup script:
+  - Windows: `nwntools/setup.bat`
+  - Linux: `nwntools/setup.sh`
+2. *Symlink the packed module* to your *nwn/modules* folder in order to open the version controlled module with the Aurora Toolset.
+  - Windows: `MKLINK "<path_to_nwn>\modules" "<path_to_repo>\packed\testserver.mod"`
+  - Linux: `ln -s <path_to_repo>/packed/testserver.mod <path_to_nwn>/modules`
+
+---
 
 ## Docker
 When Docker runs an image it starts what is called a container. Containers are running instances of an image, and once created should be used over again to avoid unnecessary container buildup.
@@ -46,8 +73,6 @@ When Docker runs an image it starts what is called a container. Containers are r
 | Stop container | `docker stop CONTAINER` |
 
 ### Running nwserver in a container
-The next steps are done in the console.
-
 For the Docker container to access the module, the host directory containing the module must be mounted as a data volume in the container. This is a little tricky on OSX and Windows, as Docker runs in a VM and the directory must be shared with the VM. Instructions to come, but for now see [docker userguide](http://docs.docker.com/engine/userguide/dockervolumes/). The below example specifies a Linux path and launches the *bop-testserver:latest image*. The port specifications are necessary as Docker will not initialize UDP by default.
 
 ```

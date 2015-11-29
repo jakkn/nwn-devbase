@@ -1,0 +1,228 @@
+<html>
+<title>NWN Module Tools</title>
+
+<body>
+<h2>NWN Module Packing/Unpacking Utilities</h2>
+
+<p><i>Note: These tools require Java to run.  I've only tested it on
+	  Java 1.4 and above.  Go <a href="http://javasoft.com/">here</a>
+	  and download the latest J2SE if you don't already have Java
+	  installed.</i></p>
+
+<p><i>Also Note: This is currently alpha software, which for me means
+	  that it should theoretically work but I've only tested it
+	  on a handful of modules.  So, make sure to keep backups of
+	  your work... just in case.  Good advice anyway.</i></p>
+
+<h3>Introduction</h3>
+
+<h4>ModPacker/ModUnpacker</h4>
+
+<p>Included are two simple tools that will pack and unpack module
+files.  This is similar to what the Neverwinter Nights toolset
+will do, but alot faster and command line driven.</p>
+
+<p>I wrote these tools for when I'm editing the scripts of a large
+module.  It can be quite painful to save a 62+ megabyte module from
+the Bioware toolset every time I make a minor change to a script.  On
+my system, the module packer tool will rebuild the module file in about
+8 seconds.  The same module takes almost a minute to save with the
+toolset.</p>
+
+<p>Combined with Torlack's commandline-based script compiler, I can edit
+scripts, build them, and roll them back into a module without ever
+having to run the bioware toolset... and I can do it all from the
+command line.</p>
+
+<h4>ModToXml/XmlToGff</h4>
+
+<p>Also included are some tools for converting modules and/or their
+packed GFF files into XML files and back again.  This makes it easier to
+store module "source" files in a CVS repository and collaborate with other
+developers.  Sometimes it's a nice way to do quick edits to a file too without
+booting up the bioware toolset.<p>
+
+<h3>Installation</h3>
+
+<p>Make sure you have Java installed.</p>
+
+<p>Unzip the modpacker.zip file to a directory somewhere.</p>
+
+<p>Run the setup.cmd script that is in this directory.  This script
+will create six other scripts called: setpath.cmd, ModPacker.cmd,
+ModUnpacker.cmd, ModToXml.cmd, GffToXml.cmd, and XmlToGff.cmd.</p>
+
+<p>Whenever you want to use the tool, run the setpath.cmd to setup
+your environment in the command line within which you will be working.
+After that, you should be able to run ModPacker, ModUnpacker, etc. from
+wherever you want.</p>
+
+<p>You can check your installion by running either ModPacker.cmd or
+ModUnpacker.cmd with no arguments.  If things are working correctly,
+you should see the simple help message explaining the tool's usage.</p>
+
+<p>Example:</p>
+<pre><code>C:\&gt;<b>modpacker</b>
+Usage: ModPacker &lt;directory&gt; &lt;mod file&gt;
+
+Where: &lt;directory&gt; is the location of the files to pack.
+    and &lt;mod file&gt; is the file to create.
+</code></pre>
+
+<h3>ModUnpacker</h3>
+
+<p>This will extract the resources from a module file and save them
+to a directory.  The Bioware toolset does the same thing when you
+open a module, but with ModUnpacker you can specify which directory
+to dump the files.</p>
+
+<p>To run, type <code><b>ModUnpacker mymodule.mod mydirectory</b></code>
+where <code>mymodule.mod</code> is the name of the module to unpack and
+<code>mydirectory</code> is where you want the files dumped.  You must
+have already created the directory ahead of time.</p>
+
+<p>Example:</p>
+<p><code><b>ModUnpacker FizWorld.mod testdir</b></code></p>
+
+<p>The above will unpack the FizWorld module and store all of the files
+into the directory testdir.</p>
+
+<h3>ModPacker</h3>
+
+<p>This will use the contents of a directory to create a module file.
+It will ignore sub-directories and file types it doesn't know how to
+deal with.  Other than that, it will try to pack everything so don't
+put strange files into the directory.</p>
+
+<p>To run, type <code><b>ModPacker mydirectory mymodule.mod</b></code>
+where <code>mymodule.mod</code> is the name of the module you wish to
+create and <code>mydirectory</code> is the location of the module
+resources you wish to bundle.</p>
+
+<p><font color="red">Note: this tool will happily write over existing
+module files without a care.  So be careful and backup your work in
+case of mistakes.</font></p>
+
+<p>Example:</p>
+<p><code><b>ModPacker testdir UpdatedFizWorld.mod</b></code></p>
+
+<p>The above command will repack the module we unpacked in the ModUnpacker
+example above.  In the ideal case, if we've made no changes then FizWorld.mod
+and FizWorldUpated.mod would be identical except for the internal date stamp.
+The size should be the same in any case.</p>
+
+<h3>ModToXml</h3>
+
+<p>This will extract the resources from a module file and save the
+GFF-based files as XML representations of the data.  This is similar to the
+ModUnpacker utility except that you'll end up with a bunch of XML files
+for the .are, .gic, .itp, etc. files.</p>
+
+<p>To run, type <code><b>ModToXml mymodule.mod mydirectory</b></code>
+where <code>mymodule.mod</code> is the name of the module to unpack+convert
+and <code>mydirectory</code> is where you want the files dumped.  You must
+have already created the directory ahead of time.</p>
+
+<p>Example:</p>
+<p><code><b>ModToXml FizWorld.mod xml_testdir</b></code></p>
+
+<p>The above will unpack the FizWorld module and store all of the converted and
+copied files into the directory xml_testdir.</p>
+
+<h3>XmlToGff</h3>
+
+<p>Unfortunately, at the time of this release, the only way to get your XML files
+back into a module is to convert them to binaries using XmlToGff and then run
+ModPacker on them.  So it's a two step process.</p>
+
+<p>Also note, XmlToGff (and GffToXml) has its command line arguments backwards from
+what one might expect after using the other tools.  It takes the destination directory
+as the first argument and then a list of files for the following arguments.</p>
+
+<p>To run, type <code><b>XmlToGff mydirectory myfiles/*</b></code>
+where <code>mydirectory</code> is where you want the converted files to be stored
+and myfiles/* is the set of files to be converted.  Non-XML files will simply be
+copied.  You must have already created the directory ahead of time.</p>
+
+<p>Example:</p>
+<p><code><b>XmlToGff testdir xml_testdir/*</b></code></p>
+
+<p>The above will convert all of the files in xml_testdir and store them into
+the direct testdir... copying any non-xml files as it goes.</p>
+
+<p>From there you could run ModPacker to make a module as:</p>
+<p><code><b>ModPacker testdir UpdatedFizWorld.mod</b></code></p>
+
+<h3>GffToXml</h3>
+
+<p>For symmetry, a GFF to XML converter has also been included.  It functions pretty
+much the same say that XmlToGff does except in reverse.</p>
+
+<p>To run, type <code><b>GffToXml mydirectory myfiles/*</b></code>
+where <code>mydirectory</code> is where you want the converted files to be stored
+and myfiles/* is the set of files to be converted.  Non-GFF files will simply be
+copied.  You must have already created the directory ahead of time.</p>
+
+<p>Example:</p>
+<p><code><b>GffToXml xml_testdir testdir/*</b></code></p>
+
+<p>The above will convert all of the files in testdir and store their XML counterparts into
+the direct xml_testdir... copying any non-convertable files as it goes.</p>
+
+<h3>Typical XML conversion workflows</h3>
+
+<p>Simple workflow:</p>
+<ol>
+<li>Step 1: Unpack the module as XML and native files.</li>
+<p><code><b>ModToXml FizWorld.mod xml_testdir</b></code></p>
+
+<li>Step 2: Edit the XML files as you see fit.</li>
+<li>Step 3: Reconvert the files to binaries.</li>
+<p><code><b>XmlToGff testdir xml_testdir/*</b></code></p>
+<li>Step 4: Repack the module.</li>
+<p><code><b>ModPacker testdir UpdatedFizWorld.mod</b></code></p>
+</ol>
+
+<p>Advanced workflow (for those that always want the intermediate binaries):</p>
+<ol>
+<li>Step 1: Unpack the module as native files.</li>
+<p><code><b>ModUnpacker FizWorld.mod testdir</b></code></p>
+<li>Step 2: Convert the binaries to XML.</li>
+<p><code><b>GffToXml xml_testdir testdir/*</b></code></p>
+<li>Step 3: Edit the XML files as you see fit.</li>
+<li>Step 4: Reconvert the files to binaries.</li>
+<p><code><b>XmlToGff testdir xml_testdir/*</b></code></p>
+<li>Step 5: Repack the module.</li>
+<p><code><b>ModPacker testdir UpdatedFizWorld.mod</b></code></p>
+</ol>
+
+<p>The advanced workflow is useful if you are using tools that can determine
+when files need to be reconverted and when they don't (like if you're using a build
+tool like make or ant).  I think the NWN-tools tools are fast enough that this really
+only makes a big difference for extremely large modules... and even then, only if you
+find you're repacking frequently.</p>
+
+<h3>Non-windows Users</h3>
+
+<p>All of the above holds true except you may need/want to write your
+own shell scripts based on the Windows .cmd script files.</p>
+
+<h3>Preemptive Answers</h3>
+
+<p>A few answers to questions that may be asked.</p>
+
+<p>Q: Who will find these tools useful?<br>
+A: Anyone that prefers to do module development outside the Bioware
+toolset when possible.</p>
+
+<p>Q: Is the source code available?<br>
+A: Yes, most certainly.  See the sourceforge CVS at http://nwntools.sf.net/</p>
+
+<p>Q: Why did you write this in Java instead of &lt;<i>insert super-elite language here</i>&gt;?<br>
+A: Because it's the language I use the most and it allowed me to cobble
+the original packer/unpacker tools together in a few hours.</p>
+
+<p>Q: Why did the install size grow with this release?<br>
+A: Well, with the XML conversion utilities now included I depend on a couple other
+projects including <a href="http://meta-jb.sf.net/">Meta-JB</a> and in some cases
+<a href="http://logging.apache.org/">Log4j</a>.  I tried to keep it trimmed down though.</p>
