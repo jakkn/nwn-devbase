@@ -47,6 +47,20 @@ As already mentioned, git is a version control system. If you're unsure what thi
 - [Best practices](https://sethrobertson.github.io/GitBestPractices/)
 - [How to write a commit message](http://chris.beams.io/posts/git-commit/)
 
+
+**Useful git commands**
+
+| Function  | Command  |
+| :-------------------- |:---------------------- |
+| Pull latest from repo | `git pull` |
+| Push local changes to repo | `git push` |
+| Current status of local repo | `git status` |
+| Stage a file | `git add <file>` |
+| Unstage a file | `git reset HEAD <file>` |
+| Commit staged files | `git commit` |
+| Discard changes in working directory | `git checkout -- <file>` |
+
+
 #### How do I test locally?
 The next challenge that must be solved is testing. The system structure of BoP development is depicted below
 
