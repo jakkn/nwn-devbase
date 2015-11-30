@@ -34,7 +34,6 @@ docker run \
 
 To function properly, the container needs access to the
 - host directory containing the module
-- host directory containing the scripts
 - database container
 
 ```
