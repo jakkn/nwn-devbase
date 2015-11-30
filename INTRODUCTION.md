@@ -1,5 +1,5 @@
-# Development Overview
-This document aims to give an introduction to how module development is structured at Bastion of Peace. It introduces the systems and describes desired workflow. BoP is the basis for the document, but the framework in this repository has been made as generic as possible so that it may be used by anyone on any system.
+# Introduction
+This document aims to give an introduction to how module development is structured at Bastion of Peace. It introduces the systems and describes desired workflow. BoP is the basis for the document, but the framework contained in this repository has been made as generic as possible so that it may be used by anyone on any system.
 
 If you either cannot, or struggle to, answer any of the following questions, then please read on.
 - Why use these systems?

@@ -1,11 +1,11 @@
 # nwn-devbase
 This repository is meant to function as a base setup for anyone who wants to version control their module development for the game Neverwinter Nights (NWN), using git. It also contains instructions for setting up a local test environment using Docker, which can easily be distributed to the development team.
 
-In addition, the texts here are meant to function as a reference for the users who might be unfamiliar with the practice of git and Docker, as is the case with some of my team members. Thus, if all you are wondering is *why*, please read [OVERVIEW](https://github.com/jakkn/nwn-devbase/blob/master/OVERVIEW.md). That file attempts to explain why version control and local test environments are a good thing to have.
+In addition, the texts here are meant to function as a reference for users unfamiliar with git and Docker, as is the case with some of my team members. [INTRODUCTION](https://github.com/jakkn/nwn-devbase/blob/master/INTRODUCTION.md) introduces the problem areas git and Docker solve, and attempts to explain how the development process is supposed to work. It also presents an overview of how the systems are wired together.
 
 
 ## But seriously, what's the point?
-Can't people just version control their sources without this? Of course they can. However, it is not a straight forward process. The Aurora Toolset stores all module content in file archives with the *.mod* extension. git does not handle *.mod* archives, so for git to be of any use the archive must first be unpacked. The process of unpacking and repacking module content may be cumbersome to some, which is why I have created this repository. It is an attempt at sharing the work I have done so that anyone who may want to do the same can do so with minimal effort. The basis for this work is what I have already done on an existing server - [Bastion of Peace](http://bastionofpeace.freeforums.net/). For further details, please see [OVERVIEW](https://github.com/jakkn/nwn-devbase/blob/master/OVERVIEW.md).
+Can't people just version control their sources without this? Of course they can. However, it is not a straight forward process. The Aurora Toolset stores all module content in file archives with the *.mod* extension. git does not handle *.mod* archives, so for git to be of any use the archive must first be unpacked. The process of unpacking and repacking module content may be cumbersome to some, which is why I have created this repository. It is an attempt at sharing the work I have done so that anyone who may want to do the same can do so with minimal effort. The basis for this work is what I have already done on an existing server - [Bastion of Peace](http://bastionofpeace.freeforums.net/).
 
 
 ## Intended audience
@@ -18,7 +18,7 @@ Can't people just version control their sources without this? Of course they can
 
 First you must clone the repository. You need only do this once, and your module admin should have provided you with a link to the repository. Run `git clone <repository-url>` to clone the repository to your local computer, or clone with a gui client.
 
-For general usage, some git basics and best practices are covered and referenced in [OVERVIEW](https://github.com/jakkn/nwn-devbase/blob/master/OVERVIEW.md). Using a git client like [SourceTree](https://www.sourcetreeapp.com/) or [another](https://git-scm.com/download/gui/linux) is nice if you prefer a gui, but git may also be run via the command line.
+For general usage, some git basics and best practices are covered and referenced in [INTRODUCTION](https://github.com/jakkn/nwn-devbase/blob/master/INTRODUCTION.md). Using a git client like [SourceTree](https://www.sourcetreeapp.com/) or [another](https://git-scm.com/download/gui/linux) is nice if you prefer a gui, but git may also be run via the command line.
 
 **Useful git commands**
 
@@ -36,7 +36,7 @@ For general usage, some git basics and best practices are covered and referenced
 ---
 
 ## ModPacker
-The ModPacker and ModUnpacker utilities found in *nwntools* will pack and unpack the *.mod* archive. They are Java applications and will need [JRE](http://www.oracle.com/technetwork/java/javase/install-windows-64-142952.html) to run. Please make sure it is installed before proceeding.
+ModPacker is used to pack and unpack the *.mod* archive. It is a Java application and needs [JRE](http://www.oracle.com/technetwork/java/javase/install-windows-64-142952.html) to run. Please make sure it is installed before proceeding.
 
 ### Usage
 
@@ -46,12 +46,7 @@ Run these scripts, located in *scripts/*
 | Windows | `pack.cmd` | `unpack.cmd` |
 | Linux | `pack.sh` | `unpack.sh` |
 
-TODO: Modify scripts to check for modpacker installed
-
-1. *nwntools must be initialized* by running the setup script:
-  - Windows: `nwntools/setup.bat`
-  - Linux: `nwntools/setup.sh`
-2. *Symlink the packed module* to your *nwn/modules* folder in order to open the version controlled module with the Aurora Toolset.
+- *Symlink the packed module* to your *nwn/modules* folder in order to open the version controlled module with the Aurora Toolset.
   - Windows: `MKLINK "<path_to_nwn>\modules" "<path_to_repo>\packed\testserver.mod"`
   - Linux: `ln -s <path_to_repo>/packed/testserver.mod <path_to_nwn>/modules`
 
