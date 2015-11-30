@@ -1,6 +1,6 @@
+# Using Docker
 
-## Docker
-When Docker runs an image it starts what is called a container. Containers are running instances of an image, and once created should be used over again to avoid unnecessary container buildup.
+When you start a Docker image with the `docker run IMAGE` command, Docker creates what is called a container. Containers are instances of an image and are considered disposable. Everything you do in a container stays in the container. Containers should be used over again to avoid unnecessary container buildup.
 
 **Useful docker commands**
 
@@ -14,44 +14,73 @@ When Docker runs an image it starts what is called a container. Containers are r
 | Restart container | `docker restart CONTAINER` |
 | Stop container | `docker stop CONTAINER` |
 
-### Running nwserver in a container
-For the Docker container to access the module, the host directory containing the module must be mounted as a data volume in the container. This is a little tricky on OSX and Windows, as Docker runs in a VM and the directory must be shared with the VM. Instructions to come, but for now see [docker userguide](http://docs.docker.com/engine/userguide/dockervolumes/). The below example specifies a Linux path and launches the *bop-testserver:latest image*. The port specifications are necessary as Docker will not initialize UDP by default.
+
+## Linux
+
+In the below subsections, change `PATH_TO_REPO` with the path to your repository on the host system.
+
+### Create the database container
+```
+docker pull mysql:5.7
+docker run \
+  --name nwn-mysql \
+  -v PATH_TO_REPO/docker/database:/docker-entrypoint-initdb.d \
+  -e MYSQL_ROOT_PASSWORD=password \
+  -d \
+  mysql:5.7
+```
+
+### Create the nwserver container
+
+To function properly, the container needs access to the
+- host directory containing the module
+- host directory containing the scripts
+- database container
 
 ```
 docker run -it \
-  -v /home/user/nwn-devbase/packed:/opt/nwnserver/modules \
+  -v PATH_TO_REPO/packed:/opt/nwnserver/modules \
+  --link nwn-mysql:mysql \
   -p 5121:5121/tcp \
   -p 5121:5121/udp \
-  --name testserver \
+  --name boptest \
   bop-testserver:latest
 ```
 
-The procedure is similar if you need haks, overrides, or other custom files. The below example adds folders *hak*, *tlk*, and *erf*.
+`-v` mounts a host directory as a volume in the container. `--link nwn-mysql:mysql` creates a link between the mysql container and the boptest container. Note: the name following the colon - *mysql* in this case - is the name of the server, and must correspond with the database server specified in the nwnx2.ini, but this should work out of the box unless it has been changed in the Dockerfile. `-p` specifies which container ports to expose to the host system. Docker will not expose UDP by default and must be specified to enable nwserver connections.
 
+The procedure is similar if you need haks, overrides, or other custom files. The below example adds folders *hak*, *tlk*, and *erf*, assumed located on host system at */opt/nwn/*
 ```
 docker run -it \
-  -v /home/user/nwn-devbase/packed:/opt/nwnserver/modules \
+  -v PATH_TO_REPO/packed:/opt/nwnserver/modules \
   -v /opt/nwn/hak:/opt/nwnserver/hak \
   -v /opt/nwn/tlk:/opt/nwnserver/tlk \
   -v /opt/nwn/erf:/opt/nwnserver/erf \
+  --link nwn-mysql:mysql \
   -p 5121:5121/tcp \
   -p 5121:5121/udp \
-  --name testserver \
+  --name boptest \
   bop-testserver:latest
 ```
 
-### Restarting container
-The `docker run` command above creates a container named testserver and will by default run the last CMD command defined in the Dockerfile. To exit the container simply type `exit`. If nwserver launched successfully you will have to type `exit` once more, as the first command shut down the server while the second will shut down the container.
+### Restarting the container
+`docker run` will by default run the last CMD command defined in the Dockerfile. To exit the container simply type `exit`.
 
 From now on you should only need the following two commands to start and stop the server.
 ```
 docker restart testserver
 docker stop testserver
 ```
+To view log output you may copy logs.0 from the container by running `docker cp boptest:/opt/nwnserver/logs.0 .`
 
-### Connect to the server
-To connect to the server from your local NWN game client, direct connect to `localhost:5121`.
+## Windows
+This is a little tricky on Windows, as Docker runs in a VM and the directory must be shared with the VM. Instructions to come, but for now see [docker userguide](http://docs.docker.com/engine/userguide/dockervolumes/).
 
-### Protip
-TODO: Run `pack -n` to pack the module without scripts, mount ncs folder, and use nwnx_funcs(?) to edit and test scripts without having to restart the server.
+## OSX
+This is a little tricky on OSX, as Docker runs in a VM and the directory must be shared with the VM. Instructions to come, but for now see [docker userguide](http://docs.docker.com/engine/userguide/dockervolumes/).
 
+I don't run OSX and neither does anyone else at BOP. If anyone wants to fill out this please go ahead.
+
+
+## Connect to the server
+Direct connect to `localhost:5121` from your NWN game client.

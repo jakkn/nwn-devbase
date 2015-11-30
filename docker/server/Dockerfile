@@ -11,7 +11,7 @@ RUN cp $(pwd)/nwnx2.ini /opt/nwnserver/
 # Change YourModuleHere with your module name
 WORKDIR /opt/nwnserver
 RUN sed -i \
-    -e's/Contest Of Champions 0492/Contest Of Champions 0492/g' \
+    -e's/Contest Of Champions 0492/YourModuleHere/g' \
     nwnstartup.sh
 
 #WORKDIR /var/lib/mysql

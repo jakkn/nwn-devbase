@@ -16,6 +16,14 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Current Database: `testserver`
+--
+
+CREATE DATABASE /*!32312 IF NOT EXISTS*/ `testserver` /*!40100 DEFAULT CHARACTER SET latin1 */;
+
+USE `testserver`;
+
+--
 -- Table structure for table `pwdata`
 --
 
@@ -51,4 +59,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-11-26 19:42:37
+-- Dump completed on 2015-11-30 12:21:09
