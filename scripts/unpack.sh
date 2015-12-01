@@ -18,21 +18,18 @@ if [ -d $NWNTOOLS ]; then
     cd $NWNTOOLS && ./setup.sh
     # Exit early if setup failed
     if [ ! -x $MODUNPACKER ]; then
-      echo "Failed to setup nwntools."
-      echo "Exiting."
+      echo -e "Failed to setup nwntools.\nExiting."
       exit
     fi
   fi
 else
-  echo "Cannot find nwntools."
-  echo "Exiting."
+  echo -e "Cannot find nwntools.\nExiting."
   exit
 fi
 
 # Exit early if there is no module to unpack
 if [ ! -d $UNPACKED ]; then
-  echo "Cannot find module to unpack. Check $PACKED."
-  echo "Exiting."
+  echo -e "Cannot find module to unpack. Check $PACKED.\nExiting."
   exit
 fi
 
