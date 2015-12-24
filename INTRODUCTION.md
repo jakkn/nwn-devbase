@@ -43,9 +43,13 @@ Let's continuing with our story:
 
 As already mentioned, git is a version control system. If you're unsure what this really means, please refer you to [git basics](https://git-scm.com/book/en/v2/Getting-Started-Git-Basics) for an introduction. git enables version control, but in order to reap the full benefits of version control, it has to be used in the right way. By everyone. So, we have to establish a set of ground rules. Please take the time to browse the following posts, use them as references, and most importantly - apply what you learn. Make sure to revisit these guidelines over and over again, and strive to use git for the benefit of the team as a whole:
 
-(Please feel free to recommend articles here)
-- [Best practices](https://sethrobertson.github.io/GitBestPractices/)
-- [How to write a commit message](http://chris.beams.io/posts/git-commit/)
+- [Beginner: GitCasts YouTube channel](https://www.youtube.com/playlist?list=PLttwD7NyH3omQLyVtan0CFOX_UWItX_yG)
+- [Beginner: CLI introduction] (https://try.github.io/levels/1/challenges/1)
+- [Beginner: Best practices](https://sethrobertson.github.io/GitBestPractices/)
+- [Beginner: How to write a commit message](http://chris.beams.io/posts/git-commit/)
+- [Advanced: ProGit](https://progit.org/)
+- [Advanced: Various tutorials](http://scottchacon.com/)
+- [Advanced: The fringes of git](https://www.youtube.com/watch?v=qh-R0-7Ii_U)
 
 
 **Useful git commands**
