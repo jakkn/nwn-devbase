@@ -1,7 +1,7 @@
 # Setup
 This document is intended for those in charge of setting up the repository and managing the Docker image.
 
-The document covers the following:
+The following topics are covered:
 
 - [Applying version control](#git)
 - [Configuring the local testing environment](#docker)
@@ -11,14 +11,19 @@ Either can be used independently, but I recommend both.
 ---
 
 ## git
-1. Fork repository
-2. Change permissions
-	- I suggest you make the fork private if you don't want to expose module content to anyone but your team. I also recommend using BitBucket or GitLab, as GitHub charges money per private repository. See [how to fork](https://confluence.atlassian.com/bitbucket/forking-a-repository-221449527.html) and [how to make private](https://confluence.atlassian.com/bitbucket/make-a-repo-private-or-public-221449724.html).
-3. Rename the repository to reflect your project, e.g. at BoP our repo is named nwn-bop
-4. Place your *.mod* archive in the designated directory
-5. Change the module name in the pack scripts
-6. Run the unpack script
-7. Add, commit, push.
+
+The skeleton is basically the content of directories *scripts/* and *nwntools/*. Either copy-paste these folders over to your project, or clone this repository and change the origin. Cloning has the added benefit of being able to pull any future changes from this repository into yours. To do this, type
+```
+git clone -o boilerplate https://github.com/jakkn/nwn-devbase.git nwn-my-project
+git remote add origin ssh://git@bitbucket.org/user/nwn-my-project.git
+```
+Please note:
+
+- If you clone it is adviced to set the new remote origin to a private repository (bitbucket.org/user/nwn-my-project.git is just an example), as most likely you do not want to expose module content to anyone but the team. I recommend using BitBucket as GitHub charges money per private repository. See [how to make private](https://confluence.atlassian.com/bitbucket/make-a-repo-private-or-public-221449724.html)
+- Place your module (*.mod* archive) in the designated directory *packed/*
+- Change the module name in the pack and unpack scripts
+- Run the unpack script
+- Add, commit, push
 
 ---
 
