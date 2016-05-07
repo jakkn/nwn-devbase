@@ -1,5 +1,5 @@
 # nwn-devbase
-This repository is meant to function as a base setup for anyone who wants to version control their module development for the game Neverwinter Nights (NWN), using git. It also contains instructions for setting up a local test environment using Docker, which can easily be distributed to the development team.
+This repository is meant to function as boilerplate for anyone who wants to version control their module development for the game Neverwinter Nights (NWN), using git. It contains a skeleton with the necessary tools, and usage documentation including instructions for setting up a local test environment using Docker, which can easily be distributed to the development team.
 
 In addition, the texts here are meant to function as a reference for users unfamiliar with git and Docker, as is the case with some of my team members. [INTRODUCTION](https://github.com/jakkn/nwn-devbase/blob/master/INTRODUCTION.md) introduces the problem areas git and Docker solve, and attempts to explain how the development process is supposed to work. It also presents an overview of how the systems are wired together.
 
@@ -9,7 +9,7 @@ Can't people just version control their sources without this? Of course they can
 
 
 ## Intended audience
-- **Admin** - Please see [SETUP](https://github.com/jakkn/nwn-devbase/blob/master/SETUP.md). It contains instructions on how to initialize and customize the repository to your custom server.
+- **Admin** - Please see [SETUP](https://github.com/jakkn/nwn-devbase/blob/master/SETUP.md). It contains instructions on how to initialize and customize the repository to your server.
 - **Developers** - Continue reading. You will find instructions on how to initialize and use these tools below.
 
 
@@ -43,7 +43,7 @@ Using a git client like [SourceTree](https://www.sourcetreeapp.com/) or [another
 
 ### Symlink
 
-To open the packed module with the Aurora Toolset, symlink the *.mod* file to your *nwn/modules* folder. Run the following commands (windows may need admin console), where *PATH_TO_NWN* is the install dir of your local NWN installation, and *PATH_TO_REPO* is the path to the repository.
+To open the packed module with the Aurora Toolset, symlink the *.mod* file to your *nwn/modules* folder. Run the following command (windows may need admin console), where *PATH_TO_NWN* is the install dir of your local NWN installation, and *PATH_TO_REPO* is the path to the repository.
 
 - Linux: `ln -s "PATH_TO_REPO"/packed/testserver.mod "PATH_TO_NWN"/modules/`
 - Windows: `MKLINK "PATH_TO_NWN\modules\" "PATH_TO_REPO\packed\testserver.mod"`
@@ -64,10 +64,10 @@ For Docker usage, please refer to [DOCKERGUIDE](https://github.com/jakkn/nwn-dev
 
 
 ## Background
-Neverwinter Nights is a RPG developed by BioWare and was released in 2001. In addition to the NWN game client, BioWare released a tool for creating custom game content, the Aurora Toolset, along with server hosting software. This enabled players to create and host their own worlds.
+Neverwinter Nights is a RPG developed by BioWare, released in 2001. In addition to the NWN game client, BioWare released a tool for creating game content - the Aurora Toolset - along with server hosting software. This enables anyone to create and host their own worlds.
 
-NWN was discontinued 7 years after release, with the final patch v1.69 released 9 July 2008. Even though the game was discontinued by the developer, the community is still strong and due to the game's hackable nature new community content is continuously released.
+NWN was discontinued 7 years after release, with the final patch v1.69 released July 9th, 2008. Even though the game was discontinued by the developer, the community is still strong and due to the game's hackable nature new community content is continuously released.
 
 
 ## Feedback
-Feedback is greatly appreciated. If you have any thoughts, suggestions or ideas about how to improve the content of this project, please feel free to contact me, or even better; improve it and make a pull request.
+Feedback is greatly appreciated. If you have any thoughts, suggestions or ideas about how to improve this project, please feel free to contact me, or even better; make a pull request.
