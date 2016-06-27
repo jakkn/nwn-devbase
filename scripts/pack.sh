@@ -5,23 +5,19 @@ SCRIPTS_DIR=$(dirname $FILE)
 BASE_DIR=$(dirname $SCRIPTS_DIR)
 NWNTOOLS="$BASE_DIR"/nwntools
 MODPACKER="$NWNTOOLS"/ModPacker
+XMLTOGFF="$NWNTOOLS"/XmlToGff
 TMP="$BASE_DIR"/tmp
 PACKED="$BASE_DIR"/packed
 UNPACKED="$BASE_DIR"/unpacked
 MODULE="$PACKED"/testserver.mod
-#echo -e "file:\t\t$FILE"
-#echo -e "scriptdir:\t$SCRIPTS_DIR"
-#echo -e "basedir:\t$BASE_DIR"
-#echo -e "nwntools:\t$NWNTOOLS"
-
 
 # Setup nwntools if necessary
 if [ -d $NWNTOOLS ]; then
-  if [ ! -x $MODPACKER ]; then
+  if [ ! -x $MODPACKER -o ! -x $XMLTOGFF ]; then
     echo "Setting up nwntools..."
     cd $NWNTOOLS && ./setup.sh
     # Exit early if setup failed
-    if [ ! -x $MODPACKER ]; then
+    if [ ! -x $MODPACKER -o ! -x $XMLTOGFF ]; then
       echo -e "Failed to setup nwntools.\nExiting."
       exit
     fi

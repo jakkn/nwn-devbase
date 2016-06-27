@@ -1,71 +1,70 @@
 #! /bin/bash
 
-FILE=$(readlink -f $0)
+MODULE=$(readlink -e "$1")
+FILE=$(readlink -f "$0")
 SCRIPTS_DIR=$(dirname $FILE)
 BASE_DIR=$(dirname $SCRIPTS_DIR)
-NWNTOOLS="$BASE_DIR"/nwntools
-MODUNPACKER="$NWNTOOLS"/ModUnpacker
 TMP="$BASE_DIR"/tmp
-PACKED="$BASE_DIR"/packed
 UNPACKED="$BASE_DIR"/unpacked
-MODULE="$PACKED"/testserver.mod
 
-
-# Setup nwntools if necessary
-if [ -d $NWNTOOLS ]; then
-  if [ ! -x $MODUNPACKER ]; then
-    echo "Setting up nwntools..."
-    cd $NWNTOOLS && ./setup.sh
-    # Exit early if setup failed
-    if [ ! -x $MODUNPACKER ]; then
-      echo -e "Failed to setup nwntools.\nExiting."
-      exit
+extract() {
+  clean
+  echo "Extracting module to $TMP"
+  pushd "$TMP"
+  nwn-erf -x -f "$MODULE"
+  $MODTOXML $MODULE $TMP
+  exit 0;
+  
+  echo "Moving sources into $UNPACKED/ ..."
+  pushd $TMP >> /dev/null
+  for f in *; do
+    if [ -f $f ]; then
+      # prune .xml extension
+      f=${f%.xml}
+      # get remaining file extension
+      EXT=${f##*.}
+      # create dir for extension
+      mkdir -p $UNPACKED/$EXT
+      # move files to designated dir
+      if [ -f $f.xml ]; then
+        mv *.$EXT.xml $UNPACKED/$EXT/
+      else
+        mv *.$EXT $UNPACKED/$EXT/
+      fi
     fi
-  fi
-else
-  echo -e "Cannot find nwntools.\nExiting."
-  exit
-fi
+  done
+  popd >> /dev/null
+  
+  echo "Deleting temporary storage..."
+  rmdir $TMP
+  
+  echo "Done."
+}
 
-# Exit early if there is no module to unpack
-if [ ! -d $UNPACKED ]; then
-  echo -e "Cannot find module to unpack. Check $PACKED.\nExiting."
-  exit
-fi
-
-echo "Setting nwntools environment variables..."
-cd $NWNTOOLS && ./setpath.sh
-
-if [ -d $TMP ]; then
-  echo "Cleaning temporary storage..."
-  rm -r $TMP/*
-else
+clean() {
+  [ -d $TMP ] && { echo "Cleaning $TMP"; rm -r $TMP; }
   mkdir $TMP
-fi
-
-echo "Extracting module to temporary storage..."
-$MODUNPACKER $MODULE $TMP
-
-if [ -d $UNPACKED ]; then
-  echo "Cleaning old sourcefiles..."
-  rm -r $UNPACKED/*
-else
+  [ -d $UNPACKED ] && { echo "Cleaning $UNPACKED"; rm -r $UNPACKED; }
   mkdir $UNPACKED
-fi
+}
 
-echo "Moving sources into $UNPACKED/ ..."
-pushd $TMP >> /dev/null
-for f in *; do
-  if [ -f $f ]; then
-    # create dir for extension in $UNPACKED
-    mkdir -p $UNPACKED/${f##*.}
-    # move all files with extension into $UNPACKED
-    mv *.${f##*.} $UNPACKED/${f##*.}/
-  fi
-done
-popd >> /dev/null
+# Exit early if executables or module file are missing
+verifyEnvironment() {
+  testExecutableExists nwn-erf
+  testExecutableExists nwn-gff
+  testModuleExists
+}
 
-echo "Deleting temporary storage..."
-rmdir $TMP
+# Tests if the executable is in PATH.
+# Arguments:
+#   $1 - the executable to test for
+testExecutableExists() {
+  hash $1 2>/dev/null || { echo -e >&2 "I require $1 but I cannot find it. Please install and check that the executable is in PATH. \nAborting."; exit 1; }
+}
 
-echo "Done."
+testModuleExists() {
+  [ -f $MODULE ] || { echo -e "Cannot find $MODULE.\nAborting."; }
+}
+
+verifyEnvironment
+extract
