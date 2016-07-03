@@ -6,20 +6,22 @@ WARN_COLOR=\x1b[33;01m
 all: Makefile.dep compile
 
 clean:
-	-rm out/*.nss out/*.ncs out/*.ndb
+	@rm tmp/* -f
+# -rm out/*.nss out/*.ncs out/*.ndb tmp/*
 
 
-subdirs := $(shell find . -type d)
+srcdirs      := $(shell find src/ -type d)
 
-corefiles := $(wildcard ../gamedata/override/*.nss)
+corefiles    := $(wildcard ../gamedata/override/*.nss)
 
-headers := $(foreach d,$(subdirs),$(wildcard $(d)/*.h))
-scripts := $(foreach d,$(subdirs),$(wildcard $(d)/*.n))
+headers      := $(foreach d,$(srcdirs),$(wildcard $(d)/*.h))
+scripts      := $(foreach d,$(srcdirs),$(wildcard $(d)/*.n))
 preprocessed := $(addprefix out/,$(addsuffix .nss, $(notdir $(basename $(scripts)))))
 
-resources := $(foreach d,$(subdirs),$(wildcard $(d)/*.*.yml))
-gff       := $(addprefix out/,$(notdir $(basename $(resources))))
-mod       := $(shell find . -name *.mod)
+srcyaml      := $(foreach d,$(srcdirs),$(wildcard $(d)/*.*.yml))
+raw          := $(foreach f, tmp/,$(wildcard $(f)/*))
+gff          := $(addprefix out/,$(notdir $(basename $(srcyaml))))
+mod          := $(shell find -name *.mod)
 
 
 # $(corefiles) all .nss files that are provided by NWN itself
@@ -27,18 +29,31 @@ mod       := $(shell find . -name *.mod)
 # $(headers)   array of header files (.nh, .h) with extension
 # $(scripts)   array of all script files (.n) with extension
 # $(preprocessed) array of ALL script files that were preprocessed
-# $(resources)  .yml-encoded gff files related to scripts
-# $(gff)        targets for $resources
+# $(srcyaml)  .yml-encoded gff files related to scripts
+# $(gff)        targets for $srcyaml
 #
+yml: extract dirtree converttoyml
 
-extract: $(mod)
-	@cd scripts && ./unpack.sh ../$^
+extract: clean unpack
 
+unpack: $(mod)
+	@cd tmp && nwn-erf -x -f ../$^
 
-gff: $(resources)
+dirtree: $(raw)
 	@for g in $^; do \
-		echo nwn-gff -i $$g -o out/`basename $$g .yml` ;\
-		nwn-gff -i $$g -o out/`basename $$g .yml` \
+	; done
+
+converttoyml: $(raw)
+	@for g in $^; do \
+		echo nwn-gff -i $$g -o out/`basename $$g .yml` -k yaml ;\
+		nwn-gff -i $$g -o out/`basename $$g .yml` -k yaml \
+	; done
+
+
+gff: $(srcyaml)
+	@for y in $^; do \
+		echo nwn-gff -i $$y -o tmp/`basename $$y` -k gff ;\
+		nwn-gff -i $$y -o tmp/`basename $$y .yml` -k gff \
 	; done
 
 compile: $(preprocessed) $(objects) $(gff)
