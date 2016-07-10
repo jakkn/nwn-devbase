@@ -6,21 +6,22 @@ require 'nwn/all'
 require 'fileutils'
 
 
-
-
+MODULE = FileList["module/*.mod"]
+directory "tmp"
 
 namespace :main do
   desc 'Clean tmp folder'
   task :clean do
     FileUtils.rm_r Dir.glob('tmp/*')
   end
+
   desc 'Extract module'
-  task :extract do
+  task :extract => ["tmp", MODULE] do
     Dir.chdir("tmp") do
-      mod = Rake::FileList["../module/*.mod"]
-      system "nwn-erf", "-x", "-f", mod[0]
+      system "nwn-erf", "-x", "-f", "../"+MODULE[0]
     end
   end
+
   desc 'Move to src'
   task :move_sources do
     Dir.foreach('tmp') do |file|
@@ -31,6 +32,7 @@ namespace :main do
       FileUtils.mv Dir.glob('tmp/*.'+ext), srcdir
     end
   end
+
   desc 'Gff to Yaml'
   task :yml do
     def allGffToYml(dir)
@@ -47,6 +49,7 @@ namespace :main do
     # Dir.glob('tmp/*') { |filename|
     #   p File.extname(filename)
     # }
+
   desc 'Pack module'
   task :pack do
   end
