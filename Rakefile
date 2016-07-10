@@ -5,6 +5,10 @@ require 'systemu'
 require 'nwn/all'
 require 'fileutils'
 
+
+
+
+
 namespace :main do
   desc 'Clean tmp folder'
   task :clean do
@@ -25,6 +29,19 @@ namespace :main do
       srcdir = 'src/'+ext
       FileUtils.mkdir_p(srcdir)
       FileUtils.mv Dir.glob('tmp/*.'+ext), srcdir
+    end
+  end
+  desc 'Gff to Yaml'
+  task :yml do
+    def allGffToYml(dir)
+      Dir.chdir(dir) do
+        files = Rake::FileList['*']
+        pr = puts files
+      end
+    end
+    Dir.foreach('src') do |dir|
+      next if dir == '.' or dir == '..' or dir == 'nss' or dir == 'ncs'
+      allGffToYml('src/'+dir)
     end
   end
     # Dir.glob('tmp/*') { |filename|
