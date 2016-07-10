@@ -6,8 +6,10 @@ require 'nwn/all'
 require 'fileutils'
 
 
-MODULE = FileList["module/*.mod"]
+MODULE    = FileList["module/*.mod"]
+GFF       = FileList["tmp/*"]
 directory "tmp"
+directory "src"
 
 namespace :main do
   desc 'Clean tmp folder'
@@ -23,9 +25,8 @@ namespace :main do
   end
 
   desc 'Move to src'
-  task :move_sources do
-    Dir.foreach('tmp') do |file|
-      next if file == '.' or file == '..'
+  task :move_sources => ["src", "extract"] do
+    GFF.each do |file|
       ext = File.extname(file).delete('.')
       srcdir = 'src/'+ext
       FileUtils.mkdir_p(srcdir)
