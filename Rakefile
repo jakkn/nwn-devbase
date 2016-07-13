@@ -8,7 +8,8 @@ require 'fileutils'
 
 MODULE    = FileList["module/*.mod"]
 TMP_GFFS  = FileList["tmp/*"]
-GFFS      = FileList["src/**/*.*"].exclude(/n[cs]s$/)
+GFFS      = FileList["src/**/*.*"].exclude(/n[cs]s$|\.yml$/)
+YMLS      = FileList["src/**/*.yml"].exclude(/n[cs]s$/)
 
 rule '.yml' => ->(f){ source_for_yml(f) } do |t|
   system "nwn-gff", "-i", "#{t.source}", "-o", "#{t.name}"
