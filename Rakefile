@@ -20,6 +20,17 @@ def source_for_yml(yml_file)
   GFFS.detect{|f| f == yml_file.sub(/\.yml$/, '')}
 end
 
+# Circle dependency! (.yml.gff => .yml)
+# rule '.gff' => ->(f) { source_for_gff(f) } do |t|
+#   system "nwn-gff", "-i", "#{t.name}".sub(/\.gff$/, ''), "-o", "#{t.source}".sub(/\.yml\.gff$/, '')
+#   # FileUtils.rm "#{t.source}"
+# end
+
+# def source_for_gff(gff_file)
+#   YMLS.detect{|f| f == gff_file.sub(/\.gff$/, '')}
+# end
+
+
 directory "tmp"
 directory "src"
 
@@ -50,7 +61,8 @@ namespace :main do
   multitask :yml =>  GFFS.inject(GFFS.class.new) {|res, fn| res << fn + '.yml' } # GFFS.map {|p| p << '.yml' }
 
   desc 'yaml to gff'
-  # multitask :yml =>  GFFS.inject(GFFS.class.new) {|res, fn| res << fn + '.yml' } # GFFS.map {|p| p << '.yml' }
+  # multitask :gff =>  YMLS.sub(/\.yml$/, '')
+  multitask :gff =>  YMLS.inject(YMLS.class.new) {|res, fn| res << fn + '.gff' } # YMLS.map {|p| p << '.yml' }
 
   desc 'Pack module'
   task :pack do
