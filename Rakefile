@@ -11,6 +11,7 @@ TMP_GFFS  = FileList["tmp/*"]
 GFFS      = FileList["src/**/*.*"].exclude(/n[cs]s$|\.yml$/)
 YMLS      = FileList["src/**/*.yml"].exclude(/n[cs]s$/)
 
+
 rule '.yml' => ->(f){ source_for_yml(f) } do |t|
   system "nwn-gff", "-i", "#{t.source}", "-o", "#{t.name}"
   # FileUtils.rm "#{t.source}"
@@ -20,26 +21,19 @@ def source_for_yml(yml_file)
   GFFS.detect{|f| f == yml_file.sub(/\.yml$/, '')}
 end
 
-# Circle dependency! (.yml.gff => .yml)
-# rule '.gff' => ->(f) { source_for_gff(f) } do |t|
-#   system "nwn-gff", "-i", "#{t.name}".sub(/\.gff$/, ''), "-o", "#{t.source}".sub(/\.yml\.gff$/, '')
-#   # FileUtils.rm "#{t.source}"
-# end
 
-# def source_for_gff(gff_file)
-#   YMLS.detect{|f| f == gff_file.sub(/\.gff$/, '')}
-# end
-
+# Circle dependency! (.ifo => ifo.yml)
+rule( /\.(?!yml)[\w]+$/ => [
+  proc {|task_name| task_name.sub(/$/, '.yml') }
+]) do |t|
+  system "nwn-gff", "-i", "#{t.source}", "-o", "#{t.name}"
+  # FileUtils.rm "#{t.source}"
+end
 
 directory "tmp"
 directory "src"
 
-namespace :main do
-  desc 'Clean tmp folder'
-  task :clean do
-    FileUtils.rm_r Dir.glob('tmp/*')
-  end
-
+namespace :make do
   desc 'Extract module'
   task :extract => ["tmp", MODULE] do
     Dir.chdir("tmp") do
@@ -58,13 +52,19 @@ namespace :main do
   end
 
   desc 'gff to yaml'
-  multitask :yml =>  GFFS.inject(GFFS.class.new) {|res, fn| res << fn + '.yml' } # GFFS.map {|p| p << '.yml' }
+  multitask :yml =>  GFFS.inject(GFFS.class.new) {|res, fn| res << fn + '.yml' }
 
   desc 'yaml to gff'
-  # multitask :gff =>  YMLS.sub(/\.yml$/, '')
-  multitask :gff =>  YMLS.inject(YMLS.class.new) {|res, fn| res << fn + '.gff' } # YMLS.map {|p| p << '.yml' }
+  multitask :gff =>  YMLS.sub(/\.yml$/, '')
 
   desc 'Pack module'
   task :pack do
+  end
+end
+
+namespace :clean do
+  desc 'Clean tmp folder'
+  task :tmp do
+    FileUtils.rm_r Dir.glob('tmp/*')
   end
 end
