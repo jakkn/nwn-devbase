@@ -1,8 +1,22 @@
+require 'rubygems'
+require 'bundler/setup'
+
+require 'nwn/all'
+require 'fileutils'
+
+MODULE    = FileList["module/*.mod"]
 TMP_GFFS = FileList["tmp/*"]
 GFFS     = FileList["src/**/*.*"].exclude(/n[cs]s$|\.yml$/)
 
 directory "tmp"
 directory "src"
+
+
+desc 'Extract module'
+task :extract => :mod2gff
+desc 'Convert gff to yml'
+task :yml => :gff2yml
+
 
 rule '.yml' => ->(f){ source_for_yml(f) } do |t|
   system "nwn-gff", "-i", "#{t.source}", "-o", "#{t.name}"
@@ -20,8 +34,8 @@ task :mod2gff => ["tmp", MODULE] do
 	end
 end
 
-desc 'Move to src'
-task :move_sources => ["src", "extract"] do
+# desc 'Move to src'
+task :move_sources => ["src", :mod2gff] do
   TMP_GFFS.each do |file|
     ext = File.extname(file).delete('.')
     srcdir = 'src/'+ext
@@ -30,4 +44,4 @@ task :move_sources => ["src", "extract"] do
   end
 end
 
-multitask :gff2yml => [:move_sources ,GFFS.inject(GFFS.class.new) {|res, fn| res << fn + '.yml' }]
+task :gff2yml => [GFFS.inject(GFFS.class.new) {|res, fn| res << fn + '.yml' }]
