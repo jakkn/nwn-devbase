@@ -7,3 +7,4 @@ gem 'nwn-lib', '0.6.0'
 
 gem 'rake', '11.2.2'
 gem 'systemu'
+gem 'highline'
