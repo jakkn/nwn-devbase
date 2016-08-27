@@ -57,8 +57,7 @@ end
 def remove_deleted_files()
 	return if GFFS.empty?
 	GFFS.each do |file|
-		puts file
-		Kernel.exit(0)
+		FileUtils.rm(file) if !File.exists?(TMP_DIR+"/"+File.basename(file))
 	end
 end
 
