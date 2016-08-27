@@ -26,25 +26,30 @@ end
 # Extract module
 #
 def extract_module()
+	if MODULE.nil? || MODULE == ""
+		puts "No module file found."
+		puts "Exiting."
+		Kernel.exit(0)
+	end
+
 	modified_files = []
-	Dir.glob(YMLS) do |file|
-		if File.mtime(file) > File.mtime(MODULE)
-			modified_files.push(file)
-		end
+	YMLS.each do |file|
+		modified_files.push(file) if File.mtime(file) > File.mtime(MODULE)
 	end
 	
-	if !modified_files.empty?
-		puts "Found #{modified_files.size} files that are newer than the module.\nAre you sure you wish to overwrite?"
-	# TODO: Finish printout
-		# if modified_files.size > 10
-		# 	input = ask "(Show files?)"
-		# 	puts input
-		# end
-		# Kernel.exit(1)
+	unless modified_files.empty?
+		puts modified_files
+		input = ask "The above #{modified_files.size} files have newer timestamps than the module.\nAre you sure you wish to overwrite? [Y/n]"
+		Kernel.exit(1) unless input.downcase == "y"
 	end
+	
+	Dir.chdir(TMP_DIR) do
+		system "nwn-erf", "-x", "-f", "../../"+MODULE
+	end
+	# system "rake", "--rakefile", "extract.rake", "extract"
 end
 
-#system "rake", "--rakefile", "extract.rake", "extract"
+extract_module()
 
 #
 # Update cache with content of temp storage
