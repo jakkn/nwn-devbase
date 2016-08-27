@@ -68,10 +68,18 @@ def add_new_files()
 		end
 		return
 	end
-	# Dir.glob(TMP_FILES) do |file|
-	# 	puts Digest::MD5.hexdigest(File.read(file))
-	# end
+
+	TMP_FILES.each do |file|
+		if !File.exists?(GFFS_CACHE_DIR+"/"+File.basename(file))
+			FileUtils.cp(file, GFFS_CACHE_DIR)
+		else
+			tmp_digest = Digest::MD5.hexdigest(File.read(file))
+			gff_digest = Digest::MD5.hexdigest(File.read(GFFS_CACHE_DIR+"/"+File.basename(file)))
+			FileUtils.cp(file, GFFS_CACHE_DIR) if tmp_digest != gff_digest
+		end
+	end
 end
+# Kernel.exit(1)
 
 init()
 update_cache_gff()
