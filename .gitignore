@@ -1,8 +1,9 @@
-# Compiled source #
+# Compiled source and binaries #
 ###################
 *.mod
-unpacked/nss/*.ncs
-unpacked/nss/*.ndb
+*.ncs
+*.ndb
+cache
 
 # Other #
 ###################

@@ -5,10 +5,10 @@ require 'nwn/all'
 require 'fileutils'
 
 MODULE    = FileList["module/*.mod"]
-TMP_GFFS = FileList["tmp/*"]
+TMP_GFFS = FileList["cache/tmp/*"]
 GFFS     = FileList["src/**/*.*"].exclude(/n[cs]s$|\.yml$/)
 
-directory "tmp"
+directory "cache/tmp"
 directory "src"
 
 
