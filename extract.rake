@@ -1,47 +1,42 @@
 require 'rubygems'
 require 'bundler/setup'
-
 require 'nwn/all'
 require 'fileutils'
+require 'set'
 
-MODULE    = FileList["module/*.mod"]
-TMP_GFFS = FileList["cache/tmp/*"]
-GFFS     = FileList["src/**/*.*"].exclude(/n[cs]s$|\.yml$/)
+task :default => :yml
 
-directory "cache/tmp"
+GFFS = FileList["cache/gff/*.*"].exclude(/\.n[cs]s$|\.yml$/)
+YMLS = GFFS.pathmap("src/%{.*,*}x/%f.yml") { |ext|
+	ext.delete('.')
+}
+DIRS = Set.new
+
+directory "cache/gff"
 directory "src"
 
+desc 'Create dir tree and convert to yml'
+task :yml => [:create_folders, :gff2yml]
 
-desc 'Extract module'
-task :extract => :mod2gff
-desc 'Convert gff to yml'
-task :yml => :gff2yml
-
-
-rule '.yml' => ->(f){ source_for_yml(f) } do |t|
-  system "nwn-gff", "-i", "#{t.source}", "-o", "#{t.name}"
-  # FileUtils.rm "#{t.source}"
-end
-
-def source_for_yml(yml_file)
-  GFFS.detect{|f| f == yml_file.sub(/\.yml$/, '')}
-end
-
-
-task :mod2gff => ["tmp", MODULE] do
-  Dir.chdir("tmp") do
-    system "nwn-erf", "-x", "-f", "../"+MODULE[0]
+desc 'Create dir tree'
+task :create_folders => ["src"] do
+	DIRS.merge GFFS.pathmap("%{.*,*}x") { |ext|
+		ext.delete('.')
+	}
+	Dir.chdir("src") do
+		DIRS.each do |dir|
+			FileUtils.mkdir(dir) unless File.exists?(dir)
+		end
 	end
 end
 
-# desc 'Move to src'
-task :move_sources => ["src", :mod2gff] do
-  TMP_GFFS.each do |file|
-    ext = File.extname(file).delete('.')
-    srcdir = 'src/'+ext
-    FileUtils.mkdir_p(srcdir)
-    FileUtils.mv Dir.glob('tmp/*.'+ext), srcdir
-  end
+desc 'Convert gff to yml'
+multitask :gff2yml => YMLS
+
+rule '.yml' => ->(f){ source_for_yml(f) } do |t|
+  system "nwn-gff", "-i", "#{t.source}", "-o", "#{t.name}"
 end
 
-task :gff2yml => [GFFS.inject(GFFS.class.new) {|res, fn| res << fn + '.yml' }]
+def source_for_yml(yml_file)
+  GFFS.detect{|f| File.basename(f) == File.basename(yml_file, ".*")}
+end

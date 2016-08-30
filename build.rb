@@ -9,7 +9,7 @@ SOURCE_DIR = "src"
 TMP_DIR = "cache/tmp"
 GFFS_CACHE_DIR = "cache/gff"
 MODULE  = FileList[MODULE_DIR+"/*.mod"][0]
-YMLS = FileList[SOURCE_DIR+"/**/*.*"]
+SOURCES = FileList[SOURCE_DIR+"/**/*.*"]
 TMP_FILES = FileList[TMP_DIR+"/*.*"]
 GFFS = FileList[GFFS_CACHE_DIR+"/*.*"]
 
@@ -33,7 +33,7 @@ def extract_module()
 	end
 
 	modified_files = []
-	YMLS.each do |file|
+	SOURCES.each do |file|
 		modified_files.push(file) if File.mtime(file) > File.mtime(MODULE)
 	end
 	
@@ -46,23 +46,25 @@ def extract_module()
 	Dir.chdir(TMP_DIR) do
 		system "nwn-erf", "-x", "-f", "../../"+MODULE
 	end
-	# system "rake", "--rakefile", "extract.rake", "extract"
 end
 
-extract_module()
 
 #
 # Update cache with content of temp storage
 #
 def update_cache_gff()
-	remove_deleted_files()
+	remove_deleted_files(GFFS, TMP_DIR)
 	add_new_files()
 end
 
-def remove_deleted_files()
-	return if GFFS.empty?
-	GFFS.each do |file|
-		FileUtils.rm(file) if !File.exists?(TMP_DIR+"/"+File.basename(file))
+#
+# Delete files in files list that do not exist in source_dir
+#
+# TODO: function name and arguments are confusing.
+def remove_deleted_files(files, source_dir)
+	return if files.empty?
+	files.each do |file|
+		FileUtils.rm(File.exists?(file) ? file : file + ".yml") unless File.exists?(source_dir+"/"+File.basename(file))
 	end
 end
 
@@ -84,7 +86,16 @@ def add_new_files()
 		end
 	end
 end
-# Kernel.exit(1)
 
-init()
-update_cache_gff()
+def update_sources()
+	list = SOURCES.sub(/\.yml$/, '')
+	remove_deleted_files(list, GFFS_CACHE_DIR)
+	system "rake", "--rakefile", "extract.rake"
+end
+
+
+# Kernel.exit(1)
+# extract_module()
+# init()
+# update_cache_gff()
+update_sources()
