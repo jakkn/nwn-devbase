@@ -6,11 +6,12 @@ require 'set'
 
 task :default => :yml
 
-GFFS = FileList["cache/gff/*.*"].exclude(/\.n[cs]s$|\.yml$/)
+GFFS = FileList["cache/gff/*.*"].exclude(/\.n[cs]s$/)
 YMLS = GFFS.pathmap("src/%{.*,*}x/%f.yml") { |ext|
 	ext.delete('.')
 }
 DIRS = Set.new
+
 
 directory "cache/gff"
 directory "src"
@@ -34,7 +35,7 @@ desc 'Convert gff to yml'
 multitask :gff2yml => YMLS
 
 rule '.yml' => ->(f){ source_for_yml(f) } do |t|
-  system "nwn-gff", "-i", "#{t.source}", "-o", "#{t.name}"
+  system "nwn-gff", "-i", "#{t.source}", "-lg", "-o", "#{t.name}"
 end
 
 def source_for_yml(yml_file)
