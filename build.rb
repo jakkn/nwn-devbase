@@ -4,22 +4,19 @@ require 'rake'
 require 'highline/import'
 require 'digest/md5'
 
-MODULE_DIR = "module"
-SOURCE_DIR = "src"
-TMP_DIR = "cache/tmp"
-GFFS_CACHE_DIR = "cache/gff"
-MODULE  = FileList[MODULE_DIR+"/*.mod"][0]
-SOURCES = FileList[SOURCE_DIR+"/**/*.*"]
-TMP_FILES = FileList[TMP_DIR+"/*.*"]
-GFFS = FileList[GFFS_CACHE_DIR+"/*.*"]
+TMP_CACHE_DIR = "cache/tmp"
+GFF_CACHE_DIR = "cache/gff"
+MODULE = FileList["module/*.mod"][0]
+SOURCES = FileList["src/**/*.*"]
+TMP_FILES = FileList[TMP_CACHE_DIR+"/*.*"]
+GFFS = FileList[GFF_CACHE_DIR+"/*.*"]
 
 #
 # Initialize environment
 #
 def init()
-	FileUtils.mkdir_p(SOURCE_DIR)
-	FileUtils.mkdir_p(TMP_DIR)
-	FileUtils.mkdir_p(GFFS_CACHE_DIR)
+	FileUtils.mkdir_p(TMP_CACHE_DIR)
+	FileUtils.mkdir_p(GFF_CACHE_DIR)
 end
 
 #
@@ -29,7 +26,7 @@ def extract_module()
 	if MODULE.nil? || MODULE == ""
 		puts "No module file found."
 		puts "Exiting."
-		Kernel.exit(0)
+		Kernel.exit(1)
 	end
 
 	modified_files = []
@@ -43,7 +40,7 @@ def extract_module()
 		Kernel.exit(1) unless input.downcase == "y"
 	end
 	
-	Dir.chdir(TMP_DIR) do
+	Dir.chdir(TMP_CACHE_DIR) do
 		system "nwn-erf", "-x", "-f", "../../"+MODULE
 	end
 end
@@ -53,7 +50,7 @@ end
 # Update cache with content of temp storage
 #
 def update_cache_gff()
-	remove_deleted_files(GFFS, TMP_DIR)
+	remove_deleted_files(GFFS, TMP_CACHE_DIR)
 	add_new_files()
 end
 
@@ -71,31 +68,31 @@ end
 def add_new_files()
 	if GFFS.empty?
 		TMP_FILES.each do |file|
-			FileUtils.cp(file, GFFS_CACHE_DIR)
+			FileUtils.cp(file, GFF_CACHE_DIR)
 		end
 		return
 	end
 
 	TMP_FILES.each do |file|
-		if !File.exists?(GFFS_CACHE_DIR+"/"+File.basename(file))
-			FileUtils.cp(file, GFFS_CACHE_DIR)
+		if !File.exists?(GFF_CACHE_DIR+"/"+File.basename(file))
+			FileUtils.cp(file, GFF_CACHE_DIR)
 		else
 			tmp_digest = Digest::MD5.hexdigest(File.read(file))
-			gff_digest = Digest::MD5.hexdigest(File.read(GFFS_CACHE_DIR+"/"+File.basename(file)))
-			FileUtils.cp(file, GFFS_CACHE_DIR) if tmp_digest != gff_digest
+			gff_digest = Digest::MD5.hexdigest(File.read(GFF_CACHE_DIR+"/"+File.basename(file)))
+			FileUtils.cp(file, GFF_CACHE_DIR) if tmp_digest != gff_digest
 		end
 	end
 end
 
 def update_sources()
 	list = SOURCES.sub(/\.yml$/, '')
-	remove_deleted_files(list, GFFS_CACHE_DIR)
+	remove_deleted_files(list, GFF_CACHE_DIR)
 	system "rake", "--rakefile", "extract.rake"
 end
 
 
-# Kernel.exit(1)
-# extract_module()
 # init()
+# extract_module()
 # update_cache_gff()
-update_sources()
+# update_sources()
+# Kernel.exit(0)
