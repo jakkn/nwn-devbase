@@ -14,7 +14,7 @@ GFFS = FileList[GFF_CACHE_DIR+"/*.*"]
 #
 # Initialize environment
 #
-def init()
+def init_directories()
 	FileUtils.mkdir_p(TMP_CACHE_DIR)
 	FileUtils.mkdir_p(GFF_CACHE_DIR)
 end
@@ -90,9 +90,11 @@ def update_sources()
 	system "rake", "--rakefile", "extract.rake"
 end
 
+def extract_all()
+	init_directories()
+	extract_module()
+	update_cache_gff()
+	update_sources()
+end
 
-# init()
-# extract_module()
-# update_cache_gff()
-# update_sources()
 # Kernel.exit(0)
