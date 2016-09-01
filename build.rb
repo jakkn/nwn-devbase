@@ -50,44 +50,47 @@ end
 # Update cache with content of temp storage
 #
 def update_cache_gff()
-	remove_deleted_files(GFFS, TMP_CACHE_DIR)
-	add_new_files()
+	remove_deleted_files(TMP_CACHE_DIR, GFFS)
+	update_files_based_on_digest(TMP_FILES, GFF_CACHE_DIR)
 end
 
 #
-# Delete files in files list that do not exist in source_dir
+# Delete files in target_files list that do not exist in source_dir
 #
 # TODO: function name and arguments are confusing.
-def remove_deleted_files(files, source_dir)
-	return if files.empty?
-	files.each do |file|
+def remove_deleted_files(source_dir, target_files)
+	return if target_files.empty?
+	target_files.each do |file|
 		FileUtils.rm(File.exists?(file) ? file : file + ".yml") unless File.exists?(source_dir+"/"+File.basename(file))
 	end
 end
 
-def add_new_files()
-	if GFFS.empty?
-		TMP_FILES.each do |file|
-			FileUtils.cp(file, GFF_CACHE_DIR)
-		end
-		return
-	end
-
-	TMP_FILES.each do |file|
-		if !File.exists?(GFF_CACHE_DIR+"/"+File.basename(file))
-			FileUtils.cp(file, GFF_CACHE_DIR)
+def update_files_based_on_digest(source_files, target_dir)
+	source_files.each do |file|
+		if !File.exists?(target_dir+"/"+File.basename(file))
+			FileUtils.cp(file, target_dir)
 		else
 			tmp_digest = Digest::MD5.hexdigest(File.read(file))
-			gff_digest = Digest::MD5.hexdigest(File.read(GFF_CACHE_DIR+"/"+File.basename(file)))
-			FileUtils.cp(file, GFF_CACHE_DIR) if tmp_digest != gff_digest
+			gff_digest = Digest::MD5.hexdigest(File.read(target_dir+"/"+File.basename(file)))
+			FileUtils.cp(file, target_dir) if tmp_digest != gff_digest
+		end
+	end
+end
+
+def update_files_based_on_timestamp(source_files, target_dir)
+	source_files.each do |file|
+		if !File.exists?(target_dir+"/"+File.basename(file))
+			FileUtils.cp(file, target_dir)
+		elsif File.mtime(file) > File.mtime(target_dir+"/"+File.basename(file))
+			FileUtils.cp(file, target_dir)
 		end
 	end
 end
 
 def update_sources()
-	list = SOURCES.sub(/\.yml$/, '')
-	remove_deleted_files(list, GFF_CACHE_DIR)
+	remove_deleted_files(GFF_CACHE_DIR, SOURCES.sub(/\.yml$/, ''))
 	system "rake", "--rakefile", "extract.rake"
+	update_files_based_on_timestamp(FileList[GFF_CACHE_DIR+"/*.nss"], "src/nss")
 end
 
 def extract_all()
