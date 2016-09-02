@@ -47,7 +47,7 @@ end
 
 
 #
-# Update cache with content of temp storage
+# Update cache with content of tmp storage
 #
 def update_cache_gff()
 	remove_deleted_files(TMP_CACHE_DIR, GFFS)
@@ -57,7 +57,6 @@ end
 #
 # Delete files in target_files list that do not exist in source_dir
 #
-# TODO: function name and arguments are confusing.
 def remove_deleted_files(source_dir, target_files)
 	return if target_files.empty?
 	target_files.each do |file|
@@ -65,6 +64,10 @@ def remove_deleted_files(source_dir, target_files)
 	end
 end
 
+# 
+# Update all source_files that have a different digest than the corresponding
+# file in target_dir. New files are copied over.
+# 
 def update_files_based_on_digest(source_files, target_dir)
 	source_files.each do |file|
 		if !File.exists?(target_dir+"/"+File.basename(file))
@@ -77,6 +80,10 @@ def update_files_based_on_digest(source_files, target_dir)
 	end
 end
 
+# 
+# Update all source_files that have a different time stamp than the corresponding
+# file in target_dir. New files are copied over.
+# 
 def update_files_based_on_timestamp(source_files, target_dir)
 	source_files.each do |file|
 		if !File.exists?(target_dir+"/"+File.basename(file))
@@ -100,4 +107,5 @@ def extract_all()
 	update_sources()
 end
 
+extract_all
 # Kernel.exit(0)
