@@ -6,8 +6,8 @@ require 'set'
 
 task :default => :yml
 
-GFFS = FileList["cache/gff/*.*"].exclude(/\.n[cs]s$/)
-YMLS = GFFS.pathmap("src/%{.*,*}x/%f.yml") { |ext|
+GFF_SOURCES = FileList["cache/gff/*.*"].exclude(/\.n[cs]s$/)
+YML_TARGETS = GFF_SOURCES.pathmap("src/%{.*,*}x/%f.yml") { |ext|
 	ext.delete('.')
 }
 DIRS = Set.new
@@ -21,7 +21,7 @@ task :yml => [:create_folders, :gff2yml]
 
 desc 'Create dir tree'
 task :create_folders => ["src"] do
-	DIRS.merge GFFS.pathmap("%{.*,*}x") { |ext|
+	DIRS.merge GFF_SOURCES.pathmap("%{.*,*}x") { |ext|
 		ext.delete('.')
 	}
 	Dir.chdir("src") do
@@ -32,12 +32,13 @@ task :create_folders => ["src"] do
 end
 
 desc 'Convert gff to yml'
-multitask :gff2yml => YMLS
+multitask :gff2yml => YML_TARGETS
 
 rule '.yml' => ->(f){ source_for_yml(f) } do |t|
-  system "nwn-gff", "-i", "#{t.source}", "-lg", "-o", "#{t.name}"
+	system "nwn-gff", "-i", "#{t.source}", "-lg", "-o", "#{t.name}"
+	FileUtils.touch "#{t.name}", :mtime => File.mtime("#{t.source}")
 end
 
-def source_for_yml(yml_file)
-  GFFS.detect{|f| File.basename(f) == File.basename(yml_file, ".*")}
+def source_for_yml(yml)
+	GFF_SOURCES.detect{|gff| File.basename(gff) == File.basename(yml, ".*")}
 end

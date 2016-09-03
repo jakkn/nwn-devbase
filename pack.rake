@@ -4,22 +4,25 @@ require 'bundler/setup'
 require 'nwn/all'
 require 'fileutils'
 
-MODULE    = FileList["module/*.mod"]
-YMLS = FileList["src/**/*.yml"].exclude(/n[cs]s$/)
+task :default => :gff
 
+YML_SOURCES = FileList["src/**/*.yml"].exclude(/n[cs]s$/)
+GFF_TARGETS = YML_SOURCES.pathmap("cache/gff/%n")
+
+
+directory "cache/gff"
+directory "src"
 
 desc 'Convert yml to gff'
 task :gff => :yml2gff
-desc 'Pack module'
-task :module => :gff2mod do
+
+multitask :yml2gff => GFF_TARGETS
+
+rule( /\.(?!yml)[\w]+$/ => ->(f){ source_for_gff(f) }) do |t|
+	system "nwn-gff", "-i", "#{t.source}", "-o", "#{t.name}", "-kg"
+	FileUtils.touch "#{t.name}", :mtime => File.mtime("#{t.source}")
 end
 
-
-rule( /\.(?!yml)[\w]+$/ => [
-  proc {|task_name| task_name.sub(/$/, '.yml') }
-]) do |t|
-  system "nwn-gff", "-i", "#{t.source}", "-o", "#{t.name}"
-  # FileUtils.rm "#{t.source}"
+def source_for_gff(gff)
+	YML_SOURCES.detect{|yml| File.basename(gff) == File.basename(yml, ".*")}
 end
-
-multitask :yml2gff => YMLS.sub(/\.yml$/, '')
