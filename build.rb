@@ -31,15 +31,16 @@ require 'rake'
 require 'highline/import'
 require 'digest/md5'
 
+START_TIME = Time.now
+MODULE_DIR = "module"
 TMP_CACHE_DIR = "cache/tmp"
 GFF_CACHE_DIR = "cache/gff"
-MODULE = FileList["module/*.mod"][0]
+MODULE_FILE = FileList[MODULE_DIR+"/*.mod"][0]
 SOURCES = FileList["src/**/*.*"]
-TMP_FILES = FileList[TMP_CACHE_DIR+"/*.*"]
-GFFS = FileList[GFF_CACHE_DIR+"/*.*"]
 
 # Initialize environment
 def init_directories()
+	FileUtils.mkdir_p(MODULE_DIR)
 	FileUtils.mkdir_p(TMP_CACHE_DIR)
 	FileUtils.mkdir_p(GFF_CACHE_DIR)
 end
@@ -68,16 +69,22 @@ def extract_module(modfile)
 		Kernel.exit(1) unless input.downcase == "y"
 	end
 
+	puts "Extracting module."
 	Dir.chdir(TMP_CACHE_DIR) do
+		tmp_files = FileList[TMP_CACHE_DIR+"/*"]
+		FileUtils.rm tmp_files
 		system "nwn-erf", "-x", "-f", "../../"+modfile
 	end
 end
 
 
-# Update gff cache with content of tmp storage
-def update_cache_gff()
-	remove_deleted_files(TMP_CACHE_DIR, GFFS)
-	update_files_based_on_digest(TMP_FILES, GFF_CACHE_DIR)
+# Update target_dir with content from source_dir based on md5 digest.
+def update_cache(source_dir, target_dir)
+	target_files = FileList[target_dir+"/*.*"]
+	remove_deleted_files(source_dir, target_files)
+
+	source_files = FileList[source_dir+"/*.*"]
+	update_files_based_on_digest(source_files, target_dir)
 end
 
 # Delete files in target_files list that do not exist in source_dir
@@ -115,21 +122,42 @@ def update_files_based_on_timestamp(source_files, target_dir)
 end
 
 def update_sources()
+	puts "Converting from gff to yml (this may take a while)..."
+
 	remove_deleted_files(GFF_CACHE_DIR, SOURCES.sub(/\.yml$/, ''))
 	system "rake", "--rakefile", "extract.rake"
 	update_files_based_on_timestamp(FileList[GFF_CACHE_DIR+"/*.nss"], "src/nss")
 end
 
+def update_gffs()
+	puts "Converting from yml to gff (this may take a while)..."
+
+	# remove_deleted_files(GFF_CACHE_DIR, SOURCES.sub(/\.yml$/, ''))
+	system "rake", "--rakefile", "pack.rake"
+	# update_files_based_on_timestamp(FileList[GFF_CACHE_DIR+"/*.nss"], "src/nss")
+end
+
+def pack_module(modfile)
+end
+
 def extract_all()
 	init_directories()
-	extract_module(MODULE)
-	update_cache_gff()
+	extract_module(MODULE_FILE)
+	update_cache(TMP_CACHE_DIR, GFF_CACHE_DIR)
 	update_sources()
+
+	elapsed_time = Time.now - START_TIME
+	puts "Sources updated.\n Total time: #{elapsed_time} seconds.\nDone."
 end
 
 def pack_all()
-	system "rake", "--rakefile", "pack.rake"
-	# update_cache_tmp
+	init_directories()
+	update_gffs()
+	# update_cache(GFF_CACHE_DIR, TMP_CACHE_DIR)
+	pack_module(MODULE_FILE)
+
+	elapsed_time = Time.now - START_TIME
+	puts "Module updated.\n Total time: #{elapsed_time} seconds.\nDone."
 end
 
 extract_all
