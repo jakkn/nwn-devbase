@@ -1,6 +1,3 @@
-require 'rubygems'
-require 'bundler/setup'
-
 require 'nwn/all'
 require 'fileutils'
 
@@ -9,12 +6,10 @@ task :default => :gff
 YML_SOURCES = FileList["src/**/*.yml"].exclude(/n[cs]s$/)
 GFF_TARGETS = YML_SOURCES.pathmap("cache/gff/%n")
 
-
 directory "cache/gff"
-directory "src"
 
 desc 'Convert yml to gff'
-task :gff => :yml2gff
+task :gff => ["cache/gff", :yml2gff]
 
 multitask :yml2gff => GFF_TARGETS
 

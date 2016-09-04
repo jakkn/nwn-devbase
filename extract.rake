@@ -1,5 +1,3 @@
-require 'rubygems'
-require 'bundler/setup'
 require 'nwn/all'
 require 'fileutils'
 require 'set'
@@ -10,20 +8,17 @@ GFF_SOURCES = FileList["cache/gff/*.*"].exclude(/\.n[cs]s$/)
 YML_TARGETS = GFF_SOURCES.pathmap("src/%{.*,*}x/%f.yml") { |ext|
 	ext.delete('.')
 }
-DIRS = Set.new
-
-
-directory "cache/gff"
-directory "src"
+DIRS = Set.new.merge GFF_SOURCES.pathmap("%{.*,*}x") { |ext|
+	ext.delete('.')
+}
 
 desc 'Create dir tree and convert to yml'
 task :yml => [:create_folders, :gff2yml]
 
+directory "src"
+
 desc 'Create dir tree'
 task :create_folders => ["src"] do
-	DIRS.merge GFF_SOURCES.pathmap("%{.*,*}x") { |ext|
-		ext.delete('.')
-	}
 	Dir.chdir("src") do
 		DIRS.each do |dir|
 			FileUtils.mkdir(dir) unless File.exists?(dir)
