@@ -77,7 +77,6 @@ def extract_module(modfile)
 	end
 end
 
-
 # Update target_dir with content from source_dir based on md5 digest.
 def update_cache(source_dir, target_dir)
 	target_files = FileList[target_dir+"/*.*"]
@@ -132,12 +131,13 @@ end
 def update_gffs()
 	puts "Converting from yml to gff (this may take a while)..."
 
-	# remove_deleted_files(GFF_CACHE_DIR, SOURCES.sub(/\.yml$/, ''))
+	gffs = FileList["cache/gff/*"].exclude(/\.ncs$/)
+	srcs = FileList["src/**/*.*"].sub(/\.yml$/, '')
+	gffs.each do |gff|
+		puts gff unless srcs.detect{|src| File.basename(gff) == File.basename(src)}
+	end
 	system "rake", "--rakefile", "pack.rake"
-	# update_files_based_on_timestamp(FileList[GFF_CACHE_DIR+"/*.nss"], "src/nss")
-end
-
-def pack_module(modfile)
+	update_files_based_on_timestamp(FileList["src/nss/*"], GFF_CACHE_DIR)
 end
 
 def extract_all()
@@ -147,19 +147,19 @@ def extract_all()
 	update_sources()
 
 	elapsed_time = Time.now - START_TIME
-	puts "Sources updated.\n Total time: #{elapsed_time} seconds.\nDone."
+	puts "Sources updated.\nTotal time: #{elapsed_time} seconds.\nDone."
 end
 
 def pack_all()
 	init_directories()
 	update_gffs()
-	# update_cache(GFF_CACHE_DIR, TMP_CACHE_DIR)
+	update_cache(GFF_CACHE_DIR, TMP_CACHE_DIR)
 	pack_module(MODULE_FILE)
 
 	elapsed_time = Time.now - START_TIME
-	puts "Module updated.\n Total time: #{elapsed_time} seconds.\nDone."
+	puts "Module updated.\nTotal time: #{elapsed_time} seconds.\nDone."
 end
 
-extract_all
-# pack_all
+# extract_all
+pack_all
 # Kernel.exit(0)
