@@ -22,8 +22,9 @@
 # overwriting changes. The same goes for a module with a newer time stamp
 # than the latest yml source. This is not a perfect safety net as
 # updating the module without extracting it and then updating a yml
-# source will overwrite the module without a prompt, but it's better than
-# nothing. It is left for the user not to mess up.
+# source will overwrite the module on the next attempt to pack without a
+# prompt, but it's better than nothing. It is left for the user not to
+# mess up.
 
 require 'rubygems'
 require 'bundler/setup'
@@ -73,8 +74,32 @@ def extract_module(modfile)
 	Dir.chdir(TMP_CACHE_DIR) do
 		tmp_files = FileList[TMP_CACHE_DIR+"/*"]
 		FileUtils.rm tmp_files
-		system "nwn-erf", "-x", "-f", "../../"+modfile
+		system "nwn-erf", "--extract", "-f", "../../"+modfile
 	end
+end
+
+# Pack the given .mod file.
+# To avoid overwriting a modified .mod file the module time stamp is
+# compared with SOURCES time stamps, and if the module is newest the user
+# will be prompted to proceed.
+# +modfile+:: path to the module file
+def pack_module(modfile)
+	if File.exists?(modfile)
+		modified_files = []
+		SOURCES.each do |file|
+			modified_files.push(file) if File.mtime(file) > File.mtime(modfile)
+		end
+
+		if modified_files.empty?
+			input = ask "#{modfile} has a newer timestamp than the sources it will be built from.\nAre you sure you wish to overwrite? [y/N]"
+			Kernel.exit(1) unless input.downcase == "y"
+		end
+	else modfile.nil? || modfile == ""
+		modfile = MODULE_DIR+"/module.mod"
+	end
+
+	puts "Building module: #{modfile}"
+	system "nwn-erf --create -0 -M -f #{modfile} #{TMP_CACHE_DIR}/*"
 end
 
 # Update target_dir with content from source_dir based on md5 digest.
@@ -147,7 +172,7 @@ def extract_all()
 	update_sources()
 
 	elapsed_time = Time.now - START_TIME
-	puts "Sources updated.\nTotal time: #{elapsed_time} seconds.\nDone."
+	puts "Done.\nTotal time: #{elapsed_time} seconds."
 end
 
 def pack_all()
@@ -157,9 +182,9 @@ def pack_all()
 	pack_module(MODULE_FILE)
 
 	elapsed_time = Time.now - START_TIME
-	puts "Module updated.\nTotal time: #{elapsed_time} seconds.\nDone."
+	puts "Done.\nTotal time: #{elapsed_time} seconds."
 end
 
 # extract_all
-pack_all
+# pack_all
 # Kernel.exit(0)
