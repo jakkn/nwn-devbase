@@ -158,7 +158,7 @@ end
 def update_gffs()
   puts "Converting from yml to gff (this may take a while)..."
 
-  gffs = FileList["cache/gff/*"].exclude(/\.ncs$/)
+  gffs = FileList[GFF_CACHE_DIR+"/*"].exclude(/\.ncs$/)
   srcs = FileList["src/**/*.*"].sub(/\.yml$/, '')
   gffs.each do |gff|
     puts gff unless srcs.detect{|src| File.basename(gff) == File.basename(src)}
@@ -185,6 +185,15 @@ def pack_all()
 
   elapsed_time = Time.now - START_TIME
   puts "Done.\nTotal time: #{elapsed_time} seconds."
+end
+
+def clean()
+  FileList[GFF_CACHE_DIR+"/*"].each do |f|
+    FileUtils.rm(f)
+  end
+  FileList[TMP_CACHE_DIR+"/*"].each do |f|
+    FileUtils.rm(f)
+  end
 end
 
 case ARGV[0]
