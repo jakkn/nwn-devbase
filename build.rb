@@ -1,3 +1,5 @@
+#!/usr/bin/ruby
+#
 # This script is used to extract and pack NWN modules, going from .mod
 # to .yml and back, using using nwn-lib (https://github.com/niv/nwn-lib).
 #
@@ -185,6 +187,13 @@ def pack_all()
   puts "Done.\nTotal time: #{elapsed_time} seconds."
 end
 
-# extract_all
-# pack_all
-# Kernel.exit(0)
+case ARGV[0]
+when "extract"
+  extract_all
+when "pack"
+  pack_all
+when "clean"
+  clean
+else
+  puts "Usage: build.rb extract|pack|clean"
+end
