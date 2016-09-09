@@ -71,6 +71,14 @@ And use `git pull`, `git add`, `git commit`, `git push` accordingly. That's it.
 For Docker usage, please refer to [DOCKERGUIDE](https://github.com/jakkn/nwn-devbase/blob/master/DOCKERGUIDE.md).
 
 
+## Troubleshooting
+
+"Too many files open": nwn-lib opens all files at once when packing the module. This can lead to an error stating too many files are open.
+Fix:
+	- *Linux* `ulimit -n 4096` (or any other number higher than the number of files in the module)
+	- *Windows* Unknown. Help wanted.
+
+
 ## Background
 Neverwinter Nights is a RPG developed by BioWare, released in 2001. In addition to the NWN game client, BioWare released a tool for creating game content - the Aurora Toolset - along with server hosting software. This enables anyone to create and host their own worlds.
 
