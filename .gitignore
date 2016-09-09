@@ -8,13 +8,8 @@ cache
 # Other #
 ###################
 *.swp
-Makefile
-tmp/
-nwntools/setpath*
-nwntools/G*
-nwntools/X*
-nwntools/M*
 *.sublime-workspace
+tmp
 NWN
 
 # OS generated files #
