@@ -5,7 +5,7 @@ In addition, the texts here are meant to function as a reference for users unfam
 
 
 ## But seriously, what's the point?
-Can't people just version control their sources without this? Of course they can. However, it is not a straight forward process. The Aurora Toolset stores all module content in file archives with the *.mod* extension. git does not handle *.mod* archives, so for git to be of any use the archive must first be unpacked. The process of unpacking and repacking module content may be cumbersome to some, which is why I have created this repository. It is an attempt at sharing the work I have done so that anyone who may want to do the same can do so with minimal effort. The basis for this work is what I have already done on an existing server; [Bastion of Peace](http://bastionofpeace.freeforums.net/).
+Can't people just version control their sources without this? Of course they can. However, it is not a straight forward process. The Aurora Toolset stores all module content in file archives with the *.mod* extension. git does not handle *.mod* archives, so for git to be of any use the archive must first be extracted. The process of extracting and packing module content may be cumbersome to some, which is why I have created this repository. It is an attempt at sharing the work I have done so that anyone who may want to do the same can do so with minimal effort. The basis for this work is what I have already done on an existing server; [Bastion of Peace](http://bastionofpeace.freeforums.net/).
 
 
 ## Intended audience
@@ -22,14 +22,14 @@ Please make sure the following software is installed before proceeding:
   - Ubuntu: `sudo apt-get install git`
   - Windows: https://git-scm.com/download/win
 
-- Java, needed by ModPacker to pack and unpack the *.mod* archive
-  - Arch: `pacman -S jre8-openjdk`
-  - Ubuntu: `sudo apt-get install openjdk-8-jre`
-  - Windows: http://www.oracle.com/technetwork/java/javase/install-windows-64-142952.html
+- Ruby, needed by nwn-lib to pack and extract the *.mod* archive
+  - Arch: `pacman -S ruby`
+  - Ubuntu: `sudo apt-get install ruby`
+  - Windows: http://rubyinstaller.org
 
 - (Optional) Docker, for local test environment
   - Arch: `pacman -S docker`
-  - Ubuntu: https://docs.docker.com/engine/installation/ubuntulinux/
+  - Ubuntu: https://get.docker.com
   - Windows: https://docs.docker.com/engine/installation/windows/
 
 
@@ -41,22 +41,30 @@ Your module admin should have provided you with a link to your repository (NOT [
 
 Using a git client like [SourceTree](https://www.sourcetreeapp.com/) or [another](https://git-scm.com/download/gui/linux) is nice if you prefer a gui, but you can also do everything from the command line. Some git basics and best practices are covered and referenced in [INTRODUCTION](https://github.com/jakkn/nwn-devbase/blob/master/INTRODUCTION.md).
 
+### Install ruby gems
+
+Open a console, navigate to the repository, and type
+```
+gem install bundler
+bundle install
+```
+
+If there are errors it is most likely due to improper Ruby configurations or missing PATH entries.
+
 ### Symlink
 
 To open the packed module with the Aurora Toolset, symlink the *.mod* file to your *nwn/modules* folder. Run the following command (windows may need admin console), where *PATH_TO_NWN* is the install dir of your local NWN installation, and *PATH_TO_REPO* is the path to the repository.
 
-- Linux: `ln -s "PATH_TO_REPO"/packed/testserver.mod "PATH_TO_NWN"/modules/`
-- Windows: `MKLINK "PATH_TO_NWN\modules\" "PATH_TO_REPO\packed\testserver.mod"`
+- Linux: `ln -s "PATH_TO_REPO"/module/module.mod "PATH_TO_NWN"/modules/`
+- Windows: `MKLINK "PATH_TO_NWN\modules\" "PATH_TO_REPO\module\module.mod"`
 
 
 ## Use
 
-Run these scripts, located in *scripts/*
+All use should be done through build.rb, because this script will update properly. Either use it from the command line (no argument or wrong argument will print help with usage instructions), or run these scripts, located in *scripts/*
 
-| OS  | Pack *src/* into *.mod* | Unpack *.mod* to *src/* |
-| :---------- | :---------- | :---------- |
-| Windows | `pack.cmd` | `unpack.cmd` |
-| Linux | `pack.sh` | `unpack.sh` |
+| Pack *src/* into *.mod* | `pack.rb` |
+| Extract *.mod* to *src/* | `extract.rb` |
 
 And use `git pull`, `git add`, `git commit`, `git push` accordingly. That's it.
 
