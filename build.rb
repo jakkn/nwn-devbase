@@ -36,8 +36,9 @@ require 'digest/md5'
 
 START_TIME = Time.now
 MODULE_DIR = "module"
-TMP_CACHE_DIR = "cache/tmp"
-GFF_CACHE_DIR = "cache/gff"
+CACHE_DIR = "cache"
+TMP_CACHE_DIR = CACHE_DIR+"/tmp"
+GFF_CACHE_DIR = CACHE_DIR+"/gff"
 MODULE_FILE = FileList[MODULE_DIR+"/*.mod"][0]
 SOURCES = FileList["src/**/*.*"]
 
@@ -188,12 +189,7 @@ def pack_all()
 end
 
 def clean()
-  FileList[GFF_CACHE_DIR+"/*"].each do |f|
-    FileUtils.rm(f)
-  end
-  FileList[TMP_CACHE_DIR+"/*"].each do |f|
-    FileUtils.rm(f)
-  end
+  FileUtils.rm_r Dir.glob(CACHE_DIR+'/*')
 end
 
 case ARGV[0]
