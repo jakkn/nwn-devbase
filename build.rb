@@ -204,5 +204,6 @@ when "pack"
 when "clean"
   clean
 else
-  puts "Usage: build.rb extract|pack|clean"
+  puts "Usage: build.rb ACTION"
+  puts "\nACTIONs:\n\textract\n\tpack\n\tclean"
 end
