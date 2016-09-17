@@ -33,10 +33,12 @@ require 'bundler/setup'
 require 'rake'
 require 'highline/import'
 require 'digest/md5'
+require 'os'
 
 START_TIME = Time.now
 MODULE_DIR = "module"
 CACHE_DIR = "cache"
+NSS_DIR = "src/nss"
 TMP_CACHE_DIR = CACHE_DIR+"/tmp"
 GFF_CACHE_DIR = CACHE_DIR+"/gff"
 MODULE_FILE = FileList[MODULE_DIR+"/*.mod"][0]
@@ -164,8 +166,24 @@ def update_gffs()
   gffs.each do |gff|
     puts gff unless srcs.detect{|src| File.basename(gff) == File.basename(src)}
   end
-  system "rake", "--rakefile", "pack.rake"
   update_files_based_on_timestamp(FileList["src/nss/*"], GFF_CACHE_DIR)
+end
+
+# Compile all nss scripts. NWNScriptCompiler is built to process nss in bulk and
+# would be much slower if done one by one due to startup overhead. The startup
+# overhead is mainly due to loading includes from the .mod file, and on Linux
+# there is the additional wine startup overhead.
+def compile_nss()
+  module_filename = MODULE_FILE.pathmap("%n")
+  Dir.chdir(NSS_DIR) do
+    if OS.linux?
+      system "wine ../../bin/NWNScriptCompiler.exe -qgo1 -v1.69 -n ../../NWN -m #{module_filename} -b ../../#{GFF_CACHE_DIR} -y *.nss"
+    elsif OS.windows?
+      system "../../bin/NWNScriptCompiler.exe -qgo1 -v1.69 -n ../../NWN -m #{module_filename} -b ../../#{GFF_CACHE_DIR} -y *.nss"
+    else
+      puts "Unknown OS. Don't know how to run NWNScriptCompiler."
+    end
+  end
 end
 
 def extract_all()
@@ -181,6 +199,7 @@ end
 def pack_all()
   init_directories()
   update_gffs()
+  compile_nss()
   update_cache(GFF_CACHE_DIR, TMP_CACHE_DIR)
   pack_module(MODULE_FILE)
 
@@ -199,7 +218,9 @@ when "pack"
   pack_all
 when "clean"
   clean
+when "compile"
+  compile_nss
 else
   puts "Usage: build.rb ACTION"
-  puts "\nACTIONs:\n\textract\n\tpack\n\tclean"
+  puts "\nACTIONs:\n\textract\n\tpack\n\tclean\n\tcompile"
 end
