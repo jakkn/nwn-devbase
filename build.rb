@@ -178,7 +178,7 @@ end
 # there is the additional wine startup overhead.
 def compile_nss(modfile)
   unless File.exists?(modfile)
-    puts "Using \"#{modfile}\", but the file does not exist. Cannot resolve includes for nss compilation without knowing where to read the module.ifo from.\nSkipping nss compilation."
+    puts "Using \"#{modfile}\", but the file does not exist. Cannot resolve includes for nss compilation without knowing where to read the module.ifo from. If you are trying to pack the module from a fresh clone, compilation will succeed on the second run.\nSkipping nss compilation."
     return
   end
   module_filename = modfile.pathmap("%n")
