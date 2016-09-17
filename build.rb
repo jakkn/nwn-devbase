@@ -41,8 +41,14 @@ CACHE_DIR = "cache"
 NSS_DIR = "src/nss"
 TMP_CACHE_DIR = CACHE_DIR+"/tmp"
 GFF_CACHE_DIR = CACHE_DIR+"/gff"
-MODULE_FILE = FileList[MODULE_DIR+"/*.mod"][0]
 SOURCES = FileList["src/**/*.*"]
+
+def find_modfile()
+  mod = FileList[MODULE_DIR+"/*.mod"][0]
+  return (mod.nil? || mod == "") ? "#{MODULE_DIR}/module.mod" : mod
+end
+
+MODULE_FILE = find_modfile
 
 # Initialize environment
 def init_directories()
@@ -58,9 +64,8 @@ end
 # the module.
 # +modfile+:: module file to extract
 def extract_module(modfile)
-  if modfile.nil? || modfile == ""
-    puts "No module file found."
-    puts "Exiting."
+  unless File.exists?(modfile)
+    puts "No module file found in folder \"#{MODULE_DIR}/\".\nExiting."
     Kernel.exit(1)
   end
 
@@ -99,8 +104,6 @@ def pack_module(modfile)
       input = ask "#{modfile} has a newer timestamp than the sources it will be built from.\nAre you sure you wish to overwrite? [y/N]"
       Kernel.exit(1) unless input.downcase == "y"
     end
-  else modfile.nil? || modfile == ""
-    modfile = MODULE_DIR+"/module.mod"
   end
 
   puts "Building module: #{modfile}"
@@ -173,8 +176,12 @@ end
 # would be much slower if done one by one due to startup overhead. The startup
 # overhead is mainly due to loading includes from the .mod file, and on Linux
 # there is the additional wine startup overhead.
-def compile_nss()
-  module_filename = MODULE_FILE.pathmap("%n")
+def compile_nss(modfile)
+  unless File.exists?(modfile)
+    puts "Using \"#{modfile}\", but the file does not exist. Cannot resolve includes for nss compilation without knowing where to read the module.ifo from.\nSkipping nss compilation."
+    return
+  end
+  module_filename = modfile.pathmap("%n")
   Dir.chdir(NSS_DIR) do
     if OS.linux?
       system "wine ../../bin/NWNScriptCompiler.exe -qgo1 -v1.69 -n ../../NWN -m #{module_filename} -b ../../#{GFF_CACHE_DIR} -y *.nss"
@@ -199,7 +206,7 @@ end
 def pack_all()
   init_directories()
   update_gffs()
-  compile_nss()
+  compile_nss(MODULE_FILE)
   update_cache(GFF_CACHE_DIR, TMP_CACHE_DIR)
   pack_module(MODULE_FILE)
 
@@ -219,7 +226,7 @@ when "pack"
 when "clean"
   clean
 when "compile"
-  compile_nss
+  compile_nss(MODULE_FILE)
 else
   puts "Usage: build.rb ACTION"
   puts "\nACTIONs:\n\textract\n\tpack\n\tclean\n\tcompile"
