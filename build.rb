@@ -144,13 +144,17 @@ end
 # Update all source_files that have a different time stamp than the corresponding
 # file in target_dir. New files are copied over.
 def update_files_based_on_timestamp(source_files, target_dir)
+  files_updated = false
   source_files.each do |file|
     if !File.exists?(target_dir+"/"+File.basename(file))
       FileUtils.cp(file, target_dir)
+      files_updated = true
     elsif File.mtime(file) > File.mtime(target_dir+"/"+File.basename(file))
       FileUtils.cp(file, target_dir)
+      files_updated = true
     end
   end
+  return files_updated
 end
 
 def update_sources()
@@ -170,7 +174,7 @@ def update_gffs()
     FileUtils.rm(gff) unless srcs.detect{|src| File.basename(gff) == File.basename(src)}
   end
   system "rake", "--rakefile", "pack.rake"
-  update_files_based_on_timestamp(FileList["src/nss/*"], GFF_CACHE_DIR)
+  return update_files_based_on_timestamp(FileList["src/nss/*"], GFF_CACHE_DIR)
 end
 
 # Compile all nss scripts. NWNScriptCompiler is built to process nss in bulk and
@@ -206,8 +210,8 @@ end
 
 def pack_all()
   init_directories()
-  update_gffs()
-  compile_nss(MODULE_FILE)
+  should_compile = update_gffs()
+  compile_nss(MODULE_FILE) if should_compile
   update_cache(GFF_CACHE_DIR, TMP_CACHE_DIR)
   pack_module(MODULE_FILE)
 
