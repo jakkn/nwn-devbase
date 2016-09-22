@@ -167,8 +167,9 @@ def update_gffs()
   gffs = FileList[GFF_CACHE_DIR+"/*"].exclude(/\.ncs$/)
   srcs = FileList["src/**/*.*"].sub(/\.yml$/, '')
   gffs.each do |gff|
-    puts gff unless srcs.detect{|src| File.basename(gff) == File.basename(src)}
+    FileUtils.rm(gff) unless srcs.detect{|src| File.basename(gff) == File.basename(src)}
   end
+  system "rake", "--rakefile", "pack.rake"
   update_files_based_on_timestamp(FileList["src/nss/*"], GFF_CACHE_DIR)
 end
 
