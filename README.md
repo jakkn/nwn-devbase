@@ -61,7 +61,7 @@ To open the packed module with the Aurora Toolset, symlink the *.mod* file to yo
 
 ## Use
 
-All use should be done through build.rb, because this script will update properly. Either use it from the command line (no argument or wrong argument will print help with usage instructions), or run these scripts, located in *scripts/*
+All use should be done through build.rb, because this script will update the cache properly. Either use it from the command line (no argument or wrong argument will print help with usage instructions), or run these scripts, located in *scripts/*
 
 | Pack *src/* into *.mod* | `pack.rb` |
 | Extract *.mod* to *src/* | `extract.rb` |

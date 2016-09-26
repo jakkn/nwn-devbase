@@ -4,6 +4,7 @@
 *.ncs
 *.ndb
 cache
+bin/modpacker
 
 # Other #
 ###################

@@ -107,7 +107,17 @@ def pack_module(modfile)
   end
 
   puts "Building module: #{modfile}"
-  system "nwn-erf --create -0 -M -f #{modfile} #{TMP_CACHE_DIR}/*"
+
+  # nwn-lib 0.6 and below throws too many files open exception when module
+  # grows too large. Use progeeks modpacker as a workaround.
+  # Reference: https://github.com/niv/nwn-lib/issues/7
+  # Modpacker: https://sourceforge.net/projects/nwntools/files/ModPacker/Version%201.0.0/
+  if OS.windows?
+    Dir.chdir("bin")
+    system "modpacker-pack.cmd"
+  else
+    system "nwn-erf --create -0 -M -f #{modfile} #{TMP_CACHE_DIR}/*"
+  end
 end
 
 # Update target_dir with content from source_dir based on md5 digest.
