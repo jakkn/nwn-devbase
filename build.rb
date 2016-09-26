@@ -154,6 +154,7 @@ end
 # Update all source_files that have a different time stamp than the corresponding
 # file in target_dir. New files are copied over.
 def update_files_based_on_timestamp(source_files, target_dir)
+  FileUtils.mkdir_p(target_dir) unless File.exists?(target_dir)
   files_updated = false
   source_files.each do |file|
     if !File.exists?(target_dir+"/"+File.basename(file))
