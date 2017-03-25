@@ -12,17 +12,16 @@ Either can be used independently, but I recommend both.
 
 ## git
 
-The skeleton is basically the content of directories *scripts/* and *nwntools/*. Either copy-paste these folders over to your project, or clone this repository and change the origin. Cloning has the added benefit of being able to pull any future changes from this repository into yours. To do this, type
+The skeleton is basically the ruby scripts and the libraries they use. Either copy-paste the ruby files over to your project, or clone this repository and change the origin. Cloning has the added benefit of being able to pull any future changes from this repository into yours. To do this, type
 ```
 git clone -o boilerplate https://github.com/jakkn/nwn-devbase.git nwn-my-project
 git remote add origin ssh://git@bitbucket.org/user/nwn-my-project.git
 ```
 Please note:
 
-- If you clone it is adviced to set the new remote origin to a private repository (bitbucket.org/user/nwn-my-project.git is just an example), as most likely you do not want to expose module content to anyone but the team. I recommend using BitBucket as GitHub charges money per private repository. See [how to make private](https://confluence.atlassian.com/bitbucket/make-a-repo-private-or-public-221449724.html)
-- Place your module (*.mod* archive) in the designated directory *packed/*
-- Change the module name in the pack and unpack scripts
-- Run the unpack script
+- If you clone it is adviced to set the new remote origin to a private repository (bitbucket.org/user/nwn-my-project.git is just an example), as you may not want to expose module content to anyone outside the team. I recommend using BitBucket as GitHub charges money per private repository, while Bitbucket is free for up to 5 collaborators. See [how to make private](https://confluence.atlassian.com/bitbucket/make-a-repo-private-or-public-221449724.html)
+- Place your module (*.mod* file) in the designated directory *module/*
+- Run the extract command (see [README](https://github.com/jakkn/nwn-devbase/blob/master/README.md))
 - Add, commit, push
 
 ---
