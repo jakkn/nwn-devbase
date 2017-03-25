@@ -58,25 +58,30 @@ To open the packed module with the Aurora Toolset, symlink the *.mod* file to yo
 - Linux: `ln -s "PATH_TO_REPO"/module/module.mod "PATH_TO_NWN"/modules/`
 - Windows: `MKLINK "PATH_TO_NWN\modules\" "PATH_TO_REPO\module\module.mod"`
 
+Alternatively there is [Link Shell Extension](http://schinagl.priv.at/nt/hardlinkshellext/linkshellextension.html) for Windows users.
 
 ## Use
 
-All use should be done through build.rb, because this script will update the cache properly. Either use it from the command line (no argument or wrong argument will print help with usage instructions), or run these scripts, located in *scripts/*
+All use should be done through build.rb, because this script will update the cache properly. Run it from the command line (no argument or wrong argument will print help with usage instructions).
 
-| Pack *src/* into *.mod* | `pack.rb` |
-| Extract *.mod* to *src/* | `extract.rb` |
+| Pack *src/* into *.mod* | `ruby build.rb pack` |
+| Extract *.mod* to *src/* | `ruby build.rb extract` |
+| Compile *.nss* to *.ncs* | `ruby build.rb compile` |
+| Clean *cache* folder | `ruby build.rb clean` |
 
-And use `git pull`, `git add`, `git commit`, `git push` accordingly. That's it.
+To version control changes to the sources use the git commands `git pull`, `git add`, `git commit`, `git push` accordingly.
 
 For Docker usage, please refer to [DOCKERGUIDE](https://github.com/jakkn/nwn-devbase/blob/master/DOCKERGUIDE.md).
 
+#### Hint
+Windows users may find this blog post titled [make powershell and git suck less on windows](http://learnaholic.me/2012/10/12/make-powershell-and-git-suck-less-on-windows/) useful.
 
 ## Troubleshooting
 
 "Too many files open": nwn-lib opens all files at once when packing the module. This can lead to an error stating too many files are open.
 Fix:
 	- *Linux* `ulimit -n 4096` (or any other number higher than the number of files in the module)
-	- *Windows* Unknown. Help wanted.
+	- *Windows* the Java library modpacker is used instead. If modpacker cannot be found build.rb will print out instructions.
 
 
 ## Background
