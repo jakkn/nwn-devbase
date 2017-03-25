@@ -62,12 +62,20 @@ Alternatively there is [Link Shell Extension](http://schinagl.priv.at/nt/hardlin
 
 ## Use
 
-All use should be done through build.rb, because this script will update the cache properly. Run it from the command line (no argument or wrong argument will print help with usage instructions).
+All use should be done through build.rb, because this script will update the cache properly. Run it from the command line by navigating to the repository root folder, and issue one of the commands below (no argument or wrong argument will print help with usage instructions).
 
-| Pack *src/* into *.mod* | `ruby build.rb pack` |
-| Extract *.mod* to *src/* | `ruby build.rb extract` |
-| Compile *.nss* to *.ncs* | `ruby build.rb compile` |
-| Clean *cache* folder | `ruby build.rb clean` |
+|        Function          |           Command         |
+| ------------------------ | ------------------------- |
+| Pack *src/* into *.mod*  | `ruby ./build.rb pack`    |
+| Extract *.mod* to *src/* | `ruby ./build.rb extract` |
+| Compile *.nss* to *.ncs* | `ruby ./build.rb compile` |
+| Clean *cache* folder     | `ruby ./build.rb clean`   |
+
+Example use:
+```
+cd /home/user/nwn-my-module
+ruby ./build.rb extract
+```
 
 To version control changes to the sources use the git commands `git pull`, `git add`, `git commit`, `git push` accordingly.
 
@@ -78,10 +86,11 @@ Windows users may find this blog post titled [make powershell and git suck less 
 
 ## Troubleshooting
 
-"Too many files open": nwn-lib opens all files at once when packing the module. This can lead to an error stating too many files are open.
+"Too many files open": nwn-lib opens all files for reading at the same time when packing the module. This can lead to an error stating too many files are open.
 Fix:
-	- *Linux* `ulimit -n 4096` (or any other number higher than the number of files in the module)
-	- *Windows* the Java library modpacker is used instead. If modpacker cannot be found build.rb will print out instructions.
+
+- *Linux* `ulimit -n 4096` (or any other number higher than the number of files in the module)
+- *Windows* the Java library modpacker is used instead. If modpacker cannot be found build.rb will print out instructions.
 
 
 ## Background
