@@ -3,7 +3,7 @@
 source "https://rubygems.org"
 
 gem 'nwn-lib'
-gem 'rake', '11.2.2'
+gem 'rake'
 gem 'systemu'
 gem 'highline'
 gem 'os'
