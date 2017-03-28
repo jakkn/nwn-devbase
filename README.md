@@ -73,11 +73,11 @@ All use should be done through build.rb, because this script will update the cac
 
 Example use:
 ```
-cd /home/user/nwn-my-module
+cd /home/user/nwn-my-module-repository
 ruby ./build.rb extract
 ```
 
-To version control changes to the sources use the git commands `git pull`, `git add`, `git commit`, `git push` accordingly.
+To version control your changes to the sources use the git commands `git pull`, `git add`, `git commit`, `git push` accordingly.
 
 For Docker usage, please refer to [DOCKERGUIDE](https://github.com/jakkn/nwn-devbase/blob/master/DOCKERGUIDE.md).
 
@@ -96,7 +96,7 @@ Fix:
 ## Background
 Neverwinter Nights is a RPG developed by BioWare, released in 2001. In addition to the NWN game client, BioWare released a tool for creating game content - the Aurora Toolset - along with server hosting software. This enables anyone to create and host their own worlds.
 
-NWN was discontinued 7 years after release, with the final patch v1.69 released July 9th, 2008. Even though the game was discontinued by the developer, the community is still strong and due to the game's hackable nature new community content is continuously released.
+NWN was discontinued 7 years after release, with the final patch v1.69 released July 9th, 2008. Even though BioWare discontinued the game, the community is still strong and new content is continuously released.
 
 
 ## Feedback
