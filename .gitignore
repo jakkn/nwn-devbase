@@ -12,6 +12,7 @@ bin/*
 *.sublime-workspace
 tmp
 NWN
+resman
 
 # OS generated files #
 ######################

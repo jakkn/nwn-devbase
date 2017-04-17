@@ -209,6 +209,10 @@ def compile_nss(modfile)
   end
 end
 
+def create_resman_symlinks
+  system "rake", "--rakefile", "symlink.rake"
+end
+
 def extract_all()
   init_directories()
   extract_module(MODULE_FILE)
@@ -243,7 +247,9 @@ when "clean"
   clean
 when "compile"
   compile_nss(MODULE_FILE)
+when "resman"
+  create_resman_symlinks
 else
   puts "Usage: build.rb ACTION"
-  puts "\nACTIONs:\n\textract\n\tpack\n\tclean\n\tcompile"
+  puts "\nACTIONs:\n\textract\n\tpack\n\tclean\n\tcompile\n\tresman"
 end

@@ -11,7 +11,8 @@
 				".git",
 				".hg",
 				"NWN",
-				"cache"
+				"cache",
+				"resman"
 			],
 			"path": "."
 		}

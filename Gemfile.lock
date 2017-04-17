@@ -1,6 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    byebug (9.0.6)
     highline (1.7.8)
     nwn-lib (0.6.0)
     os (0.9.6)
@@ -11,6 +12,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  byebug
   highline
   nwn-lib
   os
@@ -18,4 +20,4 @@ DEPENDENCIES
   systemu
 
 BUNDLED WITH
-   1.12.5
+   1.14.6
