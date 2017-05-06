@@ -4,7 +4,8 @@
 		{
 			"file_exclude_patterns":
 			[
-				"*.sublime-project"
+				"*.sublime-project",
+				"*.mod"
 			],
 			"folder_exclude_patterns":
 			[
