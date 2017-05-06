@@ -15,6 +15,7 @@ Either can be used independently, but I recommend both.
 The skeleton is basically the ruby scripts and the libraries they use. Either copy-paste the ruby files over to your project, or clone this repository and change the origin. Cloning has the added benefit of being able to pull any future changes from this repository into yours. To do this, type
 ```
 git clone -o boilerplate https://github.com/jakkn/nwn-devbase.git nwn-my-project
+cd nwn-my-project
 git remote add origin ssh://git@bitbucket.org/user/nwn-my-project.git
 ```
 Please note:
