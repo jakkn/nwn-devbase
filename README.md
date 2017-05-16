@@ -19,18 +19,25 @@ Please make sure the following software is installed before proceeding:
 
 - git, the version control software
   - Arch: `pacman -S git`
-  - Ubuntu: `sudo apt-get install git`
-  - Windows: https://git-scm.com/download/win
+  - Ubuntu: `apt install git`
+  - Windows: [https://git-scm.com/download/win](https://git-scm.com/download/win)
 
 - Ruby, needed by nwn-lib to pack and extract the *.mod* archive
   - Arch: `pacman -S ruby`
-  - Ubuntu: `sudo apt-get install ruby`
-  - Windows: http://rubyinstaller.org
+  - Ubuntu: `apt install ruby`
+  - Windows: [http://rubyinstaller.org](http://rubyinstaller.org)
+
+- Java, needed on Windows to pack the module
+  - [Download](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html) [Oracle JRE 8](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
+
+- wine, needed to run NWNScriptCompiler on Linux
+  - Arch: `pacman -S wine`
+  - Ubuntu: `apt install wine`
 
 - (Optional) Docker, for local test environment
   - Arch: `pacman -S docker`
-  - Ubuntu: https://get.docker.com
-  - Windows: https://docs.docker.com/engine/installation/windows/
+  - Ubuntu: [https://get.docker.com](https://get.docker.com)
+  - Windows: [https://docs.docker.com/engine/installation/windows/](https://docs.docker.com/engine/installation/windows/)
 
 
 ## Initialize
@@ -49,6 +56,8 @@ gem install bundler
 bundle install
 ```
 
+Note: this assumes ruby executable is on your PATH. If this is new to you and you're on Windows, [ask google](https://www.google.no/search?q=windows+path&oq=windows+path&aqs=chrome.0.0l6.1280j0j1&sourceid=chrome&ie=UTF-8#q=windows+10+change+path).
+
 If there are errors it is most likely due to improper Ruby configurations or missing PATH entries.
 
 ### Symlink
@@ -64,12 +73,13 @@ Alternatively there is [Link Shell Extension](http://schinagl.priv.at/nt/hardlin
 
 All use should be done through build.rb, because this script will update the cache properly. Run it from the command line by navigating to the repository root folder, and issue one of the commands below (no argument or wrong argument will print help with usage instructions).
 
-|        Function          |           Command         |
-| ------------------------ | ------------------------- |
-| Pack *src/* into *.mod*  | `ruby ./build.rb pack`    |
-| Extract *.mod* to *src/* | `ruby ./build.rb extract` |
-| Compile *.nss* to *.ncs* | `ruby ./build.rb compile` |
-| Clean *cache* folder     | `ruby ./build.rb clean`   |
+|            Function            |           Command         |
+| ------------------------------ | ------------------------- |
+| Extract *.mod* to *src/*       | `ruby ./build.rb extract` |
+| Pack *src/* into *.mod*        | `ruby ./build.rb pack`    |
+| Clean *cache* folder           | `ruby ./build.rb clean`   |
+| Compile *.nss* to *.ncs*       | `ruby ./build.rb compile` |
+| Create/refresh resman symlinks | `ruby build.rb resman`    |
 
 Example use:
 ```
