@@ -56,22 +56,27 @@ gem install bundler
 bundle install
 ```
 
-Note: this assumes ruby executable is on your PATH. If this is new to you and you're on Windows, [ask google](https://www.google.no/search?q=windows+path&oq=windows+path&aqs=chrome.0.0l6.1280j0j1&sourceid=chrome&ie=UTF-8#q=windows+10+change+path).
+If there are errors it is most likely due to improper Ruby configurations or missing PATH entries. See [troubleshooting](https://github.com/jakkn/nwn-devbase#troubleshooting).
 
-If there are errors it is most likely due to improper Ruby configurations or missing PATH entries.
+### Symlinks
 
-### Symlink
+For the below commands please replace *PATH_TO_NWN* with the path to the install dir of your local NWN installation, and *PATH_TO_REPO* with the path to the repository.
 
-To open the packed module with the Aurora Toolset, symlink the *.mod* file to your *nwn/modules* folder. Run the following command (windows may need admin console), where *PATH_TO_NWN* is the install dir of your local NWN installation, and *PATH_TO_REPO* is the path to the repository.
+The packed *.mod* file must be symlinked to *PATH_TO_NWN/modules/* in order to open the module with the Aurora Toolset:
 
 - Linux: `ln -s "PATH_TO_REPO"/module/module.mod "PATH_TO_NWN"/modules/`
 - Windows: `MKLINK "PATH_TO_NWN\modules\" "PATH_TO_REPO\module\module.mod"`
 
-Alternatively there is [Link Shell Extension](http://schinagl.priv.at/nt/hardlinkshellext/linkshellextension.html) for Windows users.
+*PATH_TO_NWN* must be symlinked as *PATH_TO_REPO/NWN* in order to compile with NWNScriptCompiler:
+
+- Linux: `ln -s "PATH_TO_NWN" "PATH_TO_REPO/NWN"`
+- Windows: `MKLINK /D "PATH_TO_REPO\NWN" "PATH_TO_NWN"`
+
+Windows users may also use [Link Shell Extension](http://schinagl.priv.at/nt/hardlinkshellext/linkshellextension.html) instead of running the shell commands.
 
 ## Use
 
-All use should be done through build.rb, because this script will update the cache properly. Run it from the command line by navigating to the repository root folder, and issue one of the commands below (no argument or wrong argument will print help with usage instructions).
+All use should be done through build.rb and not the rake files, because build.rb will update the cache properly. Run it from the command line by navigating to the repository root folder, and issue one of the commands below (no argument or wrong argument will print help with usage instructions).
 
 |            Function            |           Command         |
 | ------------------------------ | ------------------------- |
@@ -79,7 +84,7 @@ All use should be done through build.rb, because this script will update the cac
 | Pack *src/* into *.mod*        | `ruby ./build.rb pack`    |
 | Clean *cache* folder           | `ruby ./build.rb clean`   |
 | Compile *.nss* to *.ncs*       | `ruby ./build.rb compile` |
-| Create/refresh resman symlinks | `ruby build.rb resman`    |
+| Create/refresh resman symlinks | `ruby ./build.rb resman`  |
 
 Example use:
 ```
@@ -91,7 +96,10 @@ To version control your changes to the sources use the git commands `git pull`, 
 
 For Docker usage, please refer to [DOCKERGUIDE](https://github.com/jakkn/nwn-devbase/blob/master/DOCKERGUIDE.md).
 
-#### Hint
+#### Hints
+
+##### Windows PowerShell
+
 Windows users may find this blog post titled [make powershell and git suck less on windows](http://learnaholic.me/2012/10/12/make-powershell-and-git-suck-less-on-windows/) useful.
 
 ## Troubleshooting
@@ -101,6 +109,8 @@ Fix:
 
 - *Linux* `ulimit -n 4096` (or any other number higher than the number of files in the module)
 - *Windows* the Java library modpacker is used instead. If modpacker cannot be found build.rb will print out instructions.
+
+I have installed Ruby but it does not work: This is most likely due the Ruby executable missing from your PATH environment variable. If this is new to you and you're on Windows, [please ask google first](https://www.google.com/search?q=windows+path&oq=windows+path&aqs=chrome.0.0l6.1280j0j1&sourceid=chrome&ie=UTF-8#q=windows+10+change+path). Linux users should not have this issue.
 
 
 ## Background
