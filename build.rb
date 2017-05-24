@@ -114,7 +114,7 @@ def pack_module(modfile)
   # Modpacker: https://sourceforge.net/projects/nwntools/files/ModPacker/Version%201.0.0/
   if OS.windows?
     Dir.chdir("bin")
-    system "modpacker-pack.cmd"
+    system "modpacker-pack.cmd #{modfile}"
   else
     system "nwn-erf --create -0 -M -f #{modfile} #{TMP_CACHE_DIR}/*"
   end

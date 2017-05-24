@@ -23,7 +23,7 @@ IF NOT EXIST ModPacker.cmd (
 ECHO Setting nwntools environment variables...
 CALL setpath.cmd
 
-CALL ModPacker.cmd ..\..\cache\tmp ..\..\module\testserver.mod
+CALL ModPacker.cmd ..\..\cache\tmp ..\..\%1
 
 CD ..\
 ECHO Done.
