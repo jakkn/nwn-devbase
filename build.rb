@@ -144,8 +144,8 @@ def update_files_based_on_digest(source_files, target_dir)
     if !File.exists?(target_dir+"/"+File.basename(file))
       FileUtils.cp(file, target_dir)
     else
-      tmp_digest = Digest::MD5.hexdigest(File.read(file))
-      gff_digest = Digest::MD5.hexdigest(File.read(target_dir+"/"+File.basename(file)))
+      tmp_digest = Digest::MD5.hexdigest(File.open(file, "rb") { |f| f.read })
+      gff_digest = Digest::MD5.hexdigest(File.open(target_dir+"/"+File.basename(file), "rb") { |f| f.read })
       FileUtils.cp(file, target_dir) if tmp_digest != gff_digest
     end
   end
