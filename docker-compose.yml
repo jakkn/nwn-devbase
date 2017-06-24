@@ -1,0 +1,54 @@
+version: '2'
+services:
+  nwnserver:
+    build: ./docker
+    image: nwn-devbase:latest
+    working_dir: /opt/nwnserver/
+    volumes:
+      - /opt/nwn/data:/opt/nwnserver/data
+      - /opt/nwn/erf:/opt/nwnserver/erf
+      - /opt/nwn/hak:/opt/nwnserver/hak
+      - /opt/nwn/tlk:/opt/nwnserver/tlk
+      - /opt/nwn/servervault:/opt/nwnserver/servervault
+      - ./module:/opt/nwnserver/modules
+      - ./resman:/opt/nwnserver/resman
+      - ./cache/gff:/opt/nwnserver/cache/gff
+    command: ./compose-nwnx2setup.sh
+      --mysql
+      --profiler
+      --resman
+      -publicserver 1
+      -servername "Containerized nwn-devbase"
+      -dmpassword foo
+      -oneparty 0
+      -pvp 1
+      -difficulty 2
+      -elc 0
+      -reloadwhenempty 0
+      -module "module"
+      -maxclients 32
+      -servervault 1
+      -maxlevel 40
+      -gametype 0
+      -autosaveinterval 0
+    ports:
+      - "5129:5121/tcp"
+      - "5129:5121/udp"
+    restart: always
+    stdin_open: true
+    tty: true
+    depends_on:
+      - db
+
+  db:
+    image: mysql/mysql-server:5.7.15
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=database
+    volumes:
+      - ./docker/mysql-db:/docker-entrypoint-initdb.d
+    ports:
+      - "3309:3306"
+    restart: always
+    stdin_open: true
+    tty: true

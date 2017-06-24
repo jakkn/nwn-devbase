@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 5.7.9, for Linux (x86_64)
 --
--- Host: localhost    Database: testserver
+-- Host: localhost    Database: database
 -- ------------------------------------------------------
 -- Server version	5.7.9
 
@@ -16,12 +16,12 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Current Database: `testserver`
+-- Current Database: `database`
 --
 
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `testserver` /*!40100 DEFAULT CHARACTER SET latin1 */;
+CREATE DATABASE /*!32312 IF NOT EXISTS*/ `database` /*!40100 DEFAULT CHARACTER SET latin1 */;
 
-USE `testserver`;
+USE `database`;
 
 --
 -- Table structure for table `pwdata`
