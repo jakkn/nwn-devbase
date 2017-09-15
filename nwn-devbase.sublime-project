@@ -17,5 +17,77 @@
       ],
       "path": "."
     }
+  ],
+  "build_systems": [
+    {
+      "name": "NWN compile",
+      "file_regex": "^\\s*?([^\\(]+)\\(([0-9]+)\\): (Error|Warning): .*?$",
+      "shell": true,
+      "windows":
+      {
+        "cmd": ["ruby","$folder\\build.rb","compile","$file"]
+      },
+      "linux":
+      {
+        "cmd": ["ruby $folder/build.rb compile \"$file\""]
+      },
+      "variants": [
+        {
+          "name": "Compile all",
+          "windows":
+          {
+            "cmd": ["ruby","$folder\\build.rb","compile"]
+          },
+          "linux":
+          {
+            "cmd": ["ruby $folder/build.rb compile"]
+          }
+        },
+        {
+          "name": "Pack module",
+          "windows":
+          {
+            "cmd": ["ruby","$folder\\build.rb","pack"]
+          },
+          "linux":
+          {
+            "cmd": ["ruby $folder/build.rb pack"]
+          }
+        },
+        {
+          "name": "Extract module",
+          "windows":
+          {
+            "cmd": ["ruby","$folder\\build.rb","extract"]
+          },
+          "linux":
+          {
+            "cmd": ["ruby $folder/build.rb extract"]
+          }
+        },
+        {
+          "name": "Create/refresh resman symlinks",
+          "windows":
+          {
+            "cmd": ["ruby","$folder\\build.rb","resman"]
+          },
+          "linux":
+          {
+            "cmd": ["ruby $folder/build.rb resman"]
+          }
+        },
+        {
+          "name": "Clean cache folder",
+          "windows":
+          {
+            "cmd": ["ruby","$folder\\build.rb","clean"]
+          },
+          "linux":
+          {
+            "cmd": ["ruby $folder/build.rb clean"]
+          }
+        },
+      ]
+    }
   ]
 }

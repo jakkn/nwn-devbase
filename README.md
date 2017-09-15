@@ -98,6 +98,16 @@ For Docker usage, please refer to [DOCKERGUIDE](https://github.com/jakkn/nwn-dev
 
 #### Hints
 
+##### Scripting in Sublime Text
+Sublime Text is recommended for writing scripts outside the toolset. You may find Sublime Text to be faster, easier to navigate, and to provide much better syntax highlighting than Aurora. Setting up Sublime Text for scripting requires a few steps to set up the custom NWN script compiler (NWNScriptCompiler).
+
+- Install [Sublime Text 3](http://www.sublimetext.com/3)
+- Install [Package Control](https://packagecontrol.io/installation)
+- Install [STNeverwinterScript](https://github.com/CromFr/STNeverwinterScript) plugin
+- Open the Sublime project described by the file nwn-devbase.sublime-project located in the root directory of this repository
+- Tools->Build System->NWN compile
+- Hit ctrl+b to compile open nss files or ctrl+shift+b for all the other build options
+ 
 ##### Windows PowerShell
 
 Windows users may find this blog post titled [make powershell and git suck less on windows](http://learnaholic.me/2012/10/12/make-powershell-and-git-suck-less-on-windows/) useful.
