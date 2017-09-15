@@ -36,15 +36,17 @@ require 'digest/md5'
 require 'os'
 
 START_TIME = Time.now
-MODULE_DIR = "module"
-CACHE_DIR = "cache"
-NSS_DIR = "src/nss"
-TMP_CACHE_DIR = CACHE_DIR+"/tmp"
-GFF_CACHE_DIR = CACHE_DIR+"/gff"
-SOURCES = FileList["src/**/*.*"]
+PROGRAM_ROOT = $PROGRAM_NAME.pathmap("%d")
+MODULE_DIR = "#{PROGRAM_ROOT}/module"
+CACHE_DIR = "#{PROGRAM_ROOT}/cache"
+TMP_CACHE_DIR = "#{CACHE_DIR}/tmp"
+GFF_CACHE_DIR = "#{CACHE_DIR}/gff"
+NSS_DIR = "#{PROGRAM_ROOT}/src/nss"
+ALL_NSS = "#{NSS_DIR}/*.nss"
+SOURCES = FileList["#{PROGRAM_ROOT}/src/**/*.*"]
 
 def find_modfile()
-  mod = FileList[MODULE_DIR+"/*.mod"][0]
+  mod = FileList["#{MODULE_DIR}/*.mod"][0]
   return (mod.nil? || mod == "") ? "#{MODULE_DIR}/module.mod" : mod
 end
 
@@ -82,9 +84,9 @@ def extract_module(modfile)
 
   puts "Extracting module."
   Dir.chdir(TMP_CACHE_DIR) do
-    tmp_files = FileList[TMP_CACHE_DIR+"/*"]
+    tmp_files = FileList["#{TMP_CACHE_DIR}/*"]
     FileUtils.rm tmp_files
-    system "nwn-erf", "--extract", "-f", "../../"+modfile
+    system "nwn-erf", "--extract", "-f", "../../#{modfile}"
   end
 end
 
@@ -122,10 +124,10 @@ end
 
 # Update target_dir with content from source_dir based on md5 digest.
 def update_cache(source_dir, target_dir)
-  target_files = FileList[target_dir+"/*.*"]
+  target_files = FileList["#{target_dir}/*.*"]
   remove_deleted_files(source_dir, target_files)
 
-  source_files = FileList[source_dir+"/*.*"]
+  source_files = FileList["#{source_dir}/*.*"]
   update_files_based_on_digest(source_files, target_dir)
 end
 
@@ -133,7 +135,7 @@ end
 def remove_deleted_files(source_dir, target_files)
   return if target_files.empty?
   target_files.each do |file|
-    FileUtils.rm(File.exists?(file) ? file : file + ".yml") unless File.exists?(source_dir+"/"+File.basename(file))
+    FileUtils.rm(File.exists?(file) ? file : file + ".yml") unless File.exists?("#{source_dir}/"+File.basename(file))
   end
 end
 
@@ -141,11 +143,11 @@ end
 # file in target_dir. New files are copied over.
 def update_files_based_on_digest(source_files, target_dir)
   source_files.each do |file|
-    if !File.exists?(target_dir+"/"+File.basename(file))
+    if !File.exists?("#{target_dir}/"+File.basename(file))
       FileUtils.cp(file, target_dir)
     else
       tmp_digest = Digest::MD5.hexdigest(File.open(file, "rb") { |f| f.read })
-      gff_digest = Digest::MD5.hexdigest(File.open(target_dir+"/"+File.basename(file), "rb") { |f| f.read })
+      gff_digest = Digest::MD5.hexdigest(File.open("#{target_dir}/"+File.basename(file), "rb") { |f| f.read })
       FileUtils.cp(file, target_dir) if tmp_digest != gff_digest
     end
   end
@@ -157,10 +159,10 @@ def update_files_based_on_timestamp(source_files, target_dir)
   FileUtils.mkdir_p(target_dir) unless File.exists?(target_dir)
   files_updated = false
   source_files.each do |file|
-    if !File.exists?(target_dir+"/"+File.basename(file))
+    if !File.exists?("#{target_dir}/"+File.basename(file))
       FileUtils.cp(file, target_dir)
       files_updated = true
-    elsif File.mtime(file) > File.mtime(target_dir+"/"+File.basename(file))
+    elsif File.mtime(file) > File.mtime("#{target_dir}/"+File.basename(file))
       FileUtils.cp(file, target_dir)
       files_updated = true
     end
@@ -172,45 +174,46 @@ def update_sources()
   puts "Converting from gff to yml (this may take a while)..."
 
   remove_deleted_files(GFF_CACHE_DIR, SOURCES.sub(/\.yml$/, ''))
-  system "rake", "--rakefile", "extract.rake"
-  update_files_based_on_timestamp(FileList[GFF_CACHE_DIR+"/*.nss"], "src/nss")
+  system "rake", "--rakefile", "#{PROGRAM_ROOT}/extract.rake"
+  update_files_based_on_timestamp(FileList["#{GFF_CACHE_DIR}/*.nss"], "src/nss")
 end
 
 def update_gffs()
   puts "Converting from yml to gff (this may take a while)..."
 
-  gffs = FileList[GFF_CACHE_DIR+"/*"].exclude(/\.ncs$/)
+  gffs = FileList["#{GFF_CACHE_DIR}/*"].exclude(/\.ncs$/)
   srcs = FileList["src/**/*.*"].sub(/\.yml$/, '')
   gffs.each do |gff|
     FileUtils.rm(gff) unless srcs.detect{|src| File.basename(gff) == File.basename(src)}
   end
-  system "rake", "--rakefile", "pack.rake"
+  system "rake", "--rakefile", "#{PROGRAM_ROOT}/pack.rake"
   return update_files_based_on_timestamp(FileList["src/nss/*"], GFF_CACHE_DIR)
 end
 
-# Compile all nss scripts. NWNScriptCompiler is built to process nss in bulk and
+# Compile nss scripts. NWNScriptCompiler is built to process nss in bulk and
 # would be much slower if done one by one due to startup overhead. The startup
 # overhead is mainly due to loading includes from the .mod file, and on Linux
 # there is the additional wine startup overhead.
-def compile_nss(modfile)
+# Valid targets are any nss file name, 
+def compile_nss(modfile, target=ALL_NSS)
   unless File.exists?(modfile)
     puts "Using \"#{modfile}\", but the file does not exist. Cannot resolve includes for nss compilation without knowing where to read the module.ifo from. If you are trying to pack the module from a fresh clone, compilation will succeed on the second run.\nSkipping nss compilation."
     return
   end
   module_filename = modfile.pathmap("%n")
-  Dir.chdir(NSS_DIR) do
-    if OS.linux?
-      system "wine ../../bin/NWNScriptCompiler.exe -qgo1 -v1.69 -n ../../NWN -m #{module_filename} -b ../../#{GFF_CACHE_DIR} -y *.nss"
-    elsif OS.windows?
-      system "../../bin/NWNScriptCompiler.exe -qgo1 -v1.69 -n ../../NWN -m #{module_filename} -b ../../#{GFF_CACHE_DIR} -y *.nss"
-    else
-      puts "Unknown OS. Don't know how to run NWNScriptCompiler."
-    end
+  compiler = "#{PROGRAM_ROOT}/bin/NWNScriptCompiler.exe"
+  nwn_root = "#{PROGRAM_ROOT}/NWN"
+  if OS.linux?
+    system "wine #{compiler} -qgo1 -v1.69 -n #{nwn_root} -m #{module_filename} -b #{GFF_CACHE_DIR} -y #{target}"
+  elsif OS.windows?
+    system "#{compiler} -qgo1 -v1.69 -n #{nwn_root} -m #{module_filename} -b #{GFF_CACHE_DIR} -y #{target}"
+  else
+    puts "Unknown OS. Don't know how to run NWNScriptCompiler."
   end
 end
 
 def create_resman_symlinks
-  system "rake", "--rakefile", "symlink.rake"
+  system "rake", "--rakefile", "#{PROGRAM_ROOT}/symlink.rake"
 end
 
 def extract_all()
@@ -235,10 +238,11 @@ def pack_all()
 end
 
 def clean()
-  FileUtils.rm_r Dir.glob(CACHE_DIR+'/*')
+  FileUtils.rm_r Dir.glob("#{CACHE_DIR}/*")
 end
 
-case ARGV[0]
+command = ARGV.shift
+case command
 when "extract"
   extract_all
 when "pack"
@@ -246,7 +250,8 @@ when "pack"
 when "clean"
   clean
 when "compile"
-  compile_nss(MODULE_FILE)
+  target = ARGV.shift || ALL_NSS
+  compile_nss(MODULE_FILE, target)
 when "resman"
   create_resman_symlinks
 else
