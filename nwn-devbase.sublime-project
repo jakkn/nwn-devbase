@@ -1,21 +1,21 @@
 {
-	"folders":
-	[
-		{
-			"file_exclude_patterns":
-			[
-				"*.sublime-project",
-				"*.mod"
-			],
-			"folder_exclude_patterns":
-			[
-				".git",
-				".hg",
-				"NWN",
-				"cache",
-				"resman"
-			],
-			"path": "."
-		}
-	]
+  "folders":
+  [
+    {
+      "file_exclude_patterns":
+      [
+        "*.sublime-project",
+        "*.mod"
+      ],
+      "folder_exclude_patterns":
+      [
+        ".git",
+        ".hg",
+        "NWN",
+        "cache",
+        "resman"
+      ],
+      "path": "."
+    }
+  ]
 }
