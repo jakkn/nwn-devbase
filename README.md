@@ -37,7 +37,10 @@ Please make sure the following software is installed before proceeding:
 - (Optional) Docker, for local test environment
   - Arch: `pacman -S docker`
   - Ubuntu: [https://get.docker.com](https://get.docker.com)
-  - Windows: [https://docs.docker.com/engine/installation/windows/](https://docs.docker.com/engine/installation/windows/)
+
+- (Optional) docker-compose, for easy docker configuration
+  + Arch: `pacman -S docker-compose`
+  + Ubuntu: See [https://docs.docker.com/compose/install/#install-compose](https://docs.docker.com/compose/install/#install-compose)
 
 
 ## Initialize

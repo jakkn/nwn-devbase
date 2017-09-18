@@ -1,29 +1,43 @@
 # Using Docker
 
-When you start a Docker image with the `docker run IMAGE` command, Docker creates what is called a container. Containers are instances of an image and are considered disposable. Everything you do in a container stays in the container. Containers should be used over again to avoid unnecessary container buildup.
+**Intended audience: builders**
 
-**Useful docker commands**
+This document covers running NWN modules in docker containers.
 
-| Function  | Command  |
-| :-------------------- |:---------------------- |
-| List all images | `docker images` |
-| List all containers | `docker ps -a` |
-| Remove image | `docker rmi IMAGE` |
-| Remove container | `docker rm CONTAINER` |
-| Build dockerfile | `docker build .` |
-| Restart container | `docker restart CONTAINER` |
-| Stop container | `docker stop CONTAINER` |
-
-Note, you need the NWN sources installed to use the image, as the *data* folder has been stripped to reduce image size.
+*Note to non-Linux users: At the time of writing there are no Windows images for nwserver, and I have no plans to make any because nwnx2-win32 is discontinued. Consequently, running nwserver in a docker container is restricted to Linux (OSX should work but is currently untested). This can be accomplished on Windows by the use of a virtual machine and sharing files between the host and the vm, but I have not gotten to this part and I am currently looking for help in documenting those steps.*
 
 
-## Linux
+## Dependencies
 
+* docker
+* docker-compose (optional but highly recommended)
+
+
+## Configure
+
+Configuration is esily managed using `docker-compose`. You can find an example in [./docker-compose.yml](https://github.com/jakkn/nwn-devbase/blob/master/docker/docker-compose.yml).
+
+Please note that you need the NWN sources installed on your computer to use the image, as the *data* folder has been stripped from the image to reduce the size. So the volume mounts must match with your computer environment to mount the necessary NWN files. At the very least the data folder must be mounted.
+
+
+## Run
+
+### With docker-compose
+```
+docker-compose up -d
+```
+Stop (and remove all containers including volumes) with
+```
+docker-compose stop
+```
+
+
+### With docker
 In the below subsections, change
 - `PATH_TO_REPO` with the path to your repository on the host system
 - `PATH_TO_NWN` with the path to your NWN install dir
 
-### Create the database container
+#### Create the database container
 ```
 docker pull mysql:5.7
 docker run \
@@ -34,10 +48,9 @@ docker run \
   mysql:5.7
 ```
 
-### Create the nwserver container
-
+#### Create the nwserver container
 To function properly, the container needs access to the
-- host directory containing the essential NWN .bif files
+- host directory containing the essential NWN *.bif* files
 - host directory containing the module
 - database container
 
@@ -48,11 +61,11 @@ docker run -it \
   --link nwn-mysql:mysql \
   -p 5121:5121/tcp \
   -p 5121:5121/udp \
-  --name boptest \
-  bop-testserver:latest
+  --name nwn-devbase-test \
+  nwn-devbase:latest
 ```
 
-`-v` mounts a host directory as a volume in the container. `--link nwn-mysql:mysql` creates a link between the mysql container and the boptest container. Note: the name following the colon - *mysql* in this case - is the name of the server, and must correspond with the database server specified in the nwnx2.ini, but this should work out of the box unless it has been changed in the Dockerfile. `-p` specifies which container ports to expose to the host system. Docker will not expose UDP by default and must be specified to enable nwserver connections.
+`-v` mounts a host directory as a volume in the container. `--link nwn-mysql:mysql` creates a link between the mysql container and the nwn-devbase-test container. Note: the name following the colon - *mysql* in this case - is the name of the server, and must correspond with the database server specified in the nwnx2.ini, but this should work out of the box unless it has been changed in the Dockerfile. `-p` specifies which container ports to expose to the host system. Docker will not expose UDP by default and must be specified to enable nwserver connections.
 
 The procedure is similar if you need haks, overrides, or other custom files. The below example adds folders *hak*, *tlk*, and *erf*.
 ```
@@ -65,28 +78,36 @@ docker run -it \
   --link nwn-mysql:mysql \
   -p 5121:5121/tcp \
   -p 5121:5121/udp \
-  --name boptest \
-  bop-testserver:latest
+  --name nwn-devbase-test \
+  nwn-devbase:latest
 ```
 
-### Restarting the container
-`docker run` will by default run the last CMD command defined in the Dockerfile. To exit the container simply type `exit`.
-
+#### Restarting the container
 From now on you should only need the following two commands to start and stop the server.
 ```
 docker restart testserver
 docker stop testserver
 ```
-To view log output you may copy logs.0 from the container by running `docker cp boptest:/opt/nwnserver/logs.0 .`
+
+#### View the logs
+Either mount the logs folder to the host, or attach to the running container in a new shell with `docker exec -it nwn-devbase-test /bin/bash`
+
+#### Attach to the running server
+```
+docker attach nwn-devbase-test
+```
+Detach safely with `ctrl+p ctrl+q`
+
+
+## Play
+
+Direct connect to `localhost:5121` from your NWN game client.
+
 
 ## Windows
-This is a little tricky on Windows, as Docker runs in a VM and the directory must be shared with the VM. Instructions to come, but for now see [docker userguide](http://docs.docker.com/engine/userguide/dockervolumes/).
+
+*Note to non-Linux users: At the time of writing there are no Windows images for nwserver, and I have no plans to make any because nwnx2-win32 is discontinued. Consequently, running nwserver in a docker container is restricted to Linux (OSX should work but is currently untested). This can be accomplished on Windows by the use of a virtual machine and sharing files between the host and the vm, but I have not gotten to this part and I am currently looking for help in documenting those steps.*
+
 
 ## OSX
-This is a little tricky on OSX, as Docker runs in a VM and the directory must be shared with the VM. Instructions to come, but for now see [docker userguide](http://docs.docker.com/engine/userguide/dockervolumes/).
-
-I don't run OSX and neither does anyone else at BOP. If anyone wants to fill out this please go ahead.
-
-
-## Connect to the server
-Direct connect to `localhost:5121` from your NWN game client.
+I don't run OSX and neither does anyone else at BoP. If anyone wants to fill this guide please go ahead.
