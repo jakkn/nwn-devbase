@@ -30,10 +30,6 @@ Please make sure the following software is installed before proceeding:
 - Java, needed on Windows to pack the module
   - [Download](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html) [Oracle JRE 8](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 
-- wine, needed to run NWNScriptCompiler on Linux
-  - Arch: `pacman -S wine`
-  - Ubuntu: `apt install wine`
-
 - (Optional) Docker, for local test environment
   - Arch: `pacman -S docker`
   - Ubuntu: [https://get.docker.com](https://get.docker.com)

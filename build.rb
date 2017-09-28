@@ -192,20 +192,20 @@ end
 
 # Compile nss scripts. NWNScriptCompiler is built to process nss in bulk and
 # would be much slower if done one by one due to startup overhead. The startup
-# overhead is mainly due to loading includes from the .mod file, and on Linux
-# there is the additional wine startup overhead.
-# Valid targets are any nss file name, 
+# overhead is mainly due to loading includes from the .mod file
+# Valid targets are any nss file name,
 def compile_nss(modfile, target=ALL_NSS)
   unless File.exists?(modfile)
     puts "Using \"#{modfile}\", but the file does not exist. Cannot resolve includes for nss compilation without knowing where to read the module.ifo from. If you are trying to pack the module from a fresh clone, compilation will succeed on the second run.\nSkipping nss compilation."
     return
   end
   module_filename = modfile.pathmap("%n")
-  compiler = "#{PROGRAM_ROOT}/bin/NWNScriptCompiler.exe"
   nwn_root = "#{PROGRAM_ROOT}/NWN"
   if OS.linux?
-    system "wine #{compiler} -qgo1 -v1.69 -n #{nwn_root} -m #{module_filename} -b #{GFF_CACHE_DIR} -y #{target}"
+    compiler = "#{PROGRAM_ROOT}/bin/nwnnsscomp"
+    system "#{compiler} -qgo -v1.69 #{nwn_root} #{target}"
   elsif OS.windows?
+    compiler = "#{PROGRAM_ROOT}/bin/NWNScriptCompiler.exe"
     system "#{compiler} -qgo1 -v1.69 -n #{nwn_root} -m #{module_filename} -b #{GFF_CACHE_DIR} -y #{target}"
   else
     puts "Unknown OS. Don't know how to run NWNScriptCompiler."
