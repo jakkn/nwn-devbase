@@ -24,7 +24,7 @@ Please make sure the following software is installed before proceeding:
 
 - Ruby, needed by nwn-lib to pack and extract the *.mod* archive
   - Arch: `pacman -S ruby`
-  - Ubuntu: `apt install ruby`
+  - Ubuntu: `apt install ruby ruby-dev`
   - Windows: [http://rubyinstaller.org](http://rubyinstaller.org)
 
 - Java, needed on Windows to pack the module
@@ -110,7 +110,7 @@ Sublime Text is recommended for writing scripts outside the toolset. You may fin
 - Open the Sublime project described by the file nwn-devbase.sublime-project located in the root directory of this repository
 - Tools->Build System->NWN compile
 - Hit ctrl+b to compile open nss files or ctrl+shift+b for all the other build options
- 
+
 ##### Windows PowerShell
 
 Windows users may find this blog post titled [make powershell and git suck less on windows](http://learnaholic.me/2012/10/12/make-powershell-and-git-suck-less-on-windows/) useful.
