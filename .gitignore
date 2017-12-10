@@ -5,6 +5,7 @@
 *.ndb
 cache
 bin/*
+server/*
 
 # Other #
 ###################
