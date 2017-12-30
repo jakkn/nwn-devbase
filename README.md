@@ -1,5 +1,5 @@
 # nwn-devbase
-This repository is meant to function as boilerplate for anyone who wants to version control their module development for the game Neverwinter Nights (NWN), using git. It contains a skeleton with the necessary tools, and usage documentation including instructions for setting up a local test environment using Docker, which can easily be distributed to the development team.
+This repository is meant to function as boilerplate for anyone who wants to version control their module development for the game Neverwinter Nights (NWN), including NWN:EE, using git. It contains a skeleton with the necessary tools and usage documentation, including instructions for setting up a local test environment using Docker.
 
 In addition, the texts here are meant to function as a reference for users unfamiliar with git and Docker, as is the case with some of my team members. [INTRODUCTION](https://github.com/jakkn/nwn-devbase/blob/master/INTRODUCTION.md) introduces the problem areas git and Docker solve, and attempts to explain how the development process is supposed to work. It also presents an overview of how the systems are wired together.
 
@@ -10,12 +10,12 @@ Can't people just version control their sources without this? Of course they can
 
 ## Intended audience
 - **Admin** - Please see [SETUP](https://github.com/jakkn/nwn-devbase/blob/master/SETUP.md). It contains instructions on how to initialize and customize the repository to your server.
-- **Developers** - Continue reading. You will find instructions on how to initialize and use these tools below.
+- **Developers** - Continue reading to find instructions on how to install and use the tools.
 
 
 ## Dependencies
 
-Please make sure the following software is installed before proceeding:
+You will need to install:
 
 - git, the version control software
   - Arch: `pacman -S git`
