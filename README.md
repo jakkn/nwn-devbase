@@ -20,12 +20,12 @@ Please make sure the following software is installed before proceeding:
 - git, the version control software
   - Arch: `pacman -S git`
   - Ubuntu: `apt install git`
-  - Windows: [https://git-scm.com/download/win](https://git-scm.com/download/win)
+  - Windows: `choco install git`
 
 - Ruby, needed by nwn-lib to pack and extract the *.mod* archive
   - Arch: `pacman -S ruby`
   - Ubuntu: `apt install ruby`
-  - Windows: [http://rubyinstaller.org](http://rubyinstaller.org)
+  - Windows: `choco install ruby`
 
 - Java, needed on Windows to pack the module
   - [Download](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html) [Oracle JRE 8](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
@@ -36,11 +36,17 @@ Please make sure the following software is installed before proceeding:
 
 - (Optional) Docker, for local test environment
   - Arch: `pacman -S docker`
-  - Ubuntu: [https://get.docker.com](https://get.docker.com)
+  - Ubuntu: See [https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/](https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/)
+  - Windows: Depends on Hyper-V support (Windows Pro and above), please refer to [https://forums.docker.com/t/linux-container-on-windows-docker-host/25884/2](https://forums.docker.com/t/linux-container-on-windows-docker-host/25884/2) for details.
+    - No Hyper-V: `choco install docker-toolbox`
+    - With Hyper-V: `choco install docker-for-windows`
 
 - (Optional) docker-compose, for easy docker configuration
-  + Arch: `pacman -S docker-compose`
-  + Ubuntu: See [https://docs.docker.com/compose/install/#install-compose](https://docs.docker.com/compose/install/#install-compose)
+  - Arch: `pacman -S docker-compose`
+  - Ubuntu: See [https://docs.docker.com/compose/install/#install-compose](https://docs.docker.com/compose/install/#install-compose)
+  - Windows: 
+    - If you installed docker-toolbox in the previous step you already have it
+    -  `choco install docker-compose`
 
 
 ## Initialize
