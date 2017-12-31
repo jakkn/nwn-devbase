@@ -38,7 +38,7 @@ You will need to install:
   - Arch: `pacman -S docker`
   - Ubuntu: See [https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/](https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/)
   - Windows: Depends on Hyper-V support (Windows Pro and above), please refer to [https://forums.docker.com/t/linux-container-on-windows-docker-host/25884/2](https://forums.docker.com/t/linux-container-on-windows-docker-host/25884/2) for details.
-    - No Hyper-V: `choco install docker-toolbox`
+    - No Hyper-V: `choco install virtualbox docker-toolbox`
     - With Hyper-V: `choco install docker-for-windows`
 
 - (Optional) docker-compose, for easy docker configuration
