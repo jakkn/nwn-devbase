@@ -69,18 +69,18 @@ If you need haks, overrides, or other custom files they should be placed in the 
 #### Restarting the container
 From now on you should only need the following two commands to start and stop the server.
 ```
-docker restart testserver
-docker stop testserver
+docker restart nwn-devbase-test
+docker stop nwn-devbase-test
 ```
 
 #### Claim a shell in the running server
 ```
-docker exec -it container_name /bin/bash
+docker exec -it nwn-devbase-test /bin/bash
 ```
 
 #### Attach to the running shell
 ```
-docker attach container_name
+docker attach nwn-devbase-test
 ```
 Detach safely with `ctrl+p ctrl+q`
 
