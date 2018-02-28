@@ -37,7 +37,7 @@ require 'os'
 
 DEBUG=false
 START_TIME = Time.now
-PROGRAM_ROOT = Dir.pwd
+PROGRAM_ROOT = File.expand_path __dir__
 HOME_DIR = "#{PROGRAM_ROOT}/homedir"
 INSTALL_DIR = "#{PROGRAM_ROOT}/installdir"
 MODULE_DIR = "#{HOME_DIR}/modules"
