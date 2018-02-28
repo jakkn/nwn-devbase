@@ -35,9 +35,12 @@ require 'highline/import'
 require 'digest/md5'
 require 'os'
 
+DEBUG=false
 START_TIME = Time.now
-PROGRAM_ROOT = $PROGRAM_NAME.pathmap("%d")
-MODULE_DIR = "#{PROGRAM_ROOT}/module"
+PROGRAM_ROOT = Dir.pwd
+HOME_DIR = "#{PROGRAM_ROOT}/homedir"
+INSTALL_DIR = "#{PROGRAM_ROOT}/installdir"
+MODULE_DIR = "#{HOME_DIR}/modules"
 CACHE_DIR = "#{PROGRAM_ROOT}/cache"
 TMP_CACHE_DIR = "#{CACHE_DIR}/tmp"
 GFF_CACHE_DIR = "#{CACHE_DIR}/gff"
@@ -51,6 +54,21 @@ def find_modfile()
 end
 
 MODULE_FILE = find_modfile
+
+if DEBUG
+  puts "DEBUG: #{DEBUG}"
+  puts "START_TIME: #{START_TIME}"
+  puts "PROGRAM_ROOT: #{PROGRAM_ROOT}"
+  puts "HOME_DIR: #{HOME_DIR}"
+  puts "INSTALL_DIR: #{INSTALL_DIR}"
+  puts "MODULE_DIR: #{MODULE_DIR}"
+  puts "CACHE_DIR: #{CACHE_DIR}"
+  puts "TMP_CACHE_DIR: #{TMP_CACHE_DIR}"
+  puts "GFF_CACHE_DIR: #{GFF_CACHE_DIR}"
+  puts "NSS_DIR: #{NSS_DIR}"
+  puts "ALL_NSS: #{ALL_NSS}"
+  puts "MODULE_FILE: #{MODULE_FILE}"
+end
 
 # Initialize environment
 def init_directories()
