@@ -35,11 +35,18 @@ require 'highline/import'
 require 'digest/md5'
 require 'os'
 
+# Returns the name of a file if it exists, or nil
+# Used in ORing files
+def file_exists(file)
+  return nil unless File.exists?(file)
+  return file
+end
+
 DEBUG=false
 START_TIME = Time.now
 PROGRAM_ROOT = File.expand_path __dir__
 HOME_DIR = "#{PROGRAM_ROOT}/homedir"
-INSTALL_DIR = "#{PROGRAM_ROOT}/installdir"
+INSTALL_DIR = file_exists("#{PROGRAM_ROOT}/installdir") || file_exists("#{PROGRAM_ROOT}/NWN") || ENV["NWN_INSTALLDIR"]
 MODULE_DIR = "#{HOME_DIR}/modules"
 CACHE_DIR = "#{PROGRAM_ROOT}/cache"
 TMP_CACHE_DIR = "#{CACHE_DIR}/tmp"
