@@ -215,25 +215,14 @@ def update_gffs()
   return update_files_based_on_timestamp(FileList["src/nss/*"], GFF_CACHE_DIR)
 end
 
-# Compile nss scripts. NWNScriptCompiler is built to process nss in bulk and
-# would be much slower if done one by one due to startup overhead. The startup
-# overhead is mainly due to loading includes from the .mod file, and on Linux
-# there is the additional wine startup overhead.
+# Compile nss scripts. Module file not parsed for hak includes at the time of writing.
 # Valid targets are any nss file name, 
 def compile_nss(modfile, target=ALL_NSS)
-  unless File.exists?(modfile)
-    puts "Using \"#{modfile}\", but the file does not exist. Cannot resolve includes for nss compilation without knowing where to read the module.ifo from. If you are trying to pack the module from a fresh clone, compilation will succeed on the second run.\nSkipping nss compilation."
-    return
-  end
-  module_filename = modfile.pathmap("%n")
-  compiler = "#{PROGRAM_ROOT}/bin/NWNScriptCompiler.exe"
-  nwn_root = "#{PROGRAM_ROOT}/NWN"
-  if OS.linux?
-    system "wine #{compiler} -qgo1 -v1.69 -n #{nwn_root} -m #{module_filename} -b #{GFF_CACHE_DIR} -y #{target}"
-  elsif OS.windows?
-    system "#{compiler} -qgo1 -v1.69 -n #{nwn_root} -m #{module_filename} -b #{GFF_CACHE_DIR} -y #{target}"
-  else
-    puts "Unknown OS. Don't know how to run NWNScriptCompiler."
+  puts "Compiling #{target}" if DEBUG
+  compiler = "nwnsc"
+
+  Dir.chdir(NSS_DIR) do
+    system "#{compiler} -qo -n #{INSTALL_DIR} -b #{GFF_CACHE_DIR} -y #{target}"
   end
 end
 
