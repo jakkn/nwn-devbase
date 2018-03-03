@@ -5,8 +5,8 @@ services:
     volumes:
       - ./server:/nwn/home
     env_file: ./docker/server.env
+    network_mode: "host"
     ports:
-      - "5121:5121/tcp"
       - "5121:5121/udp"
     restart: always
     stdin_open: true
