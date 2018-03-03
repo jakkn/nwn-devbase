@@ -4,8 +4,9 @@
 *.ncs
 *.ndb
 cache
-bin/*
-server/*
+server
+homedir
+installdir
 
 # Other #
 ###################
