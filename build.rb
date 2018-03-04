@@ -54,6 +54,7 @@ GFF_CACHE_DIR = "#{CACHE_DIR}/gff"
 NSS_DIR = "#{PROGRAM_ROOT}/src/nss"
 ALL_NSS = "#{NSS_DIR}/*.nss"
 SOURCES = FileList["#{PROGRAM_ROOT}/src/**/*.*"]
+NSS_COMPILER = ENV["NSS_COMPILER"] || "nwnsc"
 
 def find_modfile()
   mod = FileList["#{MODULE_DIR}/*.mod"][0]
@@ -75,6 +76,7 @@ if DEBUG
   puts "NSS_DIR: #{NSS_DIR}"
   puts "ALL_NSS: #{ALL_NSS}"
   puts "MODULE_FILE: #{MODULE_FILE}"
+  puts "NSS_COMPILER: #{NSS_COMPILER}"
 end
 
 # Initialize environment
@@ -219,10 +221,9 @@ end
 # Valid targets are any nss file name, 
 def compile_nss(modfile, target=ALL_NSS)
   puts "Compiling #{target}" if DEBUG
-  compiler = "nwnsc"
 
   Dir.chdir(NSS_DIR) do
-    system "#{compiler} -qo -n #{INSTALL_DIR} -b #{GFF_CACHE_DIR} -y #{target}"
+    system "#{NSS_COMPILER} -qo -n #{INSTALL_DIR} -b #{GFF_CACHE_DIR} -y #{target}"
   end
 end
 
