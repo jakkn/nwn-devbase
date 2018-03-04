@@ -22,26 +22,22 @@ You will need to install:
   - Ubuntu: `apt install git`
   - Windows: `choco install git`
 
-- Ruby, needed by nwn-lib to pack and extract the *.mod* archive
+- Ruby, to run the build script and nwn-lib to pack and extract the *.mod* archive
   - Arch: `pacman -S ruby`
   - Ubuntu: `apt install ruby`
   - Windows: `choco install ruby`
 
-- Java, needed on Windows to pack the module
-  - [Download](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html) [Oracle JRE 8](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
+- nwnsc, the nwscript compiler
+  - Binaries for all platforms on [neverwintervault](https://neverwintervault.org/project/nwn1/other/tool/nwnsc-nwn-enhanced-edition-script-compiler)
 
-- wine, needed to run NWNScriptCompiler on Linux
-  - Arch: `pacman -S wine`
-  - Ubuntu: `apt install wine`
-
-- (Optional) Docker, for local test environment
+- (Optional) Docker, to run nwserver
   - Arch: `pacman -S docker`
   - Ubuntu: See [https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/](https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/)
   - Windows: Depends on Hyper-V support (Windows Pro and above), please refer to [https://forums.docker.com/t/linux-container-on-windows-docker-host/25884/2](https://forums.docker.com/t/linux-container-on-windows-docker-host/25884/2) for details.
     - No Hyper-V: `choco install virtualbox docker-toolbox`
     - With Hyper-V: `choco install docker-for-windows`
 
-- (Optional) docker-compose, for easy docker configuration
+- (Optional) docker-compose, for simplified docker configuration
   - Arch: `pacman -S docker-compose`
   - Ubuntu: See [https://docs.docker.com/compose/install/#install-compose](https://docs.docker.com/compose/install/#install-compose)
   - Windows: 
@@ -69,19 +65,29 @@ If there are errors it is most likely due to improper Ruby configurations or mis
 
 ### Symlinks
 
-For the below commands please replace *PATH_TO_NWN* with the path to the install dir of your local NWN installation, and *PATH_TO_REPO* with the path to the repository.
+A symbolic link is used to reveal the *.mod* file to the aurora toolset. This is necessary because the module builds to a directory within the repository, while the toolset looks for the file in *NWN_INSTALLDIR/modules/*.
 
-The packed *.mod* file must be symlinked to *PATH_TO_NWN/modules/* in order to open the module with the Aurora Toolset:
+Replace *NWN_INSTALLDIR* with the path to the install dir of your local NWN installation, and *PATH_TO_REPO* with the path to the repository for the below commands.
 
-- Linux: `ln -s "PATH_TO_REPO"/module/module.mod "PATH_TO_NWN"/modules/`
-- Windows: `MKLINK "PATH_TO_NWN\modules\" "PATH_TO_REPO\module\module.mod"`
-
-*PATH_TO_NWN* must be symlinked as *PATH_TO_REPO/NWN* in order to compile with NWNScriptCompiler:
-
-- Linux: `ln -s "PATH_TO_NWN" "PATH_TO_REPO/NWN"`
-- Windows: `MKLINK /D "PATH_TO_REPO\NWN" "PATH_TO_NWN"`
+- Linux: `ln -s "PATH_TO_REPO"/module/module.mod "NWN_INSTALLDIR"/modules/`
+- Windows: `MKLINK "NWN_INSTALLDIR\modules\" "PATH_TO_REPO\module\module.mod"`
 
 Windows users may also use [Link Shell Extension](http://schinagl.priv.at/nt/hardlinkshellext/linkshellextension.html) instead of running the shell commands.
+
+### Paths
+For nss compilation to work, it may be necessary to set some PATHs if the script defaults do not match with your system environment. Either specify the paths at run time with (where $HOME tanslates to the home directory and the remaining paths must be changed to match your environment)
+```
+NWN_INSTALLDIR="$HOME/nwnee-dedicated" NSS_COMPILER="$HOME/nss_compiler/nwnsc" ruby build.rb compile
+```
+or set them permantently in system environment variables.
+
+If you need more information what an environment variable is, you can find more information in the [wikipedia article](https://en.wikipedia.org/wiki/Environment_variable)
+
+#### NSS compiler
+`build.rb` looks for the *NSS_COMPILER* environment variable, and defaults to `nwnsc` if that does not exist. Either add the compiler to your PATH, or create the NSS_COMPILER environment variable that points to the nss compiler of your choice.
+
+#### NWN install dir
+The compiler run arguments specify game resources located in *NWN_INSTALLDIR* environment variable. This is needed to locate `nwscript.nss` and base game includes.
 
 ## Use
 
