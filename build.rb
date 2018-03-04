@@ -1,7 +1,9 @@
 #!/usr/bin/ruby
 #
 # This script is used to extract and pack NWN modules, going from .mod
-# to .yml and back, using using nwn-lib (https://github.com/niv/nwn-lib).
+# to .yml and back, using neverwinter_utils.nim
+# (https://github.com/niv/neverwinter_utils.nim) and nwn-lib
+# (https://github.com/niv/nwn-lib).
 #
 # Rake is used to multithread the gff->yml and yml->gff operations, and
 # the script has been optimized to only work on modified resources,
@@ -113,7 +115,7 @@ def extract_module(modfile)
   Dir.chdir(TMP_CACHE_DIR) do
     tmp_files = FileList["#{TMP_CACHE_DIR}/*"]
     FileUtils.rm tmp_files
-    system "nwn-erf", "--extract", "-f", "../../#{modfile}"
+    system "nwn_erf -x -f #{modfile}"
   end
 end
 
@@ -136,17 +138,7 @@ def pack_module(modfile)
   end
 
   puts "Building module: #{modfile}"
-
-  # nwn-lib 0.6 and below throws too many files open exception when module
-  # grows too large. Use progeeks modpacker as a workaround.
-  # Reference: https://github.com/niv/nwn-lib/issues/7
-  # Modpacker: https://sourceforge.net/projects/nwntools/files/ModPacker/Version%201.0.0/
-  if OS.windows?
-    Dir.chdir("bin")
-    system "modpacker-pack.cmd #{modfile}"
-  else
-    system "nwn-erf --create -0 -M -f #{modfile} #{TMP_CACHE_DIR}/*"
-  end
+  system "nwn_erf", "-c", "#{TMP_CACHE_DIR}", "-f", "#{modfile}"
 end
 
 # Update target_dir with content from source_dir based on md5 digest.
