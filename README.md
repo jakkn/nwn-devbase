@@ -22,13 +22,21 @@ You will need to install:
   - Ubuntu: `apt install git`
   - Windows: `choco install git`
 
-- Ruby, to run the build script and nwn-lib to pack and extract the *.mod* archive
+- Ruby, to run the build script and nwn-lib to convert gff to yml
   - Arch: `pacman -S ruby`
   - Ubuntu: `apt install ruby`
   - Windows: `choco install ruby`
 
 - nwnsc, the nwscript compiler
-  - Binaries for all platforms on [neverwintervault](https://neverwintervault.org/project/nwn1/other/tool/nwnsc-nwn-enhanced-edition-script-compiler)
+  - All platforms: [https://neverwintervault.org/project/nwn1/other/tool/nwnsc-nwn-enhanced-edition-script-compiler](https://neverwintervault.org/project/nwn1/other/tool/nwnsc-nwn-enhanced-edition-script-compiler)
+
+- nim, to use neverwinter_utils.nim
+  - Arch: `pacman -S nim`
+  - Ubuntu: [choosenim](https://github.com/dom96/choosenim)
+  - Windows: [choosenim](https://github.com/dom96/choosenim)
+
+- neverwinter_utils.nim for module packing and extracting
+  - All platforms: [https://github.com/niv/neverwinter_utils.nim](https://github.com/niv/neverwinter_utils.nim)
 
 - (Optional) Docker, to run nwserver
   - Arch: `pacman -S docker`
