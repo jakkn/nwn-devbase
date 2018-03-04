@@ -7,4 +7,3 @@ gem 'rake'
 gem 'systemu'
 gem 'highline'
 gem 'os'
-gem 'byebug', :group => :development
