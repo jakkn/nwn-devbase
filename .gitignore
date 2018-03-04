@@ -1,8 +1,5 @@
 # Compiled source and binaries #
 ###################
-*.mod
-*.ncs
-*.ndb
 cache
 server
 homedir
