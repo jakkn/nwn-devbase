@@ -138,7 +138,7 @@ def pack_module(modfile)
   end
 
   puts "Building module: #{modfile}"
-  system "nwn_erf", "-c", "#{TMP_CACHE_DIR}", "-f", "#{modfile}"
+  system "nwn_erf", "-e", "MOD", "-c", "#{TMP_CACHE_DIR}", "-f", "#{modfile}"
 end
 
 # Update target_dir with content from source_dir based on md5 digest.
