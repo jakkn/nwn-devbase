@@ -15,17 +15,19 @@ Can't people just version control their sources without this? Of course they can
 
 ## Dependencies
 
+*Note to windows users: chocolatey is a package manager for Windows that empowers you to install and upgrade software from the command line. For those not using chocolatey the direct download links follow after the choco command.* 
+
 You will need to install:
 
 - git, the version control software
   - Arch: `pacman -S git`
   - Ubuntu: `apt install git`
-  - Windows: `choco install git`
+  - Windows: `choco install git` [git-scm.com](https://git-scm.com/download/win)
 
 - Ruby, to run the build script and nwn-lib to convert gff to yml
   - Arch: `pacman -S ruby`
   - Ubuntu: `apt install ruby`
-  - Windows: `choco install ruby`
+  - Windows: `choco install ruby` [rubyinstaller.org](https://rubyinstaller.org/downloads/)
 
 - nwnsc, the nwscript compiler
   - All platforms: [https://neverwintervault.org/project/nwn1/other/tool/nwnsc-nwn-enhanced-edition-script-compiler](https://neverwintervault.org/project/nwn1/other/tool/nwnsc-nwn-enhanced-edition-script-compiler)
