@@ -77,8 +77,8 @@ A symbolic link is used to reveal the *.mod* file to the aurora toolset. This is
 
 Replace *NWN_INSTALLDIR* with the path to the install dir of your local NWN installation, and *PATH_TO_REPO* with the path to the repository for the below commands.
 
-- Linux: `ln -s "PATH_TO_REPO"/module/module.mod "NWN_INSTALLDIR"/modules/`
-- Windows: `MKLINK "NWN_INSTALLDIR\modules\" "PATH_TO_REPO\module\module.mod"`
+- Linux: `ln -s "PATH_TO_REPO"/server/modules/module.mod "NWN_INSTALLDIR"/modules/`
+- Windows: `MKLINK "NWN_INSTALLDIR\modules\" "PATH_TO_REPO\server\modules\module.mod"`
 
 Windows users may also use [Link Shell Extension](http://schinagl.priv.at/nt/hardlinkshellext/linkshellextension.html) instead of running the shell commands.
 
