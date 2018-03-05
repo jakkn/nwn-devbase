@@ -14,7 +14,6 @@ Can't people just version control their sources without this? Of course they can
 
 
 ## Dependencies
-
 *Note to windows users: chocolatey is a package manager for Windows that empowers you to install and upgrade software from the command line. For those not using chocolatey the direct download links follow after the choco command.* 
 
 You will need to install:
@@ -58,13 +57,11 @@ You will need to install:
 ## Initialize
 
 ### Get the sources
-
 Your module admin should have provided you with a link to your repository (NOT [nwn-devbase](https://github.com/jakkn/nwn-devbase)!). Cloning can be done via a gui client, or by running `git clone <repository-url>` from the command line.
 
 Using a git client like [SourceTree](https://www.sourcetreeapp.com/) or [another](https://git-scm.com/download/gui/linux) is nice if you prefer a gui, but you can also do everything from the command line. Some git basics and best practices are covered and referenced in [INTRODUCTION](https://github.com/jakkn/nwn-devbase/blob/master/INTRODUCTION.md).
 
 ### Install ruby gems
-
 Open a console, navigate to the repository, and type
 ```
 gem install bundler
@@ -99,7 +96,6 @@ If you need more information what an environment variable is, you can find more 
 The compiler run arguments specify game resources located in *NWN_INSTALLDIR* environment variable. This is needed to locate `nwscript.nss` and base game includes.
 
 ## Use
-
 All use should be done through build.rb and not the rake files, because build.rb will update the cache properly. Run it from the command line by navigating to the repository root folder, and issue one of the commands below (no argument or wrong argument will print help with usage instructions).
 
 |            Function            |           Command         |
@@ -121,9 +117,14 @@ To version control your changes to the sources use the git commands `git pull`, 
 For Docker usage, please refer to [DOCKERGUIDE](https://github.com/jakkn/nwn-devbase/blob/master/DOCKERGUIDE.md).
 
 #### Hints
+##### Scripting in other editors
+Some might find other editors to be faster, easier to navigate, and to provide better syntax highlighting than the Aurora toolset.
+###### Visual Studio Code
+VSCode is an excellent choice for scripting outside of the toolset. The editor will prompt you to add the nwscript extension when you open a .nss file. 
 
-##### Scripting in Sublime Text
-Sublime Text is recommended for writing scripts outside the toolset. You may find Sublime Text to be faster, easier to navigate, and to provide much better syntax highlighting than Aurora. Setting up Sublime Text for scripting requires a few steps to set up the custom NWN script compiler (NWNScriptCompiler).
+###### Sublime Text
+*TODO: OUTDATED INSTRUCTIONS*
+Setting up Sublime Text for scripting requires a few steps to set up the custom NWN script compiler (NWNScriptCompiler).
 
 - Install [Sublime Text 3](http://www.sublimetext.com/3)
 - Install [Package Control](https://packagecontrol.io/installation)
@@ -133,11 +134,9 @@ Sublime Text is recommended for writing scripts outside the toolset. You may fin
 - Hit ctrl+b to compile open nss files or ctrl+shift+b for all the other build options
  
 ##### Windows PowerShell
-
 Windows users may find this blog post titled [make powershell and git suck less on windows](http://learnaholic.me/2012/10/12/make-powershell-and-git-suck-less-on-windows/) useful.
 
 ## Troubleshooting
-
 "Too many files open": nwn-lib opens all files for reading at the same time when packing the module. This can lead to an error stating too many files are open.
 Fix:
 
