@@ -40,7 +40,7 @@ require 'os'
 # Returns the name of a file if it exists, or nil
 # Used in ORing files
 def file_exists(file)
-  return nil unless File.exists?(file)
+  return nil unless File.exist?(file)
   return file
 end
 
@@ -95,7 +95,7 @@ end
 # the module.
 # +modfile+:: module file to extract
 def extract_module(modfile)
-  unless File.exists?(modfile)
+  unless File.exist?(modfile)
     puts "No module file found in folder \"#{MODULE_DIR}/\".\nExiting."
     Kernel.exit(1)
   end
@@ -125,7 +125,7 @@ end
 # will be prompted to proceed.
 # +modfile+:: path to the module file
 def pack_module(modfile)
-  if File.exists?(modfile)
+  if File.exist?(modfile)
     modified_files = []
     SOURCES.each do |file|
       modified_files.push(file) if File.mtime(file) > File.mtime(modfile)
@@ -154,7 +154,7 @@ end
 def remove_deleted_files(source_dir, target_files)
   return if target_files.empty?
   target_files.each do |file|
-    FileUtils.rm(File.exists?(file) ? file : file + ".yml") unless File.exists?("#{source_dir}/"+File.basename(file))
+    FileUtils.rm(File.exist?(file) ? file : file + ".yml") unless File.exist?("#{source_dir}/"+File.basename(file))
   end
 end
 
@@ -162,7 +162,7 @@ end
 # file in target_dir. New files are copied over.
 def update_files_based_on_digest(source_files, target_dir)
   source_files.each do |file|
-    if !File.exists?("#{target_dir}/"+File.basename(file))
+    if !File.exist?("#{target_dir}/"+File.basename(file))
       FileUtils.cp(file, target_dir)
     else
       tmp_digest = Digest::MD5.hexdigest(File.open(file, "rb") { |f| f.read })
@@ -175,10 +175,10 @@ end
 # Update all source_files that have a different time stamp than the corresponding
 # file in target_dir. New files are copied over.
 def update_files_based_on_timestamp(source_files, target_dir)
-  FileUtils.mkdir_p(target_dir) unless File.exists?(target_dir)
+  FileUtils.mkdir_p(target_dir) unless File.exist?(target_dir)
   files_updated = false
   source_files.each do |file|
-    if !File.exists?("#{target_dir}/"+File.basename(file))
+    if !File.exist?("#{target_dir}/"+File.basename(file))
       FileUtils.cp(file, target_dir)
       files_updated = true
     elsif File.mtime(file) > File.mtime("#{target_dir}/"+File.basename(file))

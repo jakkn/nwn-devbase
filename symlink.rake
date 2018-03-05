@@ -22,7 +22,7 @@ desc 'Create resman dir tree'
 task :folders => ["resman"] do
 	Dir.chdir("resman") do
 		RESMAN_DIRS.each do |dir|
-			FileUtils.mkdir(dir) unless File.exists?(dir)
+			FileUtils.mkdir(dir) unless File.exist?(dir)
 		end
 	end
 end
