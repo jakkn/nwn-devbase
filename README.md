@@ -74,20 +74,19 @@ bundle install
 If there are errors it is most likely due to improper Ruby configurations or missing PATH entries. See [troubleshooting](https://github.com/jakkn/nwn-devbase#troubleshooting).
 
 ### Symlinks
-
 A symbolic link is used to reveal the *.mod* file to the aurora toolset. This is necessary because the module builds to a directory within the repository, while the toolset looks for the file in *NWN_INSTALLDIR/modules/*.
+
+Windows users may use [Link Shell Extension](http://schinagl.priv.at/nt/hardlinkshellext/linkshellextension.html) to create symbolic links instead of running the shell commands.
 
 Replace *NWN_INSTALLDIR* with the path to the install dir of your local NWN installation, and *PATH_TO_REPO* with the path to the repository for the below commands.
 
-- Linux: `ln -s "PATH_TO_REPO"/server/modules/module.mod "NWN_INSTALLDIR"/modules/`
-- Windows: `MKLINK "NWN_INSTALLDIR\modules\" "PATH_TO_REPO\server\modules\module.mod"`
-
-Windows users may also use [Link Shell Extension](http://schinagl.priv.at/nt/hardlinkshellext/linkshellextension.html) instead of running the shell commands.
+- Linux: `ln -s "PATH_TO_REPO"/server/modules/my-module.mod "NWN_INSTALLDIR"/modules/`
+- Windows: `MKLINK "NWN_INSTALLDIR\modules\my-module.mod" "PATH_TO_REPO\server\modules\module.mod"`
 
 ### Paths
-For nss compilation to work, it may be necessary to set some PATHs if the script defaults do not match with your system environment. Either specify the paths at run time with (where $HOME tanslates to the home directory and the remaining paths must be changed to match your environment)
+For nss compilation to work, it may be necessary to set some PATHs if the script defaults do not match with your system environment. Either specify the paths at run time (where $HOME tanslates to the home/user directory and the remaining paths must be changed to match your environment) with
 ```
-NWN_INSTALLDIR="$HOME/nwnee-dedicated" NSS_COMPILER="$HOME/nss_compiler/nwnsc" ruby build.rb compile
+NWN_INSTALLDIR="$HOME/Beamdog Library/00829" NSS_COMPILER="$HOME/bin/nwnsc" ruby build.rb compile
 ```
 or set them permantently in system environment variables.
 
