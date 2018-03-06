@@ -54,7 +54,7 @@ CACHE_DIR = "#{PROGRAM_ROOT}/cache"
 TMP_CACHE_DIR = "#{CACHE_DIR}/tmp"
 GFF_CACHE_DIR = "#{CACHE_DIR}/gff"
 NSS_DIR = "#{PROGRAM_ROOT}/src/nss"
-ALL_NSS = "#{NSS_DIR}/*.nss"
+ALL_NSS = "*.nss"
 SOURCES = FileList["#{PROGRAM_ROOT}/src/**/*.*"]
 NSS_COMPILER = ENV["NSS_COMPILER"] || "nwnsc"
 
