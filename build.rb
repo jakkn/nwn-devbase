@@ -49,7 +49,7 @@ end
 DEBUG=false
 START_TIME = Time.now
 PROGRAM_ROOT = File.expand_path __dir__
-HOME_DIR = file_exists("#{PROGRAM_ROOT}/homedir") || file_exists("#{PROGRAM_ROOT}/server")
+HOME_DIR = file_exists("#{PROGRAM_ROOT}/homedir") || "#{PROGRAM_ROOT}/server"
 INSTALL_DIR = file_exists("#{PROGRAM_ROOT}/installdir") || file_exists("#{PROGRAM_ROOT}/NWN") || ENV["NWN_INSTALLDIR"]
 MODULE_DIR = "#{HOME_DIR}/modules"
 CACHE_DIR = "#{PROGRAM_ROOT}/cache"
