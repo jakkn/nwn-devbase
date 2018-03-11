@@ -257,6 +257,8 @@ def clean()
   FileUtils.rm_r Dir.glob("#{CACHE_DIR}/*")
 end
 
+# Verify the target YAML file. Throws an error when YAML parsing fails.
+# Defaults to check all project yml files if no target specified.
 def verify_yaml(target="src/**/*.yml")
   puts "Verifying yaml"
   STDOUT.flush
