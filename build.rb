@@ -36,6 +36,8 @@ require 'rake'
 require 'highline/import'
 require 'digest/md5'
 require 'os'
+require 'yaml';
+require 'parallel';
 
 # Returns the name of a file if it exists, or nil
 # Used in ORing files
@@ -248,6 +250,21 @@ def clean()
   FileUtils.rm_r Dir.glob("#{CACHE_DIR}/*")
 end
 
+def verify_yaml(target="src/**/*.yml")
+  puts "Verifying yaml"
+  ymls=FileList[target]
+  if OS.windows?
+    puts "This may take a while due to the lack of multithreading support on windows in the Parrallel gem..." unless ymls.size < 10
+    ymls.each do |file|
+      YAML.load_file(file)
+    end
+  else
+    Parallel.map(ymls) do |file|
+      YAML.load_file(file)
+    end
+  end
+end
+
 command = ARGV.shift
 case command
 when "extract"
@@ -261,7 +278,10 @@ when "compile"
   compile_nss(MODULE_FILE, target)
 when "resman"
   create_resman_symlinks
+when "verify"
+  target = ARGV.shift || "src/**/*.yml"
+  verify_yaml(target)
 else
   puts "Usage: build.rb ACTION"
-  puts "\nACTIONs:\n\textract\n\tpack\n\tclean\n\tcompile\n\tresman"
+  puts "\nACTIONs:\n\textract\n\tpack\n\tclean\n\tcompile\n\tresman\nverify"
 end
