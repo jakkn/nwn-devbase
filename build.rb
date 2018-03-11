@@ -267,13 +267,18 @@ def verify_yaml(target="src/**/*.yml")
     puts "This may take a while due to the lack of multithreading support on windows in the Parrallel gem..." unless ymls.size < 10
     STDOUT.flush
     ymls.each do |file|
+      puts "Verifying: #{file}" if DEBUG
+      STDOUT.flush
       YAML.load_file(file)
     end
   else
     Parallel.map(ymls) do |file|
       YAML.load_file(file)
+      puts "Verifying: #{file}" if DEBUG
+      STDOUT.flush
     end
   end
+  puts "Verification done. No errors detected."
 end
 
 command = ARGV.shift
