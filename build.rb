@@ -218,9 +218,14 @@ end
 # Compile nss scripts. Module file not parsed for hak includes at the time of writing.
 # Valid targets are any nss file names, including wildcards to process multiple files.
 def compile_nss(modfile, target=ALL_NSS)
-  puts "[INFO] Compiling #{target}"
+  puts "[INFO] Compiling nss #{target}"
   Dir.chdir(NSS_DIR) do
-    system "#{NSS_COMPILER} -qo -n #{INSTALL_DIR} -b #{GFF_CACHE_DIR} -y #{target}"
+    exit_code = system "#{NSS_COMPILER} -qo -n #{INSTALL_DIR} -b #{GFF_CACHE_DIR} -y #{target}"
+    if exit_code == nil
+      puts "[ERROR]\tThe compiler at \"#{NSS_COMPILER}\" does not exist. Nothing was compiled.\n\tPlease set the NSS_COMPILER environment variable."
+    elsif !exit_code
+      puts "[ERROR]\tSomething went wrong during nss compilation. Check the compiler output."
+    end
   end
 end
 
