@@ -71,20 +71,20 @@ end
 MODULE_FILE = find_modfile
 
 if DEBUG
-  puts "DEBUG: #{DEBUG}"
-  puts "START_TIME: #{START_TIME}"
-  puts "PROGRAM_ROOT: #{PROGRAM_ROOT}"
-  puts "HOME_DIR: #{HOME_DIR}"
-  puts "INSTALL_DIR: #{INSTALL_DIR}"
-  puts "MODULE_DIR: #{MODULE_DIR}"
-  puts "CACHE_DIR: #{CACHE_DIR}"
-  puts "TMP_CACHE_DIR: #{TMP_CACHE_DIR}"
-  puts "GFF_CACHE_DIR: #{GFF_CACHE_DIR}"
-  puts "NSS_DIR: #{NSS_DIR}"
-  puts "ALL_NSS: #{ALL_NSS}"
-  puts "MODULE_FILE: #{MODULE_FILE}"
-  puts "NSS_COMPILER: #{NSS_COMPILER}"
-  puts
+  puts "[DEBUG] Current environment:
+  DEBUG: #{DEBUG}
+  START_TIME: #{START_TIME}
+  PROGRAM_ROOT: #{PROGRAM_ROOT}
+  HOME_DIR: #{HOME_DIR}
+  NSTALL_DIR: #{INSTALL_DIR}
+  MODULE_DIR: #{MODULE_DIR}
+  CACHE_DIR: #{CACHE_DIR}
+  TMP_CACHE_DIR: #{TMP_CACHE_DIR}
+  GFF_CACHE_DIR: #{GFF_CACHE_DIR}
+  NSS_DIR: #{NSS_DIR}
+  ALL_NSS: #{ALL_NSS}
+  MODULE_FILE: #{MODULE_FILE}
+  NSS_COMPILER: #{NSS_COMPILER}"
 end
 
 # Initialize environment
@@ -102,7 +102,7 @@ end
 # +modfile+:: module file to extract
 def extract_module(modfile)
   unless File.exist?(modfile)
-    puts "No module file found in folder \"#{MODULE_DIR}/\".\nExiting."
+    puts "[ERROR] No module file found in folder \"#{MODULE_DIR}/\".\nExiting."
     Kernel.exit(1)
   end
 
@@ -117,7 +117,7 @@ def extract_module(modfile)
     Kernel.exit(1) unless input.downcase == "y"
   end
 
-  puts "Extracting module."
+  puts "[INFO] Extracting module."
   Dir.chdir(TMP_CACHE_DIR) do
     tmp_files = FileList["#{TMP_CACHE_DIR}/*"]
     FileUtils.rm tmp_files
@@ -143,7 +143,7 @@ def pack_module(modfile)
     end
   end
 
-  puts "Building module: #{modfile}"
+  puts "[INFO] Building module: #{modfile}"
   system "nwn_erf", "-e", "MOD", "-c", "#{TMP_CACHE_DIR}", "-f", "#{modfile}"
 end
 
@@ -196,7 +196,7 @@ def update_files_based_on_timestamp(source_files, target_dir)
 end
 
 def update_sources()
-  puts "Converting from gff to yml (this may take a while)..."
+  puts "[INFO] Converting from gff to yml (this may take a while)..."
 
   remove_deleted_files(GFF_CACHE_DIR, SOURCES.sub(/\.yml$/, ''))
   system "rake", "--rakefile", "#{PROGRAM_ROOT}/extract.rake"
@@ -204,7 +204,7 @@ def update_sources()
 end
 
 def update_gffs()
-  puts "Converting from yml to gff (this may take a while)..."
+  puts "[INFO] Converting from yml to gff (this may take a while)..."
 
   gffs = FileList["#{GFF_CACHE_DIR}/*"].exclude(/\.ncs$/)
   srcs = FileList["src/**/*.*"].sub(/\.yml$/, '')
@@ -218,8 +218,7 @@ end
 # Compile nss scripts. Module file not parsed for hak includes at the time of writing.
 # Valid targets are any nss file names, including wildcards to process multiple files.
 def compile_nss(modfile, target=ALL_NSS)
-  puts "Compiling #{target}" if DEBUG
-
+  puts "[INFO] Compiling #{target}"
   Dir.chdir(NSS_DIR) do
     system "#{NSS_COMPILER} -qo -n #{INSTALL_DIR} -b #{GFF_CACHE_DIR} -y #{target}"
   end
@@ -236,7 +235,7 @@ def extract_all()
   update_sources()
 
   elapsed_time = Time.now - START_TIME
-  puts "Done.\nTotal time: #{elapsed_time} seconds."
+  puts "[INFO] Done.\nTotal time: #{elapsed_time} seconds."
 end
 
 def pack_all()
@@ -247,7 +246,7 @@ def pack_all()
   pack_module(MODULE_FILE)
 
   elapsed_time = Time.now - START_TIME
-  puts "Done.\nTotal time: #{elapsed_time} seconds."
+  puts "[INFO] Done.\nTotal time: #{elapsed_time} seconds."
 end
 
 def clean()
@@ -257,21 +256,21 @@ end
 # Verify the target YAML file. Throws an error when YAML parsing fails.
 # Defaults to check all project yml files if no target specified.
 def verify_yaml(target="src/**/*.yml")
-  puts "Verifying yaml"
+  puts "[INFO] Verifying yaml"
   ymls=FileList[target]
   if OS.windows?
-    puts "This may take a while due to the lack of multithreading support on windows in the Parrallel gem..." unless ymls.size < 10
+    puts "[INFO] This may take a while due to the lack of multithreading support on windows in the Parrallel gem..." unless ymls.size < 10
     ymls.each do |file|
-      puts "Verifying: #{file}" if DEBUG
+      puts "[DEBUG] Verifying: #{file}" if DEBUG
       YAML.load_file(file)
     end
   else
     Parallel.map(ymls) do |file|
       YAML.load_file(file)
-      puts "Verifying: #{file}" if DEBUG
+      puts "[DEBUG] Verifying: #{file}" if DEBUG
     end
   end
-  puts "Verification done. No errors detected."
+  puts "[INFO] Verification done. No errors detected."
 end
 
 command = ARGV.shift
