@@ -39,6 +39,9 @@ require 'os'
 require 'yaml';
 require 'parallel';
 
+# Disable stdout buffering
+$stdout.sync = true
+
 # Returns the name of a file if it exists, or nil
 # Used in ORing files
 def file_exists(file)
@@ -81,6 +84,7 @@ if DEBUG
   puts "ALL_NSS: #{ALL_NSS}"
   puts "MODULE_FILE: #{MODULE_FILE}"
   puts "NSS_COMPILER: #{NSS_COMPILER}"
+  puts
 end
 
 # Initialize environment
@@ -110,12 +114,10 @@ def extract_module(modfile)
   unless modified_files.empty?
     puts modified_files
     input = ask "The above #{modified_files.size} files have newer timestamps than the module.\nAre you sure you wish to overwrite? [y/N]"
-    STDOUT.flush
     Kernel.exit(1) unless input.downcase == "y"
   end
 
   puts "Extracting module."
-  STDOUT.flush
   Dir.chdir(TMP_CACHE_DIR) do
     tmp_files = FileList["#{TMP_CACHE_DIR}/*"]
     FileUtils.rm tmp_files
@@ -137,13 +139,11 @@ def pack_module(modfile)
 
     if modified_files.empty?
       input = ask "#{modfile} has a newer timestamp than the sources it will be built from.\nAre you sure you wish to overwrite? [y/N]"
-      STDOUT.flush
       Kernel.exit(1) unless input.downcase == "y"
     end
   end
 
   puts "Building module: #{modfile}"
-  STDOUT.flush
   system "nwn_erf", "-e", "MOD", "-c", "#{TMP_CACHE_DIR}", "-f", "#{modfile}"
 end
 
@@ -197,7 +197,6 @@ end
 
 def update_sources()
   puts "Converting from gff to yml (this may take a while)..."
-  STDOUT.flush
 
   remove_deleted_files(GFF_CACHE_DIR, SOURCES.sub(/\.yml$/, ''))
   system "rake", "--rakefile", "#{PROGRAM_ROOT}/extract.rake"
@@ -206,7 +205,6 @@ end
 
 def update_gffs()
   puts "Converting from yml to gff (this may take a while)..."
-  STDOUT.flush
 
   gffs = FileList["#{GFF_CACHE_DIR}/*"].exclude(/\.ncs$/)
   srcs = FileList["src/**/*.*"].sub(/\.yml$/, '')
@@ -218,10 +216,9 @@ def update_gffs()
 end
 
 # Compile nss scripts. Module file not parsed for hak includes at the time of writing.
-# Valid targets are any nss file name, 
+# Valid targets are any nss file names, including wildcards to process multiple files.
 def compile_nss(modfile, target=ALL_NSS)
   puts "Compiling #{target}" if DEBUG
-  STDOUT.flush
 
   Dir.chdir(NSS_DIR) do
     system "#{NSS_COMPILER} -qo -n #{INSTALL_DIR} -b #{GFF_CACHE_DIR} -y #{target}"
@@ -261,21 +258,17 @@ end
 # Defaults to check all project yml files if no target specified.
 def verify_yaml(target="src/**/*.yml")
   puts "Verifying yaml"
-  STDOUT.flush
   ymls=FileList[target]
   if OS.windows?
     puts "This may take a while due to the lack of multithreading support on windows in the Parrallel gem..." unless ymls.size < 10
-    STDOUT.flush
     ymls.each do |file|
       puts "Verifying: #{file}" if DEBUG
-      STDOUT.flush
       YAML.load_file(file)
     end
   else
     Parallel.map(ymls) do |file|
       YAML.load_file(file)
       puts "Verifying: #{file}" if DEBUG
-      STDOUT.flush
     end
   end
   puts "Verification done. No errors detected."
