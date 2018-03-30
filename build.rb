@@ -65,8 +65,19 @@ Options:"
   end
 end.parse!
 
-# Disable stdout buffering
-$stdout.sync = true
+# Cross-platform way of finding an executable in the $PATH.
+# Source: https://stackoverflow.com/questions/2108727/which-in-ruby-checking-if-program-exists-in-path-from-ruby
+# which('ruby') #=> /usr/bin/ruby
+def which(cmd)
+  exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') : ['']
+  ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
+    exts.each { |ext|
+      exe = File.join(path, "#{cmd}#{ext}")
+      return exe if File.executable?(exe) && !File.directory?(exe)
+    }
+  end
+  return nil
+end
 
 # Returns the name of a file if it exists, or nil
 # Used in ORing files
@@ -75,6 +86,7 @@ def file_exists(file)
   return file
 end
 
+$stdout.sync = true # Disable stdout buffering
 VERBOSE=options[:verbose]
 START_TIME = Time.now
 PROGRAM_ROOT = File.expand_path __dir__
@@ -88,7 +100,8 @@ NSS_DIR = "#{PROGRAM_ROOT}/src/nss"
 ALL_NSS = "*.nss"
 SOURCES = FileList["#{PROGRAM_ROOT}/src/**/*.*"]
 NSS_COMPILER = ENV["NSS_COMPILER"] || "nwnsc"
-MODPACK_UTIL = "nwn_erf"
+ERF_UTIL = "nwn_erf"
+GFF_UTIL = "nwn-gff"
 
 def find_modfile()
   mod = FileList["#{MODULE_DIR}/*.mod"][0]
@@ -111,7 +124,13 @@ if VERBOSE
   ALL_NSS: #{ALL_NSS}
   MODULE_FILE: #{MODULE_FILE}
   NSS_COMPILER: #{NSS_COMPILER}
-  MODPACK_UTIL: #{MODPACK_UTIL}"
+  ERF_UTIL: #{ERF_UTIL}
+  GFF_UTIL: #{GFF_UTIL}"
+end
+
+def verify_executables()
+  abort "[ERROR] Cannot find #{ERF_UTIL} (needed for packing and extracting). Is it on your PATH?\n[ERROR] Aborting." unless which("#{ERF_UTIL}")
+  abort "[ERROR] Cannot find #{GFF_UTIL} (needed for gff <=> yml conversion). Is it on your PATH?\n[ERROR] Aborting." unless which("#{GFF_UTIL}")
 end
 
 # Initialize environment
@@ -129,8 +148,7 @@ end
 # +modfile+:: module file to extract
 def extract_module(modfile)
   unless File.exist?(modfile)
-    puts "[ERROR] No module file found in folder \"#{MODULE_DIR}/\".\nExiting."
-    Kernel.exit(1)
+    abort "[ERROR] No module file found in folder \"#{MODULE_DIR}/\".\n[ERROR] Aborting."
   end
 
   modified_files = []
@@ -148,15 +166,9 @@ def extract_module(modfile)
   Dir.chdir(TMP_CACHE_DIR) do
     tmp_files = FileList["#{TMP_CACHE_DIR}/*"]
     FileUtils.rm tmp_files
-    exit_code = system "#{MODPACK_UTIL} -x -f #{modfile}"
-    if exit_code == nil
-      puts "[ERROR] Failed to execute #{MODPACK_UTIL}. Is it on your PATH?"
-      puts "[ERROR] Exiting."
-      Kernel.exit(1)
-    elsif !exit_code
-      puts "[ERROR] Something went wrong while extracting #{modfile}."
-      puts "[ERROR] Exiting."
-      Kernel.exit(1)
+    exit_code = system "#{ERF_UTIL} -x -f #{modfile}"
+    if !exit_code
+      abort "[ERROR] Something went wrong while extracting #{modfile}.\n[ERROR] Aborting."
     end
   end
 end
@@ -180,15 +192,9 @@ def pack_module(modfile)
   end
 
   puts "[INFO] Building #{modfile}"
-  exit_code = system "#{MODPACK_UTIL}", "-e", "MOD", "-c", "#{TMP_CACHE_DIR}", "-f", "#{modfile}"
-  if exit_code == nil
-    puts "[ERROR] Failed to execute #{MODPACK_UTIL}. Is it on your PATH?"
-    puts "[ERROR] Exiting."
-    Kernel.exit(1)
-  elsif !exit_code
-    puts "[ERROR] Something went wrong while building #{modfile}."
-    puts "[ERROR] Exiting."
-    Kernel.exit(1)
+  exit_code = system "#{ERF_UTIL}", "-e", "MOD", "-c", "#{TMP_CACHE_DIR}", "-f", "#{modfile}"
+  if !exit_code
+    abort "[ERROR] Something went wrong while building #{modfile}.\n[ERROR] Aborting."
   end
 end
 
@@ -326,8 +332,10 @@ end
 command = ARGV.shift
 case command
 when "extract"
+  verify_executables
   extract_all
 when "pack"
+  verify_executables
   pack_all
 when "clean"
   clean
