@@ -38,6 +38,32 @@ require 'digest/md5'
 require 'os'
 require 'yaml';
 require 'parallel';
+require 'optparse'
+
+# Show usage on no arguments
+ARGV << '-h' if ARGV.empty?
+
+# Parse script arguments
+options = {}
+OptionParser.new do |opts|
+  opts.banner ="Usage:
+    ruby build.rb [options] extract\t\t\tExtract .mod to src/
+    ruby build.rb [options] pack\t\t\tPack src/ into .mod
+    ruby build.rb [options] clean\t\t\tClean cache folder
+    ruby build.rb [options] compile [file]\t\tCompile nss to ncs
+    ruby build.rb [options] resman\t\t\tCreate/refresh resman symlinks
+    ruby build.rb [options] verify [file]\t\tVerify YAML
+  
+Options:"
+
+  opts.on("-v", "--[no-]verbose", "Turn on debug logging") do |v|
+    options[:verbose] = v
+  end
+  opts.on_tail("-h", "--help", "Show this message") do
+    puts opts
+    exit
+  end
+end.parse!
 
 # Disable stdout buffering
 $stdout.sync = true
@@ -49,7 +75,7 @@ def file_exists(file)
   return file
 end
 
-DEBUG=false
+VERBOSE=options[:verbose]
 START_TIME = Time.now
 PROGRAM_ROOT = File.expand_path __dir__
 HOME_DIR = file_exists("#{PROGRAM_ROOT}/homedir") || "#{PROGRAM_ROOT}/server"
@@ -70,9 +96,8 @@ end
 
 MODULE_FILE = find_modfile
 
-if DEBUG
+if VERBOSE
   puts "[DEBUG] Current environment:
-  DEBUG: #{DEBUG}
   START_TIME: #{START_TIME}
   PROGRAM_ROOT: #{PROGRAM_ROOT}
   HOME_DIR: #{HOME_DIR}
@@ -266,13 +291,13 @@ def verify_yaml(target="src/**/*.yml")
   if OS.windows?
     puts "[INFO] This may take a while due to the lack of multithreading support on windows in the Parrallel gem..." unless ymls.size < 10
     ymls.each do |file|
-      puts "[DEBUG] Verifying: #{file}" if DEBUG
+      puts "[DEBUG] Verifying: #{file}" if VERBOSE
       YAML.load_file(file)
     end
   else
     Parallel.map(ymls) do |file|
       YAML.load_file(file)
-      puts "[DEBUG] Verifying: #{file}" if DEBUG
+      puts "[DEBUG] Verifying: #{file}" if VERBOSE
     end
   end
   puts "[INFO] Verification done. No errors detected."
@@ -294,7 +319,4 @@ when "resman"
 when "verify"
   target = ARGV.shift || "src/**/*.yml"
   verify_yaml(target)
-else
-  puts "Usage: build.rb ACTION"
-  puts "\nACTIONs:\n\textract\n\tpack\n\tclean\n\tcompile\n\tresman\nverify"
 end

@@ -96,19 +96,11 @@ If you need more information what an environment variable is, you can find more 
 The compiler run arguments specify game resources located in *NWN_INSTALLDIR* environment variable. This is needed to locate `nwscript.nss` and base game includes.
 
 ## Use
-All use should be done through build.rb and not the rake files, because build.rb will update the cache properly. Run it from the command line by navigating to the repository root folder, and issue one of the commands below (no argument or wrong argument will print help with usage instructions).
-
-|            Function            |           Command         |
-| ------------------------------ | ------------------------- |
-| Extract *.mod* to *src/*       | `ruby ./build.rb extract` |
-| Pack *src/* into *.mod*        | `ruby ./build.rb pack`    |
-| Clean *cache* folder           | `ruby ./build.rb clean`   |
-| Compile *.nss* to *.ncs*       | `ruby ./build.rb compile` |
-| Create/refresh resman symlinks | `ruby ./build.rb resman`  |
+All use should be done through `build.rb` and not the rake files, because `build.rb` will update the cache properly. Run it from the command line by navigating to the repository root folder, and issue `ruby build.rb`. No arguments prints the usage information.
 
 Example use:
 ```
-cd /home/user/nwn-my-module-repository
+cd /home/user/my-module-repository
 ruby ./build.rb extract
 ```
 
