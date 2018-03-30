@@ -88,6 +88,7 @@ NSS_DIR = "#{PROGRAM_ROOT}/src/nss"
 ALL_NSS = "*.nss"
 SOURCES = FileList["#{PROGRAM_ROOT}/src/**/*.*"]
 NSS_COMPILER = ENV["NSS_COMPILER"] || "nwnsc"
+MODPACK_UTIL = "nwn_erf"
 
 def find_modfile()
   mod = FileList["#{MODULE_DIR}/*.mod"][0]
@@ -109,7 +110,8 @@ if VERBOSE
   NSS_DIR: #{NSS_DIR}
   ALL_NSS: #{ALL_NSS}
   MODULE_FILE: #{MODULE_FILE}
-  NSS_COMPILER: #{NSS_COMPILER}"
+  NSS_COMPILER: #{NSS_COMPILER}
+  MODPACK_UTIL: #{MODPACK_UTIL}"
 end
 
 # Initialize environment
@@ -142,11 +144,20 @@ def extract_module(modfile)
     Kernel.exit(1) unless input.downcase == "y"
   end
 
-  puts "[INFO] Extracting module."
+  puts "[INFO] Extracting #{modfile}."
   Dir.chdir(TMP_CACHE_DIR) do
     tmp_files = FileList["#{TMP_CACHE_DIR}/*"]
     FileUtils.rm tmp_files
-    system "nwn_erf -x -f #{modfile}"
+    exit_code = system "#{MODPACK_UTIL} -x -f #{modfile}"
+    if exit_code == nil
+      puts "[ERROR] Failed to execute #{MODPACK_UTIL}. Is it on your PATH?"
+      puts "[ERROR] Exiting."
+      Kernel.exit(1)
+    elsif !exit_code
+      puts "[ERROR] Something went wrong while extracting #{modfile}."
+      puts "[ERROR] Exiting."
+      Kernel.exit(1)
+    end
   end
 end
 
@@ -168,8 +179,17 @@ def pack_module(modfile)
     end
   end
 
-  puts "[INFO] Building module: #{modfile}"
-  system "nwn_erf", "-e", "MOD", "-c", "#{TMP_CACHE_DIR}", "-f", "#{modfile}"
+  puts "[INFO] Building #{modfile}"
+  exit_code = system "#{MODPACK_UTIL}", "-e", "MOD", "-c", "#{TMP_CACHE_DIR}", "-f", "#{modfile}"
+  if exit_code == nil
+    puts "[ERROR] Failed to execute #{MODPACK_UTIL}. Is it on your PATH?"
+    puts "[ERROR] Exiting."
+    Kernel.exit(1)
+  elsif !exit_code
+    puts "[ERROR] Something went wrong while building #{modfile}."
+    puts "[ERROR] Exiting."
+    Kernel.exit(1)
+  end
 end
 
 # Update target_dir with content from source_dir based on md5 digest.
