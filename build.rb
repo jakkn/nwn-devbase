@@ -10,7 +10,7 @@
 # regardless of whether they were modified in the toolset or as .yml
 # files.
 #
-# Managing which files are updated is is done by caching the resources
+# Managing which files are updated is done by caching the resources
 # in cache/tmp and cache/gff. The two folders are necessary because time
 # stamps alone are not sufficient to determine which files have been
 # changed, as extracting a module creates new files with fresh time
@@ -23,12 +23,16 @@
 #
 # If sources have been modified after the module was updated, the user
 # will be prompted to proceed when extracting the module to avoid
-# overwriting changes. The same goes for a module with a newer time stamp
-# than the latest yml source. This is not a perfect safety net as
-# updating the module without extracting it and then updating a yml
-# source will overwrite the module on the next attempt to pack without a
-# prompt, but it's better than nothing. It is left for the user not to
-# mess up.
+# overwriting changes. The same goes for packing a module with a
+# newer time stamp than the latest yml source. This is not a perfect
+# safety net as updating the module without extracting it and then
+# updating a yml resource will overwrite the module on the next
+# attempt to pack without a prompt, but it is better than nothing.
+# It is left for the user not to mess up.
+#
+# The script begins by parsing arguments and setting the environment
+# variables, before command execution is carried out in the bottom
+# case block.
 
 require 'rubygems'
 require 'bundler/setup'
