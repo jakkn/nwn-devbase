@@ -285,6 +285,7 @@ def create_resman_symlinks
 end
 
 def extract_all()
+  verify_executables
   init_directories()
   extract_module(MODULE_FILE)
   update_cache(TMP_CACHE_DIR, GFF_CACHE_DIR)
@@ -295,6 +296,7 @@ def extract_all()
 end
 
 def pack_all()
+  verify_executables
   init_directories()
   should_compile = update_gffs()
   compile_nss(MODULE_FILE) if should_compile
@@ -332,10 +334,8 @@ end
 command = ARGV.shift
 case command
 when "extract"
-  verify_executables
   extract_all
 when "pack"
-  verify_executables
   pack_all
 when "clean"
   clean
