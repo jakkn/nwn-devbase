@@ -4,13 +4,11 @@ require 'set'
 
 task :default => :yml
 
+FLAT_LAYOUT = ENV['flat'] == "true"
+
 GFF_SOURCES = FileList["cache/gff/*.*"].exclude(/\.n[cs]s$/)
-YML_TARGETS = GFF_SOURCES.pathmap("src/%{.*,*}x/%f.yml") { |ext|
-	ext.delete('.')
-}
-DIRS = Set.new.merge GFF_SOURCES.pathmap("%{.*,*}x") { |ext|
-	ext.delete('.')
-}
+YML_TARGETS = FLAT_LAYOUT ? GFF_SOURCES.pathmap("src/%f.yml") : GFF_SOURCES.pathmap("src/%{.*,*}x/%f.yml") { |ext| ext.delete('.') }
+DIRS = Set.new.merge GFF_SOURCES.pathmap("%{.*,*}x") { |ext| ext.delete('.') }
 
 desc 'Create dir tree and convert to yml'
 task :yml => [:create_folders, :gff2yml]
@@ -23,7 +21,7 @@ task :create_folders => ["src"] do
 		DIRS.each do |dir|
 			FileUtils.mkdir(dir) unless File.exists?(dir)
 		end
-	end
+	end unless FLAT_LAYOUT
 end
 
 desc 'Convert gff to yml'

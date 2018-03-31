@@ -30,6 +30,36 @@
 # attempt to pack without a prompt, but it is better than nothing.
 # It is left for the user not to mess up.
 #
+# Two folder structures are supported. Flat folder layout is used if the src
+# directory is already flat and contains no subfolders, and can be forced
+# with -f. Otherwise the script defaults to subfolder layout.
+#
+#         flat
+# src
+# ├── foo.are.yml
+# ├── area.gic.yml
+# ├── area.git.yml
+# ├── module.ifo.yml
+# ├── module.jrl.yml
+# ├── script1.nss
+# └── script2.nss
+#
+#         subfolders
+# src
+# ├── are
+# │  └── foo.are.yml
+# ├── gic
+# │  └── area.gic.yml
+# ├── git
+# │  └── area.git.yml
+# ├── ifo
+# │  └── module.ifo.yml
+# ├── jrl
+# │  └── module.jrl.yml
+# └── nss
+#    ├── script1.nss
+#    └── script2.nss
+#
 # The script begins by parsing arguments and setting the environment
 # variables, before command execution is carried out in the bottom
 # case block.
@@ -59,7 +89,9 @@ OptionParser.new do |opts|
     ruby build.rb [options] verify [file]\t\tVerify YAML
   
 Options:"
-
+  opts.on("-f", "--flat", "Assume flat folder layout with no sub directories in src/") do |f|
+    options[:flat] = f
+  end
   opts.on("-v", "--[no-]verbose", "Turn on debug logging") do |v|
     options[:verbose] = v
   end
@@ -91,7 +123,7 @@ def file_exists(file)
 end
 
 $stdout.sync = true # Disable stdout buffering
-VERBOSE=options[:verbose]
+VERBOSE = options[:verbose]
 START_TIME = Time.now
 PROGRAM_ROOT = File.expand_path __dir__
 HOME_DIR = file_exists("#{PROGRAM_ROOT}/homedir") || "#{PROGRAM_ROOT}/server"
@@ -100,9 +132,10 @@ MODULE_DIR = "#{HOME_DIR}/modules"
 CACHE_DIR = "#{PROGRAM_ROOT}/cache"
 TMP_CACHE_DIR = "#{CACHE_DIR}/tmp"
 GFF_CACHE_DIR = "#{CACHE_DIR}/gff"
-NSS_DIR = "#{PROGRAM_ROOT}/src/nss"
-ALL_NSS = "*.nss"
-SOURCES = FileList["#{PROGRAM_ROOT}/src/**/*.*"]
+SRC_DIR = "#{PROGRAM_ROOT}/src"
+SOURCES = FileList["#{SRC_DIR}/**/*.*"] # *.* to skip directories
+FLAT_LAYOUT = options[:flat] || (SOURCES.size > 0 && Dir.glob("#{SRC_DIR}/*/").size == 0) || false # Assume flat layout only on -f or if the source folder contains files but no directories
+NSS_DIR = FLAT_LAYOUT ? "#{SRC_DIR}" : "#{SRC_DIR}/nss"
 NSS_COMPILER = ENV["NSS_COMPILER"] || "nwnsc"
 ERF_UTIL = "nwn_erf"
 GFF_UTIL = "nwn-gff"
@@ -116,6 +149,7 @@ MODULE_FILE = find_modfile
 
 if VERBOSE
   puts "[DEBUG] Current environment:
+  FLAT_LAYOUT: #{FLAT_LAYOUT}
   START_TIME: #{START_TIME}
   PROGRAM_ROOT: #{PROGRAM_ROOT}
   HOME_DIR: #{HOME_DIR}
@@ -125,8 +159,9 @@ if VERBOSE
   CACHE_DIR: #{CACHE_DIR}
   TMP_CACHE_DIR: #{TMP_CACHE_DIR}
   GFF_CACHE_DIR: #{GFF_CACHE_DIR}
+  SRC_DIR: #{SRC_DIR}
+  NUMBER_OF_SOURCES: #{SOURCES.size}
   NSS_DIR: #{NSS_DIR}
-  ALL_NSS: #{ALL_NSS}
   NSS_COMPILER: #{NSS_COMPILER}
   ERF_UTIL: #{ERF_UTIL}
   GFF_UTIL: #{GFF_UTIL}"
@@ -254,8 +289,8 @@ def update_sources()
   puts "[INFO] Converting from gff to yml (this may take a while)..."
 
   remove_deleted_files(GFF_CACHE_DIR, SOURCES.sub(/\.yml$/, ''))
-  system "rake", "--rakefile", "#{PROGRAM_ROOT}/extract.rake"
-  update_files_based_on_timestamp(FileList["#{GFF_CACHE_DIR}/*.nss"], "src/nss")
+  system "rake", "--rakefile", "#{PROGRAM_ROOT}/extract.rake", "flat=#{FLAT_LAYOUT}"
+  update_files_based_on_timestamp(FileList["#{GFF_CACHE_DIR}/*.nss"], NSS_DIR)
 end
 
 def update_gffs()
@@ -267,12 +302,12 @@ def update_gffs()
     FileUtils.rm(gff) unless srcs.detect{|src| File.basename(gff) == File.basename(src)}
   end
   system "rake", "--rakefile", "#{PROGRAM_ROOT}/pack.rake"
-  return update_files_based_on_timestamp(FileList["src/nss/*"], GFF_CACHE_DIR)
+  return update_files_based_on_timestamp(FileList["#{NSS_DIR}/*.nss"], GFF_CACHE_DIR)
 end
 
 # Compile nss scripts. Module file not parsed for hak includes at the time of writing.
 # Valid targets are any nss file names, including wildcards to process multiple files.
-def compile_nss(modfile, target=ALL_NSS)
+def compile_nss(modfile, target="*.nss")
   puts "[INFO] Compiling nss #{target}"
   Dir.chdir(NSS_DIR) do
     exit_code = system "#{NSS_COMPILER} -qo -n #{INSTALL_DIR} -b #{GFF_CACHE_DIR} -y #{target}"
@@ -317,7 +352,7 @@ end
 
 # Verify the target YAML file. Throws an error when YAML parsing fails.
 # Defaults to check all project yml files if no target specified.
-def verify_yaml(target="src/**/*.yml")
+def verify_yaml(target="#{SRC_DIR}/**/*.yml")
   puts "[INFO] Verifying yaml"
   ymls=FileList[target]
   if OS.windows?
@@ -349,6 +384,6 @@ when "compile"
 when "resman"
   create_resman_symlinks
 when "verify"
-  target = ARGV.shift || "src/**/*.yml"
+  target = ARGV.shift || "#{SRC_DIR}/**/*.yml"
   verify_yaml(target)
 end
