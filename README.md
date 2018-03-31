@@ -140,8 +140,7 @@ I have installed Ruby but it does not work: This is most likely due the Ruby exe
 
 ## build.rb schematics
 
-Schematics of how the build script operates.
-![](https://drive.google.com/file/d/156hELaw_3fwGeCWexYFmJDJiBrJu23-x/view?usp=sharing)
+Schematics of how the build script operates available at https://drive.google.com/file/d/156hELaw_3fwGeCWexYFmJDJiBrJu23-x/view?usp=sharing
 
 
 ## Feedback
