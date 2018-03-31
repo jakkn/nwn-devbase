@@ -138,11 +138,11 @@ Fix:
 I have installed Ruby but it does not work: This is most likely due the Ruby executable missing from your PATH environment variable. If this is new to you and you're on Windows, [please ask google first](https://www.google.com/search?q=windows+path&oq=windows+path&aqs=chrome.0.0l6.1280j0j1&sourceid=chrome&ie=UTF-8#q=windows+10+change+path). Linux users should not have this issue.
 
 
-## Background
-Neverwinter Nights is a RPG developed by BioWare, released in 2001. In addition to the NWN game client, BioWare released a tool for creating game content - the Aurora Toolset - along with server hosting software. This enables anyone to create and host their own worlds.
+## build.rb schematics
 
-NWN was discontinued 7 years after release, with the final patch v1.69 released July 9th, 2008. Even though BioWare discontinued the game, the community is still strong and new content is continuously released.
+Schematics of how the build script operates.
+![](https://drive.google.com/file/d/156hELaw_3fwGeCWexYFmJDJiBrJu23-x/view?usp=sharing)
 
 
 ## Feedback
-Feedback is greatly appreciated. If you have any thoughts, suggestions or ideas about how to improve this project, please feel free to contact me, or even better; make a pull request.
+Feedback is greatly appreciated. If you have any thoughts, suggestions or ideas about how to improve this project, please feel free to raise issues, create pull requests, or look me up on email or on discord.
