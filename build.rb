@@ -379,7 +379,7 @@ when "pack"
 when "clean"
   clean
 when "compile"
-  target = ARGV.shift || ALL_NSS
+  target = ARGV.shift || "*.nss"
   compile_nss(MODULE_FILE, target)
 when "resman"
   create_resman_symlinks
