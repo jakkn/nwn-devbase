@@ -70,9 +70,10 @@ require 'rake'
 require 'highline/import'
 require 'digest/md5'
 require 'os'
-require 'yaml';
-require 'parallel';
+require 'yaml'
+require 'parallel'
 require 'optparse'
+require 'ptools'
 
 # Show usage on no arguments
 ARGV << '-h' if ARGV.empty?
@@ -100,20 +101,6 @@ Options:"
     exit
   end
 end.parse!
-
-# Cross-platform way of finding an executable in the $PATH.
-# Source: https://stackoverflow.com/questions/2108727/which-in-ruby-checking-if-program-exists-in-path-from-ruby
-# which('ruby') #=> /usr/bin/ruby
-def which(cmd)
-  exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') : ['']
-  ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
-    exts.each { |ext|
-      exe = File.join(path, "#{cmd}#{ext}")
-      return exe if File.executable?(exe) && !File.directory?(exe)
-    }
-  end
-  return nil
-end
 
 # Returns the name of a file if it exists, or nil
 # Used in ORing files
@@ -168,8 +155,8 @@ if VERBOSE
 end
 
 def verify_executables()
-  abort "[ERROR] Cannot find #{ERF_UTIL} (needed for packing and extracting). Is it on your PATH?\n[ERROR] Aborting." unless which("#{ERF_UTIL}")
-  abort "[ERROR] Cannot find #{GFF_UTIL} (needed for gff <=> yml conversion). Is it on your PATH?\n[ERROR] Aborting." unless which("#{GFF_UTIL}")
+  abort "[ERROR] Cannot find #{ERF_UTIL} (needed for packing and extracting). Is it on your PATH?\n[ERROR] Aborting." unless File.which("#{ERF_UTIL}")
+  abort "[ERROR] Cannot find #{GFF_UTIL} (needed for gff <=> yml conversion). Is it on your PATH?\n[ERROR] Aborting." unless File.which("#{GFF_UTIL}")
 end
 
 # Initialize environment
