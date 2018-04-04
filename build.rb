@@ -205,7 +205,7 @@ def extract_module(modfile)
   Dir.chdir(TMP_CACHE_DIR) do
     tmp_files = FileList["#{TMP_CACHE_DIR}/*"]
     FileUtils.rm tmp_files
-    exit_code = system "#{ERF_UTIL} -x -f #{modfile}"
+    exit_code = system "#{ERF_UTIL}", "-x", "-f", "#{modfile}"
     if !exit_code
       abort "[ERROR] Something went wrong while extracting #{modfile}.\n[ERROR] Aborting."
     end
@@ -310,7 +310,7 @@ end
 def compile_nss(modfile, target="*.nss")
   puts "[INFO] Compiling nss #{target}"
   Dir.chdir(NSS_DIR) do
-    exit_code = system "#{NSS_COMPILER} -qo -n #{INSTALL_DIR} -b #{GFF_CACHE_DIR} -y #{target}"
+    exit_code = system "#{NSS_COMPILER}", "-qo", "-n", "#{INSTALL_DIR}", "-b", "#{GFF_CACHE_DIR}", "-y", "#{target}"
     if exit_code == nil
       puts "[ERROR]\tThe compiler at \"#{NSS_COMPILER}\" does not exist. Nothing was compiled.\n\tPlease set the NSS_COMPILER environment variable."
     elsif !exit_code
