@@ -60,6 +60,10 @@
 #    ├── script1.nss
 #    └── script2.nss
 #
+#
+# Use config.yml to override configurations and compiler arguments.
+# See example file config.yml.in.
+#
 # The script begins by parsing arguments and setting the environment
 # variables, before command execution is carried out in the bottom
 # case block.
@@ -113,6 +117,8 @@ $stdout.sync = true # Disable stdout buffering
 VERBOSE = options[:verbose]
 START_TIME = Time.now
 PROGRAM_ROOT = File.expand_path __dir__
+CONFIG_FILE = file_exists("#{PROGRAM_ROOT}/config.yml" ) || file_exists("#{PROGRAM_ROOT}/config.yml.in" ) || ""
+CONFIG = File.exist?("#{CONFIG_FILE}") ? YAML.load_file("#{CONFIG_FILE}") : []
 HOME_DIR = file_exists("#{PROGRAM_ROOT}/homedir") || "#{PROGRAM_ROOT}/server"
 INSTALL_DIR = file_exists("#{PROGRAM_ROOT}/installdir") || file_exists("#{PROGRAM_ROOT}/NWN") || ENV["NWN_INSTALLDIR"]
 MODULE_DIR = "#{HOME_DIR}/modules"
@@ -123,9 +129,28 @@ SRC_DIR = "#{PROGRAM_ROOT}/src"
 SOURCES = FileList["#{SRC_DIR}/**/*.*"] # *.* to skip directories
 FLAT_LAYOUT = options[:flat] || (SOURCES.size > 0 && Dir.glob("#{SRC_DIR}/*/").size == 0) || false # Assume flat layout only on -f or if the source folder contains files but no directories
 NSS_DIR = FLAT_LAYOUT ? "#{SRC_DIR}" : "#{SRC_DIR}/nss"
-NSS_COMPILER = ENV["NSS_COMPILER"] || "nwnsc"
+NSS_COMPILER = CONFIG.any? ? CONFIG['compiler']['bin'] : ENV["NSS_COMPILER"] || "nwnsc"
 ERF_UTIL = "nwn_erf"
 GFF_UTIL = "nwn-gff"
+COMP_ARGS = []
+DEFAULT_COMP_ARGS = ["-qo", "-n", "#{INSTALL_DIR}", "-y", ]
+
+# Add compiler args from config file if any
+CONFIG['compiler']['args'].each_pair { |key, value|
+  if value.kind_of?(Hash)
+    COMP_ARGS.push('-'+value["flag"])
+    COMP_ARGS.push(value["path"])
+  elsif value.kind_of?(String)
+    COMP_ARGS.push('-'+value)
+  end
+} unless CONFIG.empty?
+# Add default compiler args if no config
+if COMP_ARGS.empty?
+  COMP_ARGS.concat DEFAULT_COMP_ARGS
+end
+# Append outdir to compiler args. Outdir with absolute path must be
+# specified in build script because compiler execution runs in NSS_DIR.
+COMP_ARGS.push("-b", "#{GFF_CACHE_DIR}")
 
 def find_modfile()
   mod = FileList["#{MODULE_DIR}/*.mod"][0]
@@ -139,6 +164,8 @@ if VERBOSE
   FLAT_LAYOUT: #{FLAT_LAYOUT}
   START_TIME: #{START_TIME}
   PROGRAM_ROOT: #{PROGRAM_ROOT}
+  CONFIG_FILE: #{CONFIG_FILE}
+  CONFIG: #{CONFIG}
   HOME_DIR: #{HOME_DIR}
   INSTALL_DIR: #{INSTALL_DIR}
   MODULE_DIR: #{MODULE_DIR}
@@ -151,7 +178,9 @@ if VERBOSE
   NSS_DIR: #{NSS_DIR}
   NSS_COMPILER: #{NSS_COMPILER}
   ERF_UTIL: #{ERF_UTIL}
-  GFF_UTIL: #{GFF_UTIL}"
+  GFF_UTIL: #{GFF_UTIL}
+  COMP_ARGS: #{COMP_ARGS}
+  DEFAULT_COMP_ARGS: #{DEFAULT_COMP_ARGS}"
 end
 
 def verify_executables()
@@ -297,7 +326,7 @@ end
 def compile_nss(modfile, target="*.nss")
   puts "[INFO] Compiling nss #{target}"
   Dir.chdir(NSS_DIR) do
-    exit_code = system "#{NSS_COMPILER}", "-qo", "-n", "#{INSTALL_DIR}", "-b", "#{GFF_CACHE_DIR}", "-y", "#{target}"
+    exit_code = system "#{NSS_COMPILER}",  *COMP_ARGS, "#{target}"
     if exit_code == nil
       puts "[ERROR]\tThe compiler at \"#{NSS_COMPILER}\" does not exist. Nothing was compiled.\n\tPlease set the NSS_COMPILER environment variable."
     elsif !exit_code
