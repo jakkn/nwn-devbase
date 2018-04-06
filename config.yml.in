@@ -1,13 +1,13 @@
 # IMPORTANT: Do not modify this file for local changes. Use the ignored config.yml instead.
 #
-# Use this file to override configurations in build.rb.
+# The content of this file overrides configurations in build.rb.
 #
 # The key names under compiler.args do not matter, but the values do. Make sure to specify all necessary
 # arguments to compile, except '-b' as this is set in build.rb to get the path right.
 # All compiler args must have string values, and nested args can only go one level deep and must contain
 # key-value pairs named 'flag' and 'path'.
 compiler:
-  bin: echo
+  bin: nwnsc
   args:
     quiet: "q"
     optimize: "o"
