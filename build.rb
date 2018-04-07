@@ -294,9 +294,9 @@ def compile_nss(modfile, target="*.nss")
     puts "[DEBUG] #{command.join(" ")}" if VERBOSE # Print the command line we are using to compile
     exit_code = system *command # Execute the printed commmand
     if exit_code == nil # unknown command
-      abort "[ERROR]\tThe compiler at \"#{NSS_COMPILER}\" does not exist. Nothing was compiled.\n\tPlease set the NSS_COMPILER environment variable."
+      abort "[ERROR] The compiler at \"#{NSS_COMPILER}\" does not exist. Nothing was compiled.\n\tPlease set the NSS_COMPILER environment variable.\n[ERROR] Aborting."
     elsif !exit_code # nonzero exit
-      abort "[ERROR]\tSomething went wrong during nss compilation. Check the compiler output."
+      abort "[ERROR] Something went wrong during nss compilation. Check the compiler output.\n[ERROR] Aborting."
     end
   end
 end
