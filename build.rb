@@ -61,8 +61,8 @@
 #    └── script2.nss
 #
 #
-# Use config.yml to override configurations and compiler arguments.
-# See example file config.yml.in.
+# Use config.rb to define configurations and compiler arguments.
+# See example file config.rb.in.
 #
 # The script begins by parsing arguments and setting the environment
 # variables, before command execution is carried out in the bottom
@@ -117,55 +117,19 @@ $stdout.sync = true # Disable stdout buffering
 VERBOSE = options[:verbose]
 START_TIME = Time.now
 PROGRAM_ROOT = File.expand_path __dir__
-CONFIG_FILE = file_exists("#{PROGRAM_ROOT}/config.yml" ) || file_exists("#{PROGRAM_ROOT}/config.yml.in" ) || ""
-CONFIG = File.exist?("#{CONFIG_FILE}") ? YAML.load_file("#{CONFIG_FILE}") : []
-HOME_DIR = file_exists("#{PROGRAM_ROOT}/homedir") || "#{PROGRAM_ROOT}/server"
-INSTALL_DIR = file_exists("#{PROGRAM_ROOT}/installdir") || file_exists("#{PROGRAM_ROOT}/NWN") || ENV["NWN_INSTALLDIR"]
-MODULE_DIR = "#{HOME_DIR}/modules"
-CACHE_DIR = "#{PROGRAM_ROOT}/cache"
-TMP_CACHE_DIR = "#{CACHE_DIR}/tmp"
-GFF_CACHE_DIR = "#{CACHE_DIR}/gff"
-SRC_DIR = "#{PROGRAM_ROOT}/src"
+load("#{PROGRAM_ROOT}/config.rb" ) if File.exist?("#{PROGRAM_ROOT}/config.rb") # Prioritize local config by loading first
+load("#{PROGRAM_ROOT}/config.rb.in" ) if File.exist?("#{PROGRAM_ROOT}/config.rb.in") # Load any default config not yet defined
 SOURCES = FileList["#{SRC_DIR}/**/*.*"] # *.* to skip directories
 FLAT_LAYOUT = options[:flat] || (SOURCES.size > 0 && Dir.glob("#{SRC_DIR}/*/").size == 0) || false # Assume flat layout only on -f or if the source folder contains files but no directories
 NSS_DIR = FLAT_LAYOUT ? "#{SRC_DIR}" : "#{SRC_DIR}/nss"
-NSS_COMPILER = CONFIG.any? ? CONFIG['compiler']['bin'] : ENV["NSS_COMPILER"] || "nwnsc"
-ERF_UTIL = "nwn_erf"
-GFF_UTIL = "nwn-gff"
-COMP_ARGS = []
-DEFAULT_COMP_ARGS = ["-qo", "-n", "#{INSTALL_DIR}", "-y", ]
 
-# Add compiler args from config file if any
-CONFIG['compiler']['args'].each_pair { |key, value|
-  if value.kind_of?(Hash)
-    COMP_ARGS.push('-'+value["flag"])
-    COMP_ARGS.push(value["path"])
-  elsif value.kind_of?(String)
-    COMP_ARGS.push('-'+value)
-  end
-} unless CONFIG.empty?
-# Add default compiler args if no config
-if COMP_ARGS.empty?
-  COMP_ARGS.concat DEFAULT_COMP_ARGS
-end
-# Append outdir to compiler args. Outdir with absolute path must be
-# specified in build script because compiler execution runs in NSS_DIR.
-COMP_ARGS.push("-b", "#{GFF_CACHE_DIR}")
-
-def find_modfile()
-  mod = FileList["#{MODULE_DIR}/*.mod"][0]
-  return (mod.nil? || mod == "") ? "#{MODULE_DIR}/module.mod" : mod
-end
-
-MODULE_FILE = find_modfile
 
 if VERBOSE
   puts "[DEBUG] Current environment:
   FLAT_LAYOUT: #{FLAT_LAYOUT}
   START_TIME: #{START_TIME}
+  ARGV: #{ARGV}
   PROGRAM_ROOT: #{PROGRAM_ROOT}
-  CONFIG_FILE: #{CONFIG_FILE}
-  CONFIG: #{CONFIG}
   HOME_DIR: #{HOME_DIR}
   INSTALL_DIR: #{INSTALL_DIR}
   MODULE_DIR: #{MODULE_DIR}
@@ -177,10 +141,9 @@ if VERBOSE
   NUMBER_OF_SOURCES: #{SOURCES.size}
   NSS_DIR: #{NSS_DIR}
   NSS_COMPILER: #{NSS_COMPILER}
+  COMPILER_ARGS: #{COMPILER_ARGS}
   ERF_UTIL: #{ERF_UTIL}
-  GFF_UTIL: #{GFF_UTIL}
-  COMP_ARGS: #{COMP_ARGS}
-  DEFAULT_COMP_ARGS: #{DEFAULT_COMP_ARGS}"
+  GFF_UTIL: #{GFF_UTIL}"
 end
 
 def verify_executables()
@@ -324,13 +287,16 @@ end
 # Compile nss scripts. Module file not parsed for hak includes at the time of writing.
 # Valid targets are any nss file names, including wildcards to process multiple files.
 def compile_nss(modfile, target="*.nss")
-  puts "[INFO] Compiling nss #{target}"
+  puts "[INFO] Compiling nss"
   Dir.chdir(NSS_DIR) do
-    exit_code = system "#{NSS_COMPILER}",  *COMP_ARGS, "#{target}"
-    if exit_code == nil
-      puts "[ERROR]\tThe compiler at \"#{NSS_COMPILER}\" does not exist. Nothing was compiled.\n\tPlease set the NSS_COMPILER environment variable."
-    elsif !exit_code
-      puts "[ERROR]\tSomething went wrong during nss compilation. Check the compiler output."
+    puts "[DEBUG] Changed to #{NSS_DIR}" if VERBOSE
+    command = [NSS_COMPILER,  *COMPILER_ARGS, *target]
+    puts "[DEBUG] #{command.join(" ")}" if VERBOSE # Print the command line we are using to compile
+    exit_code = system *command # Execute the printed commmand
+    if exit_code == nil # unknown command
+      abort "[ERROR]\tThe compiler at \"#{NSS_COMPILER}\" does not exist. Nothing was compiled.\n\tPlease set the NSS_COMPILER environment variable."
+    elsif !exit_code # nonzero exit
+      abort "[ERROR]\tSomething went wrong during nss compilation. Check the compiler output."
     end
   end
 end

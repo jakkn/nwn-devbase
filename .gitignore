@@ -5,7 +5,7 @@ server
 homedir
 installdir
 resman
-config.yml
+config.rb
 
 # Other #
 ###################

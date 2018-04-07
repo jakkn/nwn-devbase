@@ -1,0 +1,23 @@
+#!/usr/bin/ruby
+
+# Copy this file to config.rb to change any constants.
+
+# Returns the first file with .mod extension in the module directory.
+def find_modfile()
+  mod = FileList["#{MODULE_DIR}/*.mod"].first
+  return (mod.nil? || mod == "") ? "#{MODULE_DIR}/module.mod" : mod
+end
+
+HOME_DIR ||= file_exists("#{PROGRAM_ROOT}/homedir") || "#{PROGRAM_ROOT}/server"
+INSTALL_DIR ||= file_exists("#{PROGRAM_ROOT}/installdir") || file_exists("#{PROGRAM_ROOT}/NWN") || ENV["NWN_INSTALLDIR"]
+MODULE_DIR ||= "#{HOME_DIR}/modules"
+MODULE_FILE ||= find_modfile
+CACHE_DIR ||= "#{PROGRAM_ROOT}/cache"
+TMP_CACHE_DIR ||= "#{CACHE_DIR}/tmp"
+GFF_CACHE_DIR ||= "#{CACHE_DIR}/gff"
+SRC_DIR ||= "#{PROGRAM_ROOT}/src"
+
+ERF_UTIL ||= "nwn_erf"
+GFF_UTIL ||= "nwn-gff"
+NSS_COMPILER ||= ENV["NSS_COMPILER"] || "nwnsc"
+COMPILER_ARGS ||= ["-qo", "-n", "#{INSTALL_DIR}", "-y", "-b", "#{GFF_CACHE_DIR}"]
