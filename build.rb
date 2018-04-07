@@ -361,7 +361,7 @@ when "pack"
 when "clean"
   clean
 when "compile"
-  target = ARGV.shift || "*.nss"
+  target = ARGV.any? ? ARGV : "*.nss"
   compile_nss(MODULE_FILE, target)
 when "resman"
   create_resman_symlinks
