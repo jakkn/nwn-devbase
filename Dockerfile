@@ -1,0 +1,1 @@
+FROM beamdog/nwserver:latest
