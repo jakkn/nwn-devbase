@@ -31,7 +31,7 @@ Please note:
 - If you clone it is adviced to set the new remote origin to a private repository (bitbucket.org/user/nwn-my-project.git is just an example), as you may not want to expose module content to anyone outside the team. I recommend using BitBucket as GitHub charges money per private repository, while Bitbucket is free for up to 5 collaborators. See [how to make private](https://confluence.atlassian.com/bitbucket/make-a-repo-private-or-public-221449724.html)
 - Setting the upstream may fail if the remote does not exist
 - To initialize the repository:
-    1. Place your *.mod* file in the designated directory *nwn-my-project/module/*
+    1. Place your *.mod* file in the designated directory *nwn-my-project/server/modules/*
     2. Run the extract command (see [README](https://github.com/jakkn/nwn-devbase/blob/master/README.md))
     3. Add, commit, push
 
