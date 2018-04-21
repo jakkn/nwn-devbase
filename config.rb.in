@@ -8,14 +8,14 @@ def find_modfile()
   return (mod.nil? || mod == "") ? "#{MODULE_DIR}/module.mod" : mod
 end
 
-HOME_DIR ||= file_exists("#{PROGRAM_ROOT}/homedir") || "#{PROGRAM_ROOT}/server"
-INSTALL_DIR ||= file_exists("#{PROGRAM_ROOT}/installdir") || file_exists("#{PROGRAM_ROOT}/NWN") || ENV["NWN_INSTALLDIR"]
+HOME_DIR ||= file_exists("#{WORKING_DIR}/homedir") || "#{WORKING_DIR}/server"
+INSTALL_DIR ||= file_exists("#{WORKING_DIR}/installdir") || file_exists("#{WORKING_DIR}/NWN") || ENV["NWN_INSTALLDIR"]
 MODULE_DIR ||= "#{HOME_DIR}/modules"
 MODULE_FILE ||= find_modfile
-CACHE_DIR ||= "#{PROGRAM_ROOT}/cache"
+CACHE_DIR ||= "#{WORKING_DIR}/cache"
 TMP_CACHE_DIR ||= "#{CACHE_DIR}/tmp"
 GFF_CACHE_DIR ||= "#{CACHE_DIR}/gff"
-SRC_DIR ||= "#{PROGRAM_ROOT}/src"
+SRC_DIR ||= "#{WORKING_DIR}/src"
 
 ERF_UTIL ||= "nwn_erf"
 GFF_UTIL ||= "nwn-gff"

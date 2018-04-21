@@ -116,9 +116,9 @@ end
 $stdout.sync = true # Disable stdout buffering
 VERBOSE = options[:verbose]
 START_TIME = Time.now
-PROGRAM_ROOT = File.expand_path __dir__
-load("#{PROGRAM_ROOT}/config.rb" ) if File.exist?("#{PROGRAM_ROOT}/config.rb") # Prioritize local config by loading first
-load("#{PROGRAM_ROOT}/config.rb.in" ) if File.exist?("#{PROGRAM_ROOT}/config.rb.in") # Load any default config not yet defined
+WORKING_DIR = Dir.pwd
+load("#{WORKING_DIR}/config.rb" ) if File.exist?("#{WORKING_DIR}/config.rb") # Prioritize local config by loading first
+load("#{WORKING_DIR}/config.rb.in" ) if File.exist?("#{WORKING_DIR}/config.rb.in") # Load any default config not yet defined
 SOURCES = FileList["#{SRC_DIR}/**/*.*"] # *.* to skip directories
 FLAT_LAYOUT = options[:flat] || (SOURCES.size > 0 && Dir.glob("#{SRC_DIR}/*/").size == 0) || false # Assume flat layout only on -f or if the source folder contains files but no directories
 NSS_DIR = FLAT_LAYOUT ? "#{SRC_DIR}" : "#{SRC_DIR}/nss"
@@ -129,7 +129,7 @@ if VERBOSE
   FLAT_LAYOUT: #{FLAT_LAYOUT}
   START_TIME: #{START_TIME}
   ARGV: #{ARGV}
-  PROGRAM_ROOT: #{PROGRAM_ROOT}
+  WORKING_DIR: #{WORKING_DIR}
   HOME_DIR: #{HOME_DIR}
   INSTALL_DIR: #{INSTALL_DIR}
   MODULE_DIR: #{MODULE_DIR}
@@ -268,7 +268,7 @@ def update_sources()
   puts "[INFO] Converting from gff to yml (this may take a while)..."
 
   remove_deleted_files(GFF_CACHE_DIR, SOURCES.sub(/\.yml$/, ''))
-  system "rake", "--rakefile", "#{PROGRAM_ROOT}/extract.rake", "flat=#{FLAT_LAYOUT}"
+  system "rake", "--rakefile", "#{WORKING_DIR}/extract.rake", "flat=#{FLAT_LAYOUT}"
   update_files_based_on_timestamp(FileList["#{GFF_CACHE_DIR}/*.nss"], NSS_DIR)
 end
 
@@ -280,7 +280,7 @@ def update_gffs()
   gffs.each do |gff|
     FileUtils.rm(gff) unless srcs.detect{|src| File.basename(gff) == File.basename(src)}
   end
-  system "rake", "--rakefile", "#{PROGRAM_ROOT}/pack.rake"
+  system "rake", "--rakefile", "#{WORKING_DIR}/pack.rake"
   return update_files_based_on_timestamp(FileList["#{NSS_DIR}/*.nss"], GFF_CACHE_DIR)
 end
 
@@ -302,7 +302,7 @@ def compile_nss(modfile, target="*.nss")
 end
 
 def create_resman_symlinks
-  system "rake", "--rakefile", "#{PROGRAM_ROOT}/symlink.rake"
+  system "rake", "--rakefile", "#{WORKING_DIR}/symlink.rake"
 end
 
 def extract_all()
