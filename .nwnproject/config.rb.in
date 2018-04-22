@@ -16,8 +16,10 @@ CACHE_DIR ||= NWNPROJECT.join("cache")
 TMP_CACHE_DIR ||= CACHE_DIR.join("tmp")
 GFF_CACHE_DIR ||= CACHE_DIR.join("gff")
 SRC_DIR ||= PROJECT_ROOT.join("src")
+RESMAN_DIR ||= PROJECT_ROOT.join("resman")
 
 ERF_UTIL ||= "nwn_erf"
 GFF_UTIL ||= "nwn-gff"
+SCRIPTS_DIR ||= PROJECT_ROOT.join("scripts")
 NSS_COMPILER ||= ENV["NSS_COMPILER"] || "nwnsc"
 COMPILER_ARGS ||= ["-qo", "-n", "#{INSTALL_DIR}", "-y", "-b", "#{GFF_CACHE_DIR}"]
