@@ -110,9 +110,11 @@ OptionParser.new do |opts|
     ruby build.rb [options] pack\t\t\tPack src/ into .mod
     ruby build.rb [options] clean\t\t\tClean cache folder
     ruby build.rb [options] compile [file]\t\tCompile nss to ncs
-    ruby build.rb [options] init \t\tInitialize a new project
     ruby build.rb [options] resman\t\t\tCreate/refresh resman symlinks
     ruby build.rb [options] verify [file]\t\tVerify YAML
+    ruby build.rb [options] init\t\t\tInitialize a new project
+    ruby build.rb [options] install\t\t\tAdd to PATH as command 'nwn-build'
+    ruby build.rb [options] install-as [cmd]\t\tAdd to PATH as [cmd]
   
 Options:"
   opts.on("-f", "--flat", "Assume flat folder layout with no sub directories in src/") do |f|
@@ -361,6 +363,16 @@ def init_nwnproject()
   FileUtils.cp(DEFAULT_CONFIG, target)
 end
 
+def install_devbase(cmd="nwn-build")
+  abort "[INFO] The command #{cmd} already exists on PATH." if File.which(cmd)
+  source=Pathname.new(EXECUTION_DIR.join($PROGRAM_NAME))
+  bin_dir=Pathname.new(ENV["HOME"]).join("bin")
+  dest=bin_dir.join(cmd)
+  bin_dir.mkdir unless bin_dir.exist?
+  puts "[INFO] Symlinking #{source} to #{dest}"
+	FileUtils.symlink(source, dest)
+end
+
 def extract_all()
   verify_executables
   init_directories()
@@ -413,6 +425,10 @@ command = ARGV.shift
 case command
 when "init"
   init_nwnproject
+when "install"
+  install_devbase 
+when "install-as"
+  install_devbase ARGV.shift 
 when "extract"
   extract_all
 when "pack"
