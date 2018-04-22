@@ -4,18 +4,18 @@
 
 # Returns the first file with .mod extension in the module directory.
 def find_modfile()
-  mod = FileList["#{MODULE_DIR}/*.mod"].first
-  return (mod.nil? || mod == "") ? "#{MODULE_DIR}/module.mod" : mod
+  mod = FileList[MODULE_DIR.join("*.mod")].first
+  return (mod.nil? || mod == "") ? MODULE_DIR.join("module.mod") : mod
 end
 
-HOME_DIR ||= file_exists("#{WORKING_DIR}/homedir") || "#{WORKING_DIR}/server"
-INSTALL_DIR ||= file_exists("#{WORKING_DIR}/installdir") || file_exists("#{WORKING_DIR}/NWN") || ENV["NWN_INSTALLDIR"]
-MODULE_DIR ||= "#{HOME_DIR}/modules"
+HOME_DIR ||= file_exists(PROJECT_ROOT.join("homedir")) || PROJECT_ROOT.join("server")
+INSTALL_DIR ||= file_exists(PROJECT_ROOT.join("installdir")) || file_exists(PROJECT_ROOT.join("NWN")) || ENV["NWN_INSTALLDIR"]
+MODULE_DIR ||= HOME_DIR.join("modules")
 MODULE_FILE ||= find_modfile
-CACHE_DIR ||= "#{WORKING_DIR}/cache"
-TMP_CACHE_DIR ||= "#{CACHE_DIR}/tmp"
-GFF_CACHE_DIR ||= "#{CACHE_DIR}/gff"
-SRC_DIR ||= "#{WORKING_DIR}/src"
+CACHE_DIR ||= PROJECT_ROOT.join("cache")
+TMP_CACHE_DIR ||= CACHE_DIR.join("tmp")
+GFF_CACHE_DIR ||= CACHE_DIR.join("gff")
+SRC_DIR ||= PROJECT_ROOT.join("src")
 
 ERF_UTIL ||= "nwn_erf"
 GFF_UTIL ||= "nwn-gff"

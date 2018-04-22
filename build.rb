@@ -149,12 +149,12 @@ end
 $stdout.sync = true # Disable stdout buffering
 VERBOSE = options[:verbose]
 START_TIME = Time.now
-EXECUTION_DIR = File.expand_path __dir__
-WORKING_DIR = Dir.pwd
-NWNPROJECT = locate_nwnproject()
+EXECUTION_DIR = Pathname.new(File.expand_path __dir__)
+WORKING_DIR = Pathname.getwd
+NWNPROJECT = locate_nwnproject(WORKING_DIR)
 PROJECT_ROOT = NWNPROJECT ? NWNPROJECT.parent : WORKING_DIR
-LOCAL_CONFIG = file_exists("#{WORKING_DIR}/config.rb.in") || file_exists("#{EXECUTION_DIR}/config.rb.in") || ""
-DEFAULT_CONFIG = file_exists("#{WORKING_DIR}/config.rb") || file_exists("#{EXECUTION_DIR}/config.rb") || ""
+LOCAL_CONFIG = file_exists(PROJECT_ROOT.join("config.rb.in")) || file_exists(EXECUTION_DIR.join("config.rb.in")) || ""
+DEFAULT_CONFIG = file_exists(PROJECT_ROOT.join("config.rb")) || file_exists(EXECUTION_DIR.join("config.rb")) || ""
 load(LOCAL_CONFIG) if File.exist?(LOCAL_CONFIG) # Prioritize local config by loading first
 load(DEFAULT_CONFIG) if File.exist?(DEFAULT_CONFIG) # Load any default config not yet defined
 SOURCES = FileList["#{SRC_DIR}/**/*.*"] # *.* to skip directories
