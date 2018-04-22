@@ -324,7 +324,7 @@ def update_gffs()
   puts "[INFO] Converting from yml to gff (this may take a while)..."
 
   gffs = FileList["#{GFF_CACHE_DIR}/*"].exclude(/\.ncs$/)
-  srcs = FileList["src/**/*.*"].sub(/\.yml$/, '')
+  srcs = FileList[SRC_DIR.join("**/*.*")].sub(/\.yml$/, '')
   gffs.each do |gff|
     FileUtils.rm(gff) unless srcs.detect{|src| File.basename(gff) == File.basename(src)}
   end
@@ -368,6 +368,7 @@ def pack_all()
   verify_executables
   init_directories()
   should_compile = update_gffs()
+  puts "[INFO] No change in nss sources detected. Skipping compilation." unless should_compile
   compile_nss(MODULE_FILE) if should_compile
   update_cache(GFF_CACHE_DIR, TMP_CACHE_DIR)
   pack_module(MODULE_FILE)
