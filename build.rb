@@ -67,6 +67,25 @@
 # The script begins by parsing arguments and setting the environment
 # variables, before command execution is carried out in the bottom
 # case block.
+#
+# Notes on using build.rb as a tool on PATH:
+#
+# The project root is used to locate resources, and may not necessarily
+# be the working directory as given by the command $(pwd). For
+# instance, one may navigate to src/nss while working on scripts, and
+# then run the compile or pack command at which point the project
+# root will be ../../ relative to $(pwd). One solution would be to use this
+# file's location and simply expect it to be located in the project root.
+# This expectation holds as long as this script is used as a build script
+# that is part of the project, but fails when one wishes to use the script as
+# a command line tool located on the PATH, something that would be
+# useful in, for instance, a containerized build environment.
+#
+# When used as a tool, the tool needs to be able to locate the resources
+# where it expects them. To enable this, the tool looks for a directory
+# named .nwnproject upwards in the directory tree with the deepest
+# level being $(pwd). If not found, $(pwd) is assumed to be the project
+# root.
 
 require 'rubygems'
 require 'bundler/setup'
@@ -78,6 +97,7 @@ require 'yaml'
 require 'parallel'
 require 'optparse'
 require 'ptools'
+require 'pathname'
 
 # Show usage on no arguments
 ARGV << '-h' if ARGV.empty?
@@ -113,11 +133,26 @@ def file_exists(file)
   return file
 end
 
+# Performs a directory search for the folder named '.nwnproject'. The  search starts
+# at the given node and looks for the folder in each parent of the given node all the
+# way to root.
+# Params:
+# +path+:: Pathname object describing the search starting path
+#
+# If found returns the Pathname object describing the '.nwnproject' folder, else nil.
+def locate_nwnproject(path=Pathname.getwd)
+  return nil if path.root?
+  return path.join(".nwnproject") if path.join(".nwnproject").exist?
+  return locate_nwnproject(path.parent)
+end
+
 $stdout.sync = true # Disable stdout buffering
 VERBOSE = options[:verbose]
 START_TIME = Time.now
 EXECUTION_DIR = File.expand_path __dir__
 WORKING_DIR = Dir.pwd
+NWNPROJECT = locate_nwnproject()
+PROJECT_ROOT = NWNPROJECT ? NWNPROJECT.parent : WORKING_DIR
 LOCAL_CONFIG = file_exists("#{WORKING_DIR}/config.rb.in") || file_exists("#{EXECUTION_DIR}/config.rb.in") || ""
 DEFAULT_CONFIG = file_exists("#{WORKING_DIR}/config.rb") || file_exists("#{EXECUTION_DIR}/config.rb") || ""
 load(LOCAL_CONFIG) if File.exist?(LOCAL_CONFIG) # Prioritize local config by loading first
@@ -134,6 +169,8 @@ if VERBOSE
   ARGV: #{ARGV}
   EXECUTION_DIR: #{EXECUTION_DIR}
   WORKING_DIR: #{WORKING_DIR}
+  NWNPROJECT: #{NWNPROJECT}
+  PROJECT_ROOT: #{PROJECT_ROOT}
   LOCAL_CONFIG: #{LOCAL_CONFIG}
   DEFAULT_CONFIG: #{DEFAULT_CONFIG}
   HOME_DIR: #{HOME_DIR}
