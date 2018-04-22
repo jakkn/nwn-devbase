@@ -110,6 +110,7 @@ OptionParser.new do |opts|
     ruby build.rb [options] pack\t\t\tPack src/ into .mod
     ruby build.rb [options] clean\t\t\tClean cache folder
     ruby build.rb [options] compile [file]\t\tCompile nss to ncs
+    ruby build.rb [options] init \t\tInitialize a new project
     ruby build.rb [options] resman\t\t\tCreate/refresh resman symlinks
     ruby build.rb [options] verify [file]\t\tVerify YAML
   
@@ -353,6 +354,13 @@ def create_resman_symlinks
   system "rake", "--rakefile", SYMLINK_RAKE.to_s, "RESMAN_DIR=#{RESMAN_DIR}", "GFF_CACHE_DIR=#{GFF_CACHE_DIR}"
 end
 
+def init_nwnproject()
+  target=WORKING_DIR.join(".nwnproject")
+  puts "[INFO] Creating #{target.to_s} with default config"
+  target.mkdir
+  FileUtils.cp(DEFAULT_CONFIG, target)
+end
+
 def extract_all()
   verify_executables
   init_directories()
@@ -403,6 +411,8 @@ end
 
 command = ARGV.shift
 case command
+when "init"
+  init_nwnproject
 when "extract"
   extract_all
 when "pack"
