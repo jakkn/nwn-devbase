@@ -17,6 +17,9 @@ TMP_CACHE_DIR ||= CACHE_DIR.join("tmp")
 GFF_CACHE_DIR ||= CACHE_DIR.join("gff")
 SRC_DIR ||= PROJECT_ROOT.join("src")
 RESMAN_DIR ||= PROJECT_ROOT.join("resman")
+EXTRACT_RAKE ||=  file_exists(PROJECT_ROOT.join("extract.rake")) || file_exists(EXECUTION_DIR.join("extract.rake"))
+PACK_RAKE ||=  file_exists(PROJECT_ROOT.join("pack.rake")) || file_exists(EXECUTION_DIR.join("pack.rake"))
+SYMLINK_RAKE ||=  file_exists(PROJECT_ROOT.join("symlink.rake")) || file_exists(EXECUTION_DIR.join("symlink.rake"))
 
 ERF_UTIL ||= "nwn_erf"
 GFF_UTIL ||= "nwn-gff"

@@ -188,6 +188,9 @@ if VERBOSE
   ERF_UTIL: #{ERF_UTIL}
   GFF_UTIL: #{GFF_UTIL}
   RESMAN_DIR: #{RESMAN_DIR}
+  EXTRACT_RAKE: #{EXTRACT_RAKE}
+  PACK_RAKE: #{PACK_RAKE}
+  SYMLINK_RAKE: #{SYMLINK_RAKE}
   SCRIPTS_DIR: #{SCRIPTS_DIR}"
 end
 
@@ -313,7 +316,7 @@ def update_sources()
   puts "[INFO] Converting from gff to yml (this may take a while)..."
 
   remove_deleted_files(GFF_CACHE_DIR, SOURCES.sub(/\.yml$/, ''))
-  system "rake", "--rakefile", PROJECT_ROOT.join("extract.rake").to_s, "flat=#{FLAT_LAYOUT}", "SRC_DIR=#{SRC_DIR}", "GFF_CACHE_DIR=#{GFF_CACHE_DIR}", "SCRIPTS_DIR=#{SCRIPTS_DIR}"
+  system "rake", "--rakefile", EXTRACT_RAKE.to_s, "flat=#{FLAT_LAYOUT}", "SRC_DIR=#{SRC_DIR}", "GFF_CACHE_DIR=#{GFF_CACHE_DIR}", "SCRIPTS_DIR=#{SCRIPTS_DIR}"
   update_files_based_on_timestamp(FileList["#{GFF_CACHE_DIR}/*.nss"], NSS_DIR)
 end
 
@@ -325,7 +328,7 @@ def update_gffs()
   gffs.each do |gff|
     FileUtils.rm(gff) unless srcs.detect{|src| File.basename(gff) == File.basename(src)}
   end
-  system "rake", "--rakefile", PROJECT_ROOT.join("pack.rake").to_s, "SRC_DIR=#{SRC_DIR}", "GFF_CACHE_DIR=#{GFF_CACHE_DIR}"
+  system "rake", "--rakefile", PACK_RAKE.to_s, "SRC_DIR=#{SRC_DIR}", "GFF_CACHE_DIR=#{GFF_CACHE_DIR}"
   return update_files_based_on_timestamp(FileList["#{NSS_DIR}/*.nss"], GFF_CACHE_DIR)
 end
 
@@ -347,7 +350,7 @@ def compile_nss(modfile, target="*.nss")
 end
 
 def create_resman_symlinks
-  system "rake", "--rakefile", PROJECT_ROOT.join("symlink.rake").to_s, "RESMAN_DIR=#{RESMAN_DIR}", "GFF_CACHE_DIR=#{GFF_CACHE_DIR}"
+  system "rake", "--rakefile", SYMLINK_RAKE.to_s, "RESMAN_DIR=#{RESMAN_DIR}", "GFF_CACHE_DIR=#{GFF_CACHE_DIR}"
 end
 
 def extract_all()
