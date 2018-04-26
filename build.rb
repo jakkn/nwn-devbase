@@ -143,10 +143,10 @@ end
 # +path+:: Pathname object describing the search starting path
 #
 # If found returns the Pathname object describing the '.nwnproject' folder, else nil.
-def locate_nwnproject(path=Pathname.getwd)
-  return nil if path.root?
+def find_nwnproject(path=Pathname.getwd)
   return path.join(".nwnproject") if path.join(".nwnproject").exist?
-  return locate_nwnproject(path.parent)
+  return nil if path.root?
+  return find_nwnproject(path.parent)
 end
 
 $stdout.sync = true # Disable stdout buffering
@@ -154,8 +154,9 @@ VERBOSE = options[:verbose]
 START_TIME = Time.now
 EXECUTION_DIR = Pathname.new(File.expand_path __dir__)
 WORKING_DIR = Pathname.getwd
-NWNPROJECT = locate_nwnproject(WORKING_DIR)
-PROJECT_ROOT = NWNPROJECT ? NWNPROJECT.parent : WORKING_DIR
+nwnproject_path = find_nwnproject(WORKING_DIR)
+PROJECT_ROOT = nwnproject_path ? nwnproject_path.parent : WORKING_DIR
+NWNPROJECT = nwnproject_path || PROJECT_ROOT.join(".nwnproject") # append .nwnproject to project root if not found
 LOCAL_CONFIG = file_exists(NWNPROJECT.join("config.rb")) || file_exists(EXECUTION_DIR.join("config.rb")) || ""
 DEFAULT_CONFIG = file_exists(NWNPROJECT.join("config.rb.in")) || file_exists(EXECUTION_DIR.join("config.rb.in")) || ""
 load(LOCAL_CONFIG) if File.exist?(LOCAL_CONFIG) # Prioritize local config by loading first
