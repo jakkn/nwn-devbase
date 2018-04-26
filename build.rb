@@ -366,8 +366,9 @@ end
 
 def install_devbase(cmd="nwn-build")
   abort "[INFO] The command #{cmd} already exists on PATH." if File.which(cmd)
+  abort "[INFO] Automatic symlinking of build.rb to PATH is not supported on Windows." if OS.windows?
   source=Pathname.new(EXECUTION_DIR.join($PROGRAM_NAME))
-  bin_dir=Pathname.new(ENV["HOME"]).join("bin")
+  bin_dir=Pathname.new("/usr").join("local").join("bin")
   dest=bin_dir.join(cmd)
   bin_dir.mkdir unless bin_dir.exist?
   puts "[INFO] Symlinking #{source} to #{dest}"
