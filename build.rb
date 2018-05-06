@@ -161,9 +161,9 @@ LOCAL_CONFIG = file_exists(NWNPROJECT.join("config.rb")) || file_exists(EXECUTIO
 DEFAULT_CONFIG = file_exists(NWNPROJECT.join("config.rb.in")) || file_exists(EXECUTION_DIR.join("config.rb.in")) || ""
 load(LOCAL_CONFIG) if File.exist?(LOCAL_CONFIG) # Prioritize local config by loading first
 load(DEFAULT_CONFIG) if File.exist?(DEFAULT_CONFIG) # Load any default config not yet defined
-SOURCES = FileList["#{SRC_DIR}/**/*.*"] # *.* to skip directories
+SOURCES = FileList[SRC_DIR.join("**").join("*.*")] # *.* to skip directories
 FLAT_LAYOUT = options[:flat] || (SOURCES.size > 0 && Dir.glob("#{SRC_DIR}/*/").size == 0) || false # Assume flat layout only on -f or if the source folder contains files but no directories
-NSS_DIR = FLAT_LAYOUT ? "#{SRC_DIR}" : "#{SRC_DIR}/nss"
+NSS_DIR = FLAT_LAYOUT ? SRC_DIR : SRC_DIR.join("nss")
 
 
 if VERBOSE
