@@ -2,12 +2,16 @@ require 'fileutils'
 require 'set'
 require 'pathname'
 
+def to_forward_slash(path=Pathname.getwd)
+  return path.to_s.gsub(File::ALT_SEPARATOR || File::SEPARATOR, File::SEPARATOR)
+end
+
 task :default => :symlinks
 
 RESMAN_DIR = Pathname.new ENV['RESMAN_DIR']
 GFF_CACHE_DIR = Pathname.new ENV['GFF_CACHE_DIR']
 
-GFF_SOURCES = FileList[GFF_CACHE_DIR.join("*.*")]
+GFF_SOURCES = FileList[to_forward_slash GFF_CACHE_DIR.join("*.*")]
 RESMAN_DIRS = Set.new.merge GFF_SOURCES.pathmap("%{.*,*}x") { |ext|
 	ext.delete('.')
 }
@@ -17,14 +21,14 @@ desc 'Create resman dir tree and symbolic links to files in cache/gff'
 task :symlinks => [:clean, :folders, :symbolic_links]
 
 task :clean do
-	FileUtils.rm_r Dir.glob(RESMAN_DIR)
+	FileUtils.rm_r Dir.glob(to_forward_slash RESMAN_DIR)
 end
 
 directory RESMAN_DIR.to_s
 
 desc 'Create resman dir tree'
 task :folders => [RESMAN_DIR.to_s] do
-	Dir.chdir(RESMAN_DIR) do
+	Dir.chdir(to_forward_slash RESMAN_DIR) do
 		RESMAN_DIRS.each do |dir|
 			FileUtils.mkdir(dir) unless File.exist?(dir)
 		end

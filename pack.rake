@@ -2,12 +2,16 @@ require 'nwn/all'
 require 'fileutils'
 require 'pathname'
 
+def to_forward_slash(path=Pathname.getwd)
+  return path.to_s.gsub(File::ALT_SEPARATOR || File::SEPARATOR, File::SEPARATOR)
+end
+
 task :default => :gff
 
 SRC_DIR = Pathname.new ENV['SRC_DIR']
 GFF_CACHE_DIR = Pathname.new ENV['GFF_CACHE_DIR']
 
-YML_SOURCES = FileList[SRC_DIR.join("**/*.yml")].exclude(/n[cs]s$/)
+YML_SOURCES = FileList[to_forward_slash SRC_DIR.join("**/*.yml")].exclude(/n[cs]s$/)
 GFF_TARGETS = YML_SOURCES.pathmap("#{GFF_CACHE_DIR}/%n")
 
 directory GFF_CACHE_DIR.to_s
