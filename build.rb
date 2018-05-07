@@ -67,6 +67,25 @@
 # The script begins by parsing arguments and setting the environment
 # variables, before command execution is carried out in the bottom
 # case block.
+#
+# Notes on using build.rb as a tool on PATH:
+#
+# The project root is used to locate resources, and may not necessarily
+# be the working directory as given by the command $(pwd). For
+# instance, one may navigate to src/nss while working on scripts, and
+# then run the compile or pack command at which point the project
+# root will be ../../ relative to $(pwd). One solution would be to use this
+# file's location and simply expect it to be located in the project root.
+# This expectation holds as long as this script is used as a build script
+# that is part of the project, but fails when one wishes to use the script as
+# a command line tool located on the PATH, something that would be
+# useful in, for instance, a containerized build environment.
+#
+# When used as a tool, the tool needs to be able to locate the resources
+# where it expects them. To enable this, the tool looks for a directory
+# named .nwnproject upwards in the directory tree with the deepest
+# level being $(pwd). If not found, $(pwd) is assumed to be the project
+# root.
 
 require 'rubygems'
 require 'bundler/setup'
@@ -78,6 +97,7 @@ require 'yaml'
 require 'parallel'
 require 'optparse'
 require 'ptools'
+require 'pathname'
 
 # Show usage on no arguments
 ARGV << '-h' if ARGV.empty?
@@ -92,6 +112,9 @@ OptionParser.new do |opts|
     ruby build.rb [options] compile [file]\t\tCompile nss to ncs
     ruby build.rb [options] resman\t\t\tCreate/refresh resman symlinks
     ruby build.rb [options] verify [file]\t\tVerify YAML
+    ruby build.rb [options] init\t\t\tInitialize a new project
+    ruby build.rb [options] install\t\t\tAdd to PATH as command 'nwn-build'
+    ruby build.rb [options] install-as [cmd]\t\tAdd to PATH as [cmd]
   
 Options:"
   opts.on("-f", "--flat", "Assume flat folder layout with no sub directories in src/") do |f|
@@ -113,15 +136,38 @@ def file_exists(file)
   return file
 end
 
+# Performs a directory search for the folder named '.nwnproject'. The  search starts
+# at the given node and looks for the folder in each parent of the given node all the
+# way to root.
+# Params:
+# +path+:: Pathname object describing the search starting path
+#
+# If found returns the Pathname object describing the '.nwnproject' folder, else nil.
+def find_nwnproject(path=Pathname.getwd)
+  return path.join(".nwnproject") if path.join(".nwnproject").exist?
+  return nil if path.root?
+  return find_nwnproject(path.parent)
+end
+
+def to_forward_slash(path=Pathname.getwd)
+  return path.to_s.gsub(File::ALT_SEPARATOR || File::SEPARATOR, File::SEPARATOR)
+end
+
 $stdout.sync = true # Disable stdout buffering
 VERBOSE = options[:verbose]
 START_TIME = Time.now
-PROGRAM_ROOT = File.expand_path __dir__
-load("#{PROGRAM_ROOT}/config.rb" ) if File.exist?("#{PROGRAM_ROOT}/config.rb") # Prioritize local config by loading first
-load("#{PROGRAM_ROOT}/config.rb.in" ) if File.exist?("#{PROGRAM_ROOT}/config.rb.in") # Load any default config not yet defined
-SOURCES = FileList["#{SRC_DIR}/**/*.*"] # *.* to skip directories
-FLAT_LAYOUT = options[:flat] || (SOURCES.size > 0 && Dir.glob("#{SRC_DIR}/*/").size == 0) || false # Assume flat layout only on -f or if the source folder contains files but no directories
-NSS_DIR = FLAT_LAYOUT ? "#{SRC_DIR}" : "#{SRC_DIR}/nss"
+EXECUTION_DIR = Pathname.new(File.expand_path __dir__)
+WORKING_DIR = Pathname.getwd
+nwnproject_path = find_nwnproject(WORKING_DIR)
+PROJECT_ROOT = nwnproject_path ? nwnproject_path.parent : WORKING_DIR
+NWNPROJECT = nwnproject_path || PROJECT_ROOT.join(".nwnproject") # append .nwnproject to project root if not found
+LOCAL_CONFIG = file_exists(NWNPROJECT.join("config.rb")) || file_exists(EXECUTION_DIR.join("config.rb")) || ""
+DEFAULT_CONFIG = file_exists(NWNPROJECT.join("config.rb.in")) || file_exists(EXECUTION_DIR.join("config.rb.in")) || ""
+load(LOCAL_CONFIG) if File.exist?(LOCAL_CONFIG) # Prioritize local config by loading first
+load(DEFAULT_CONFIG) if File.exist?(DEFAULT_CONFIG) # Load any default config not yet defined
+SOURCES = FileList[to_forward_slash SRC_DIR.join("**", "*.*")] # *.* to skip directories
+FLAT_LAYOUT = options[:flat] || (SOURCES.size > 0 && Pathname.glob(to_forward_slash SRC_DIR.join("*/")).size == 0) || false # Assume flat layout only on -f or if the source folder contains files but no directories
+NSS_DIR = FLAT_LAYOUT ? SRC_DIR : SRC_DIR.join("nss")
 
 
 if VERBOSE
@@ -129,7 +175,12 @@ if VERBOSE
   FLAT_LAYOUT: #{FLAT_LAYOUT}
   START_TIME: #{START_TIME}
   ARGV: #{ARGV}
-  PROGRAM_ROOT: #{PROGRAM_ROOT}
+  EXECUTION_DIR: #{EXECUTION_DIR}
+  WORKING_DIR: #{WORKING_DIR}
+  NWNPROJECT: #{NWNPROJECT}
+  PROJECT_ROOT: #{PROJECT_ROOT}
+  LOCAL_CONFIG: #{LOCAL_CONFIG}
+  DEFAULT_CONFIG: #{DEFAULT_CONFIG}
   HOME_DIR: #{HOME_DIR}
   INSTALL_DIR: #{INSTALL_DIR}
   MODULE_DIR: #{MODULE_DIR}
@@ -143,7 +194,12 @@ if VERBOSE
   NSS_COMPILER: #{NSS_COMPILER}
   COMPILER_ARGS: #{COMPILER_ARGS}
   ERF_UTIL: #{ERF_UTIL}
-  GFF_UTIL: #{GFF_UTIL}"
+  GFF_UTIL: #{GFF_UTIL}
+  RESMAN_DIR: #{RESMAN_DIR}
+  EXTRACT_RAKE: #{EXTRACT_RAKE}
+  PACK_RAKE: #{PACK_RAKE}
+  SYMLINK_RAKE: #{SYMLINK_RAKE}
+  SCRIPTS_DIR: #{SCRIPTS_DIR}"
 end
 
 def verify_executables()
@@ -181,8 +237,8 @@ def extract_module(modfile)
   end
 
   puts "[INFO] Extracting #{modfile}."
-  Dir.chdir(TMP_CACHE_DIR) do
-    tmp_files = FileList["#{TMP_CACHE_DIR}/*"]
+  Dir.chdir(to_forward_slash TMP_CACHE_DIR) do
+    tmp_files = FileList[to_forward_slash TMP_CACHE_DIR.join("*")]
     FileUtils.rm tmp_files
     exit_code = system "#{ERF_UTIL}", "-x", "-f", "#{modfile}"
     if !exit_code
@@ -218,10 +274,10 @@ end
 
 # Update target_dir with content from source_dir based on md5 digest.
 def update_cache(source_dir, target_dir)
-  target_files = FileList["#{target_dir}/*.*"]
+  target_files = FileList[to_forward_slash target_dir.join("*.*")]
   remove_deleted_files(source_dir, target_files)
 
-  source_files = FileList["#{source_dir}/*.*"]
+  source_files = FileList[to_forward_slash source_dir.join("*.*")]
   update_files_based_on_digest(source_files, target_dir)
 end
 
@@ -229,7 +285,7 @@ end
 def remove_deleted_files(source_dir, target_files)
   return if target_files.empty?
   target_files.each do |file|
-    FileUtils.rm(File.exist?(file) ? file : file + ".yml") unless File.exist?("#{source_dir}/"+File.basename(file))
+    FileUtils.rm(File.exist?(file) ? file : file + ".yml") unless File.exist?(source_dir.join(File.basename(file)))
   end
 end
 
@@ -237,11 +293,11 @@ end
 # file in target_dir. New files are copied over.
 def update_files_based_on_digest(source_files, target_dir)
   source_files.each do |file|
-    if !File.exist?("#{target_dir}/"+File.basename(file))
+    if !File.exist?(target_dir.join(File.basename(file)))
       FileUtils.cp(file, target_dir)
     else
       tmp_digest = Digest::MD5.hexdigest(File.open(file, "rb") { |f| f.read })
-      gff_digest = Digest::MD5.hexdigest(File.open("#{target_dir}/"+File.basename(file), "rb") { |f| f.read })
+      gff_digest = Digest::MD5.hexdigest(File.open(target_dir.join(File.basename(file)), "rb") { |f| f.read })
       FileUtils.cp(file, target_dir) if tmp_digest != gff_digest
     end
   end
@@ -253,10 +309,10 @@ def update_files_based_on_timestamp(source_files, target_dir)
   FileUtils.mkdir_p(target_dir) unless File.exist?(target_dir)
   files_updated = false
   source_files.each do |file|
-    if !File.exist?("#{target_dir}/"+File.basename(file))
+    if !File.exist?(target_dir.join(File.basename(file)))
       FileUtils.cp(file, target_dir)
       files_updated = true
-    elsif File.mtime(file) > File.mtime("#{target_dir}/"+File.basename(file))
+    elsif File.mtime(file) > File.mtime(target_dir.join(File.basename(file)))
       FileUtils.cp(file, target_dir)
       files_updated = true
     end
@@ -268,27 +324,27 @@ def update_sources()
   puts "[INFO] Converting from gff to yml (this may take a while)..."
 
   remove_deleted_files(GFF_CACHE_DIR, SOURCES.sub(/\.yml$/, ''))
-  system "rake", "--rakefile", "#{PROGRAM_ROOT}/extract.rake", "flat=#{FLAT_LAYOUT}"
-  update_files_based_on_timestamp(FileList["#{GFF_CACHE_DIR}/*.nss"], NSS_DIR)
+  system "rake", "--rakefile", EXTRACT_RAKE.to_s, "flat=#{FLAT_LAYOUT}", "SRC_DIR=#{SRC_DIR}", "GFF_CACHE_DIR=#{GFF_CACHE_DIR}", "SCRIPTS_DIR=#{SCRIPTS_DIR}"
+  update_files_based_on_timestamp(FileList[to_forward_slash GFF_CACHE_DIR.join("*.nss")], NSS_DIR)
 end
 
 def update_gffs()
   puts "[INFO] Converting from yml to gff (this may take a while)..."
 
-  gffs = FileList["#{GFF_CACHE_DIR}/*"].exclude(/\.ncs$/)
-  srcs = FileList["src/**/*.*"].sub(/\.yml$/, '')
+  gffs = FileList[to_forward_slash GFF_CACHE_DIR.join("*")].exclude(/\.ncs$/)
+  srcs = FileList[to_forward_slash SRC_DIR.join("**", "*.*")].sub(/\.yml$/, '')
   gffs.each do |gff|
     FileUtils.rm(gff) unless srcs.detect{|src| File.basename(gff) == File.basename(src)}
   end
-  system "rake", "--rakefile", "#{PROGRAM_ROOT}/pack.rake"
-  return update_files_based_on_timestamp(FileList["#{NSS_DIR}/*.nss"], GFF_CACHE_DIR)
+  system "rake", "--rakefile", PACK_RAKE.to_s, "SRC_DIR=#{SRC_DIR}", "GFF_CACHE_DIR=#{GFF_CACHE_DIR}"
+  return update_files_based_on_timestamp(FileList[to_forward_slash NSS_DIR.join("*.nss")], GFF_CACHE_DIR)
 end
 
 # Compile nss scripts. Module file not parsed for hak includes at the time of writing.
 # Valid targets are any nss file names, including wildcards to process multiple files.
 def compile_nss(modfile, target="*.nss")
   puts "[INFO] Compiling nss"
-  Dir.chdir(NSS_DIR) do
+  Dir.chdir(to_forward_slash NSS_DIR) do
     puts "[DEBUG] Changed to #{NSS_DIR}" if VERBOSE
     command = [NSS_COMPILER,  *COMPILER_ARGS, *target]
     puts "[DEBUG] #{command.join(" ")}" if VERBOSE # Print the command line we are using to compile
@@ -302,7 +358,25 @@ def compile_nss(modfile, target="*.nss")
 end
 
 def create_resman_symlinks
-  system "rake", "--rakefile", "#{PROGRAM_ROOT}/symlink.rake"
+  system "rake", "--rakefile", SYMLINK_RAKE.to_s, "RESMAN_DIR=#{RESMAN_DIR}", "GFF_CACHE_DIR=#{GFF_CACHE_DIR}"
+end
+
+def init_nwnproject()
+  target=WORKING_DIR.join(".nwnproject")
+  puts "[INFO] Creating #{target.to_s} with default config"
+  target.mkdir
+  FileUtils.cp(DEFAULT_CONFIG, target)
+end
+
+def install_devbase(cmd="nwn-build")
+  abort "[INFO] The command #{cmd} already exists on PATH." if File.which(cmd)
+  abort "[INFO] Automatic symlinking of build.rb to PATH is not supported on Windows." if OS.windows?
+  source=EXECUTION_DIR.join $PROGRAM_NAME
+  bin_dir=Pathname.new("/").join("usr", "local", "bin")
+  dest=bin_dir.join(cmd)
+  bin_dir.mkdir unless bin_dir.exist?
+  puts "[INFO] Symlinking #{source} to #{dest}"
+	FileUtils.symlink(source, dest)
 end
 
 def extract_all()
@@ -320,6 +394,7 @@ def pack_all()
   verify_executables
   init_directories()
   should_compile = update_gffs()
+  puts "[INFO] No change in nss sources detected. Skipping compilation." unless should_compile
   compile_nss(MODULE_FILE) if should_compile
   update_cache(GFF_CACHE_DIR, TMP_CACHE_DIR)
   pack_module(MODULE_FILE)
@@ -329,14 +404,14 @@ def pack_all()
 end
 
 def clean()
-  FileUtils.rm_r Dir.glob("#{CACHE_DIR}/*")
+  FileUtils.rm_r Dir.glob(to_forward_slash(CACHE_DIR.join("*")))
 end
 
 # Verify the target YAML file. Throws an error when YAML parsing fails.
 # Defaults to check all project yml files if no target specified.
-def verify_yaml(target="#{SRC_DIR}/**/*.yml")
+def verify_yaml(target=SRC_DIR.join("**").join("*.yml"))
   puts "[INFO] Verifying yaml"
-  ymls=FileList[target]
+  ymls=FileList[to_forward_slash target]
   if OS.windows?
     puts "[INFO] This may take a while due to the lack of multithreading support on windows in the Parrallel gem..." unless ymls.size < 10
     ymls.each do |file|
@@ -354,6 +429,12 @@ end
 
 command = ARGV.shift
 case command
+when "init"
+  init_nwnproject
+when "install"
+  install_devbase 
+when "install-as"
+  install_devbase ARGV.shift 
 when "extract"
   extract_all
 when "pack"
@@ -366,6 +447,6 @@ when "compile"
 when "resman"
   create_resman_symlinks
 when "verify"
-  target = ARGV.shift || "#{SRC_DIR}/**/*.yml"
+  target = ARGV.shift || to_forward_slash(SRC_DIR.join("**", "*.yml"))
   verify_yaml(target)
 end

@@ -1,0 +1,11 @@
+*.md
+.gitignore
+.git
+Dockerfile
+.dockerignore
+docker-compose.yml
+src
+cache
+tmp
+server
+resman
