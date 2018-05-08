@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
 #
 # This script is used to extract and pack NWN modules, going from .mod
 # to .yml and back, using neverwinter_utils.nim
