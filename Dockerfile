@@ -25,6 +25,6 @@ COPY . ./
 RUN gem install bundler \
     && bundle install
 RUN ruby build.rb install
-WORKDIR /home/devbase
+WORKDIR /devbase
 ENTRYPOINT [ "nwn-build" ]
 CMD [ "pack" ]
