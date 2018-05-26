@@ -182,13 +182,13 @@ WORKING_DIR = Pathname.getwd
 nwnproject_path = find_nwnproject(WORKING_DIR)
 PROJECT_ROOT = nwnproject_path ? nwnproject_path.parent : WORKING_DIR
 NWNPROJECT = nwnproject_path || PROJECT_ROOT.join(".nwnproject") # append .nwnproject to project root if not found
-PROJECT_LOCAL_CONFIG = file_exists(NWNPROJECT.join("config.rb")) || ""
+PROJECT_USER_CONFIG = file_exists(NWNPROJECT.join("config.rb")) || ""
 PROJECT_DEFAULT_CONFIG = file_exists(NWNPROJECT.join("config.rb.in")) || ""
-GLOBAL_LOCAL_CONFIG = file_exists(EXECUTION_DIR.join("config.rb")) || ""
+GLOBAL_USER_CONFIG = file_exists(EXECUTION_DIR.join("config.rb")) || ""
 GLOBAL_DEFAULT_CONFIG = file_exists(EXECUTION_DIR.join("config.rb.in")) || ""
-load(PROJECT_LOCAL_CONFIG) if File.exist?(PROJECT_LOCAL_CONFIG) # Prioritize project user configs by loading first
+load(PROJECT_USER_CONFIG) if File.exist?(PROJECT_USER_CONFIG) # Prioritize project user configs by loading first
 load(PROJECT_DEFAULT_CONFIG) if File.exist?(PROJECT_DEFAULT_CONFIG) # Load project default configs second
-load(GLOBAL_LOCAL_CONFIG) if File.exist?(GLOBAL_LOCAL_CONFIG) # Load global user configs third
+load(GLOBAL_USER_CONFIG) if File.exist?(GLOBAL_USER_CONFIG) # Load global user configs third
 load(GLOBAL_DEFAULT_CONFIG) if File.exist?(GLOBAL_DEFAULT_CONFIG) # Load global default configs last
 SOURCES = FileList[to_forward_slash SRC_DIR.join("**", "*.*")] # *.* to skip directories
 FLAT_LAYOUT = options[:flat] || (SOURCES.size > 0 && Pathname.glob(to_forward_slash SRC_DIR.join("*/")).size == 0) || false # Assume flat layout only on -f or if the source folder contains files but no directories
@@ -204,9 +204,9 @@ if VERBOSE
   WORKING_DIR: #{WORKING_DIR}
   NWNPROJECT: #{NWNPROJECT}
   PROJECT_ROOT: #{PROJECT_ROOT}
-  PROJECT_LOCAL_CONFIG: #{PROJECT_LOCAL_CONFIG}
+  PROJECT_USER_CONFIG: #{PROJECT_USER_CONFIG}
   PROJECT_DEFAULT_CONFIG: #{PROJECT_DEFAULT_CONFIG}
-  GLOBAL_LOCAL_CONFIG: #{GLOBAL_LOCAL_CONFIG}
+  GLOBAL_USER_CONFIG: #{GLOBAL_USER_CONFIG}
   GLOBAL_DEFAULT_CONFIG: #{GLOBAL_DEFAULT_CONFIG}
   HOME_DIR: #{HOME_DIR}
   INSTALL_DIR: #{INSTALL_DIR}
