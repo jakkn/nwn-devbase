@@ -5,7 +5,7 @@
 # Returns the first file with .mod extension in the module directory.
 def find_modfile()
   default_mod = MODULE_FILENAME.match(/#{MODULE_FILE_EXT}$/) ? MODULE_FILENAME : MODULE_FILENAME + MODULE_FILE_EXT
-  located_mod = FileList[MODULE_DIR.join("*#{MODULE_FILE_EXT}")].first
+  located_mod = FileList[to_forward_slash MODULE_DIR.join "*#{MODULE_FILE_EXT}"].first
   return (located_mod.nil? || located_mod == "") ? MODULE_DIR.join(default_mod) : located_mod
 end
 
