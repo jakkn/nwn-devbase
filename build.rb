@@ -391,10 +391,26 @@ def create_resman_symlinks
 end
 
 def init_nwnproject()
+  # Create .nwnproject folder
   target=WORKING_DIR.join(".nwnproject")
-  puts "[INFO] Creating #{target.to_s} with default config"
-  target.mkdir
-  FileUtils.cp(DEFAULT_CONFIG, target)
+  puts "[INFO] Creating #{target.to_s}"
+  puts "[INFO] #{target.to_s} already exists" if target.exist?
+  target.mkdir unless target.exist?
+  # Put .gitignore in folder to have something to check in, and ignore cache folder
+  gitignore = target.join(".gitignore")
+  puts "[INFO] Creating #{gitignore}"
+  File.write(gitignore, "cache\n", mode: 'a') unless qgrep("^cache$", gitignore)
+  # Prompt to configure module filename
+  input_filename = ask "Module filename (#{File.basename MODULE_FILE}):"
+  input_filename = File.basename MODULE_FILE if input_filename.to_s.empty?
+  config = NWNPROJECT.join("config.rb.in")
+  File.write(config, "#!/usr/bin/env ruby\n\n") unless config.exist?
+  File.write(config, "MODULE_FILENAME ||= \"#{input_filename}\"\n", mode: 'a') unless qgrep("^MODULE_FILENAME", config)
+end
+
+# Quiet grep that returns a boolean indicating if pattern matches anywhere in file. 
+def qgrep(pattern, file)
+  return file.exist? && File.open(file).grep(/#{pattern}/).any?
 end
 
 def install_devbase(cmd="nwn-build")
