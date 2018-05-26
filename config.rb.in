@@ -4,14 +4,16 @@
 
 # Returns the first file with .mod extension in the module directory.
 def find_modfile()
-  mod = FileList[MODULE_DIR.join("*.mod")].first
-  return (mod.nil? || mod == "") ? MODULE_DIR.join(MODULE_FILENAME) : mod
+  default_mod = MODULE_FILENAME.match(/#{MODULE_FILE_EXT}$/) ? MODULE_FILENAME : MODULE_FILENAME + MODULE_FILE_EXT
+  located_mod = FileList[MODULE_DIR.join("*#{MODULE_FILE_EXT}")].first
+  return (located_mod.nil? || located_mod == "") ? MODULE_DIR.join(default_mod) : located_mod
 end
 
 HOME_DIR ||= file_exists(PROJECT_ROOT.join("homedir")) || PROJECT_ROOT.join("server")
 INSTALL_DIR ||= file_exists(PROJECT_ROOT.join("installdir")) || file_exists(PROJECT_ROOT.join("NWN")) || ENV["NWN_INSTALLDIR"]
 MODULE_DIR ||= HOME_DIR.join("modules")
-MODULE_FILENAME ||= "module.mod"
+MODULE_FILENAME ||= "module"
+MODULE_FILE_EXT ||= ".mod"
 MODULE_FILE ||= find_modfile
 CACHE_DIR ||= NWNPROJECT.join("cache")
 TMP_CACHE_DIR ||= CACHE_DIR.join("tmp")
