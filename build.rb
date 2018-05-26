@@ -145,7 +145,9 @@ end
 # If found returns the Pathname object describing the '.nwnproject' folder, else nil.
 def find_nwnproject(path=Pathname.getwd)
   return path.join(".nwnproject") if path.join(".nwnproject").exist?
-  return nil if path.root?
+  # Count slashes as workaround for broken Pathname.root? with win32-file
+  # Ref: https://github.com/chef/win32-file/issues/8
+  return nil if path.to_s.scan(/\//).count == 1 || path.root?
   return find_nwnproject(path.parent)
 end
 
