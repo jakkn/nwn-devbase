@@ -1,16 +1,17 @@
 #!/usr/bin/env ruby
 
-# Copy this file to config.rb to change any constants.
+# Copy variables from this file to config.rb to override any constants.
 
 # Returns the first file with .mod extension in the module directory.
 def find_modfile()
   mod = FileList[MODULE_DIR.join("*.mod")].first
-  return (mod.nil? || mod == "") ? MODULE_DIR.join("module.mod") : mod
+  return (mod.nil? || mod == "") ? MODULE_DIR.join(MODULE_FILENAME) : mod
 end
 
 HOME_DIR ||= file_exists(PROJECT_ROOT.join("homedir")) || PROJECT_ROOT.join("server")
 INSTALL_DIR ||= file_exists(PROJECT_ROOT.join("installdir")) || file_exists(PROJECT_ROOT.join("NWN")) || ENV["NWN_INSTALLDIR"]
 MODULE_DIR ||= HOME_DIR.join("modules")
+MODULE_FILENAME ||= "module.mod"
 MODULE_FILE ||= find_modfile
 CACHE_DIR ||= NWNPROJECT.join("cache")
 TMP_CACHE_DIR ||= CACHE_DIR.join("tmp")
