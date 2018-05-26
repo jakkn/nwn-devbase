@@ -22,12 +22,11 @@ ENV NWN_INSTALLDIR=/nwn/data
 COPY --from=nim /usr/local/bin/* /usr/local/bin/
 WORKDIR /usr/local/src/nwn-devbase/
 COPY . ./
-RUN gem update --system 2.7.7
+# Default Rubygems on debian is bugged and messes up paths.
+# Ref: https://github.com/rubygems/rubygems/issues/2180
+RUN gem update --system
 RUN gem install bundler \
     && bundle install
-# Rubygems on debian messes up paths. Temporary workaround.
-# Ref: https://github.com/rubygems/rubygems/issues/2180
-RUN rm /usr/local/bin/rake && ln -s /usr/bin/rake /usr/local/bin/rake
 RUN ruby build.rb install
 WORKDIR /devbase
 ENTRYPOINT [ "nwn-build" ]
