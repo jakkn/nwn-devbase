@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 #
+# INTRODUCTION
+#
 # This script is used to extract and pack NWN modules, going from .mod
 # to .yml and back, using neverwinter_utils.nim
 # (https://github.com/niv/neverwinter_utils.nim) and nwn-lib
@@ -29,6 +31,9 @@
 # updating a yml resource will overwrite the module on the next
 # attempt to pack without a prompt, but it is better than nothing.
 # It is left for the user not to mess up.
+#
+#
+# FOLDER STRUCTURE
 #
 # Two folder structures are supported. Flat folder layout is used if the src
 # directory is already flat and contains no subfolders, and can be forced
@@ -61,8 +66,22 @@
 #    └── script2.nss
 #
 #
+# CONFIGURATION
+#
 # Use config.rb to define configurations and compiler arguments.
 # See example file config.rb.in.
+# Configuration files are read highest priority first, starting with
+# project configs and ending with global configs:
+# .nwnproject/config.rb
+# .nwnproject/config.rb.in
+# EXECUTION_DIR/config.rb
+# EXECUTION_DIR/config.rb.in
+#
+# Where EXECUTION_DIR is the PATH from which build.rb
+# executes on your system.
+#
+#
+# SCRIPT EXECUTION
 #
 # The script begins by parsing arguments and setting the environment
 # variables, before command execution is carried out in the bottom
@@ -163,10 +182,14 @@ WORKING_DIR = Pathname.getwd
 nwnproject_path = find_nwnproject(WORKING_DIR)
 PROJECT_ROOT = nwnproject_path ? nwnproject_path.parent : WORKING_DIR
 NWNPROJECT = nwnproject_path || PROJECT_ROOT.join(".nwnproject") # append .nwnproject to project root if not found
-LOCAL_CONFIG = file_exists(NWNPROJECT.join("config.rb")) || file_exists(EXECUTION_DIR.join("config.rb")) || ""
-DEFAULT_CONFIG = file_exists(NWNPROJECT.join("config.rb.in")) || file_exists(EXECUTION_DIR.join("config.rb.in")) || ""
-load(LOCAL_CONFIG) if File.exist?(LOCAL_CONFIG) # Prioritize local config by loading first
-load(DEFAULT_CONFIG) if File.exist?(DEFAULT_CONFIG) # Load any default config not yet defined
+PROJECT_LOCAL_CONFIG = file_exists(NWNPROJECT.join("config.rb")) || ""
+PROJECT_DEFAULT_CONFIG = file_exists(NWNPROJECT.join("config.rb.in")) || ""
+GLOBAL_LOCAL_CONFIG = file_exists(EXECUTION_DIR.join("config.rb")) || ""
+GLOBAL_DEFAULT_CONFIG = file_exists(EXECUTION_DIR.join("config.rb.in")) || ""
+load(PROJECT_LOCAL_CONFIG) if File.exist?(PROJECT_LOCAL_CONFIG) # Prioritize project user configs by loading first
+load(PROJECT_DEFAULT_CONFIG) if File.exist?(PROJECT_DEFAULT_CONFIG) # Load project default configs second
+load(GLOBAL_LOCAL_CONFIG) if File.exist?(GLOBAL_LOCAL_CONFIG) # Load global user configs third
+load(GLOBAL_DEFAULT_CONFIG) if File.exist?(GLOBAL_DEFAULT_CONFIG) # Load global default configs last
 SOURCES = FileList[to_forward_slash SRC_DIR.join("**", "*.*")] # *.* to skip directories
 FLAT_LAYOUT = options[:flat] || (SOURCES.size > 0 && Pathname.glob(to_forward_slash SRC_DIR.join("*/")).size == 0) || false # Assume flat layout only on -f or if the source folder contains files but no directories
 NSS_DIR = FLAT_LAYOUT ? SRC_DIR : SRC_DIR.join("nss")
@@ -181,8 +204,10 @@ if VERBOSE
   WORKING_DIR: #{WORKING_DIR}
   NWNPROJECT: #{NWNPROJECT}
   PROJECT_ROOT: #{PROJECT_ROOT}
-  LOCAL_CONFIG: #{LOCAL_CONFIG}
-  DEFAULT_CONFIG: #{DEFAULT_CONFIG}
+  PROJECT_LOCAL_CONFIG: #{PROJECT_LOCAL_CONFIG}
+  PROJECT_DEFAULT_CONFIG: #{PROJECT_DEFAULT_CONFIG}
+  GLOBAL_LOCAL_CONFIG: #{GLOBAL_LOCAL_CONFIG}
+  GLOBAL_DEFAULT_CONFIG: #{GLOBAL_DEFAULT_CONFIG}
   HOME_DIR: #{HOME_DIR}
   INSTALL_DIR: #{INSTALL_DIR}
   MODULE_DIR: #{MODULE_DIR}
