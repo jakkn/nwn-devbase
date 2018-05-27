@@ -28,6 +28,11 @@ RUN gem update --system
 RUN gem install bundler \
     && bundle install
 RUN ruby build.rb install
-WORKDIR /devbase
+# Configure devbase user
+RUN adduser devbase --disabled-password --gecos "" --uid 1000
+RUN echo "devbase ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+RUN sed -i "s|^#force_color_prompt=.*|force_color_prompt=yes|" /home/devbase/.bashrc
+USER devbase
+WORKDIR /home/devbase/build
 ENTRYPOINT [ "nwn-build" ]
 CMD [ "pack" ]
