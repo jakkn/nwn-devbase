@@ -335,7 +335,7 @@ end
 # Update all source_files that have a different time stamp than the corresponding
 # file in target_dir. New files are copied over.
 def update_files_based_on_timestamp(source_files, target_dir)
-  FileUtils.mkdir_p(target_dir) unless File.exist?(target_dir)
+  FileUtils.mkdir_p(target_dir)
   files_updated = false
   source_files.each do |file|
     if !File.exist?(target_dir.join(File.basename(file)))
@@ -406,6 +406,13 @@ def init_nwnproject()
   config = NWNPROJECT.join("config.rb.in")
   File.write(config, "#!/usr/bin/env ruby\n\n") unless config.exist?
   File.write(config, "MODULE_FILENAME ||= \"#{input_filename}\"\n", mode: 'a') unless qgrep("^MODULE_FILENAME", config)
+  # Prompt to create ./server/modules dir
+  create_moduledir = ask "Create default module directory (#{MODULE_DIR})? [Y/n]:"
+  if create_moduledir.empty? || create_moduledir.downcase[0] == "y"
+    FileUtils.mkdir_p(MODULE_DIR)
+    gitignore=WORKING_DIR.join(".gitignore")
+    File.write(gitignore, "server\n", mode: 'a') unless qgrep("^server$", gitignore)
+  end
 end
 
 # Quiet grep that returns a boolean indicating if pattern matches anywhere in file. 
