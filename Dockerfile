@@ -27,7 +27,7 @@ COPY . ./
 RUN gem update --system
 RUN gem install bundler \
     && bundle install
-RUN ruby build.rb install
+RUN ln -s $(pwd)/build.rb /usr/local/bin/nwn-build
 # Configure devbase user
 RUN adduser devbase --disabled-password --gecos "" --uid 1000
 RUN echo "devbase ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
