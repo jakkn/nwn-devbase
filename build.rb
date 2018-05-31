@@ -465,7 +465,7 @@ def verify_yaml(target=SRC_DIR.join("**").join("*.yml"))
   puts "[INFO] Verifying yaml"
   ymls=FileList[to_forward_slash target]
   if OS.windows?
-    puts "[INFO] This may take a while due to the lack of multithreading support on windows in the Parrallel gem..." unless ymls.size < 10
+    puts "[INFO] This may take a while due to the lack of multithreading support on windows in the Parallel gem..." unless ymls.size < 10
     ymls.each do |file|
       puts "[DEBUG] Verifying: #{file}" if VERBOSE
       YAML.load_file(file)
