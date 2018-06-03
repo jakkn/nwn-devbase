@@ -28,4 +28,5 @@ ERF_UTIL ||= "nwn_erf"
 GFF_UTIL ||= "nwn-gff"
 SCRIPTS_DIR ||= file_exists(PROJECT_ROOT.join("scripts")) || file_exists(EXECUTION_DIR.join("scripts"))
 NSS_COMPILER ||= ENV["NSS_COMPILER"] || "nwnsc"
-COMPILER_ARGS ||= ["-qo", "-n", "#{INSTALL_DIR}", "-y", "-b", "#{GFF_CACHE_DIR}"]
+NSS_BATCHOUTDIR ||= GFF_CACHE_DIR
+COMPILER_ARGS ||= ["-qo", "-n", "#{INSTALL_DIR}", "-y", "-b", "#{NSS_BATCHOUTDIR}"]

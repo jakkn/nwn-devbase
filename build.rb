@@ -220,6 +220,7 @@ if VERBOSE
   SRC_DIR: #{SRC_DIR}
   NUMBER_OF_SOURCES: #{SOURCES.size}
   NSS_DIR: #{NSS_DIR}
+  NSS_BATCHOUTDIR: #{NSS_BATCHOUTDIR}
   NSS_COMPILER: #{NSS_COMPILER}
   COMPILER_ARGS: #{COMPILER_ARGS}
   ERF_UTIL: #{ERF_UTIL}
@@ -373,6 +374,7 @@ end
 # Valid targets are any nss file names, including wildcards to process multiple files.
 def compile_nss(modfile, target="*.nss")
   puts "[INFO] Compiling nss"
+  FileUtils.mkdir_p(NSS_BATCHOUTDIR)
   Dir.chdir(to_forward_slash NSS_DIR) do
     puts "[DEBUG] Changed to #{NSS_DIR}" if VERBOSE
     command = [NSS_COMPILER,  *COMPILER_ARGS, *target]
