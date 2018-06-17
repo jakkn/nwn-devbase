@@ -28,6 +28,10 @@ RUN gem update --system
 RUN gem install bundler \
     && bundle install
 RUN ln -s $(pwd)/build.rb /usr/local/bin/nwn-build
+# Modify build.rb to ignore host environment configs
+RUN echo '#!/usr/bin/env ruby\nINSTALL_DIR = ENV["NWN_INSTALLDIR"]' \
+    | cat - build.rb > tmp.rb \
+    && mv tmp.rb build.rb
 # Configure devbase user
 RUN adduser devbase --disabled-password --gecos "" --uid 1000
 RUN echo "devbase ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
