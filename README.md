@@ -69,7 +69,7 @@ It is recommended to alias this command to something like `nwn-build`.
 Linux: append to ~/.bashrc
 
 ```bash
-alias nwn-build="docker run --rm -it --user $UID:$UID -v \"$(pwd):/home/devbase/build\" jakkn/nwn-devbase"
+alias nwn-build='docker run --rm -it --user $UID:$UID -v "$(pwd):/home/devbase/build" jakkn/nwn-devbase'
 ```
 
 Windows: TODO - Figure out how to store PS functions. Help wanted!
