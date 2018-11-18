@@ -1,10 +1,11 @@
 FROM jakkn/nwnsc as nwnsc
+FROM alpine/git as git
+WORKDIR /tmp
+RUN git clone --recursive https://github.com/niv/neverwinter_utils.nim
 FROM nimlang/nim:slim as nim
 WORKDIR /tmp
-RUN apt update \
-    && apt install -y --no-install-recommends git bash \
-    && git clone --recursive https://github.com/niv/neverwinter_utils.nim \
-    && cd neverwinter_utils.nim \
+COPY --from=git /tmp/ /tmp
+RUN cd neverwinter_utils.nim \
     && ./build.sh \
     && mv bin/* /usr/local/bin/
 
