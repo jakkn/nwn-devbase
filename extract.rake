@@ -36,7 +36,7 @@ desc 'Convert gff to yml'
 multitask :gff2yml => YML_TARGETS
 
 rule '.yml' => ->(f){ source_for_yml(f) } do |t|
-	system "nwn-gff", "-i", "#{t.source}", "-lg", "-o", "#{t.name}", "-r", to_forward_slash(SCRIPTS_DIR.join("truncate_floats.rb").to_s)
+	system "nwn_gff", "-i", "#{t.source}", "-lgff", "-o", "#{t.name}"
 	FileUtils.touch "#{t.name}", :mtime => File.mtime("#{t.source}")
 end
 

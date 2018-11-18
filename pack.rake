@@ -22,7 +22,7 @@ task :gff => [GFF_CACHE_DIR.to_s, :yml2gff]
 multitask :yml2gff => GFF_TARGETS
 
 rule( /\.(?!yml)[\w]+$/ => ->(f){ source_for_gff(f) }) do |t|
-	system "nwn-gff", "-i", "#{t.source}", "-o", "#{t.name}", "-kg"
+	system "nwn_gff", "-i", "#{t.source}", "-o", "#{t.name}", "-kgff"
 	FileUtils.touch "#{t.name}", :mtime => File.mtime("#{t.source}")
 end
 
