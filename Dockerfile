@@ -1,11 +1,11 @@
 FROM jakkn/nwnsc as nwnsc
-FROM nimlang/nim:slim as nim
+FROM nimlang/nim:latest as nim
 WORKDIR /tmp
-RUN apt update \
-    && apt install -y --no-install-recommends git bash \
+RUN apt-get update \
+    && apt-get -qy install curl libssl-dev build-essential gcc git \
     && git clone --recursive https://github.com/niv/neverwinter_utils.nim \
     && cd neverwinter_utils.nim \
-    && ./build.sh \
+    && nimble build -d:release \
     && mv bin/* /usr/local/bin/
 
 FROM ubuntu:latest
