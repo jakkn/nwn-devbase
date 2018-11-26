@@ -1,8 +1,8 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    ffi (1.9.23-x64-mingw32)
-    ffi (1.9.23-x86-mingw32)
+    ffi (1.9.25-x64-mingw32)
+    ffi (1.9.25-x86-mingw32)
     ffi-win32-extensions (1.0.3)
       ffi
     highline (1.7.8)
@@ -37,4 +37,4 @@ DEPENDENCIES
   systemu (~> 2.6.5)
 
 BUNDLED WITH
-   1.16.2
+   1.17.1
