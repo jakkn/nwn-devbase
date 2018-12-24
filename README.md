@@ -72,8 +72,12 @@ Linux: append to ~/.bashrc
 alias nwn-build='docker run --rm -it --user $UID:$UID -v "$(pwd):/home/devbase/build" jakkn/nwn-devbase'
 ```
 
-Windows: TODO - Figure out how to store PS functions. Help wanted!
+Windows:
+```Powershell
+ docker run --rm -it -v "$(pwd):/home/devbase/build" jakkn/nwn-devbase pack
+```
 
+Powershell Function: Need to figure out how to store PS functions. Help wanted!
 ```PowerShell
 function nwn-build {docker run --rm -it -v \"$(pwd):/home/devbase/build\" jakkn/nwn-devbase}
 ```
