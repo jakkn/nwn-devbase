@@ -74,7 +74,7 @@ alias nwn-build='docker run --rm -it --user $UID:$UID -v "$(pwd):/home/devbase/b
 
 Windows:
 ```Powershell
- docker run --rm -it -v "$(pwd):/home/devbase/build" jakkn/nwn-devbase pack
+ docker run --rm -it -v "$(pwd)/home/devbase/build" jakkn/nwn-devbase pack
 ```
 
 Powershell Function: Need to figure out how to store PS functions. Help wanted!
