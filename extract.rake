@@ -13,6 +13,7 @@ FLAT_LAYOUT = ENV['flat'] == "true"
 SRC_DIR = Pathname.new ENV['SRC_DIR']
 GFF_CACHE_DIR = Pathname.new ENV['GFF_CACHE_DIR']
 SCRIPTS_DIR = Pathname.new ENV['SCRIPTS_DIR']
+ENCODING = Pathname.new ENV['ENCODING']
 
 GFF_SOURCES = FileList[to_forward_slash GFF_CACHE_DIR.join("*.*")].exclude(/\.n[cs]s$/)
 YML_TARGETS = FLAT_LAYOUT ? GFF_SOURCES.pathmap("#{SRC_DIR}/%f.yml") : GFF_SOURCES.pathmap("#{SRC_DIR}/%{.*,*}x/%f.yml") { |ext| ext.delete('.') }
@@ -36,7 +37,7 @@ desc 'Convert gff to yml'
 multitask :gff2yml => YML_TARGETS
 
 rule '.yml' => ->(f){ source_for_yml(f) } do |t|
-	system "nwn-gff", "-i", "#{t.source}", "-lg", "-o", "#{t.name}", "-r", to_forward_slash(SCRIPTS_DIR.join("truncate_floats.rb").to_s)
+	system "nwn-gff", "-i", "#{t.source}", "-lg", "-o", "#{t.name}", "--encoding", "#{ENCODING}", "-r", to_forward_slash(SCRIPTS_DIR.join("truncate_floats.rb").to_s)
 	FileUtils.touch "#{t.name}", :mtime => File.mtime("#{t.source}")
 end
 

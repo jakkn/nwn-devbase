@@ -229,7 +229,8 @@ if VERBOSE
   EXTRACT_RAKE: #{EXTRACT_RAKE}
   PACK_RAKE: #{PACK_RAKE}
   SYMLINK_RAKE: #{SYMLINK_RAKE}
-  SCRIPTS_DIR: #{SCRIPTS_DIR}"
+  SCRIPTS_DIR: #{SCRIPTS_DIR}
+  ENCODING: #{ENCODING}"
 end
 
 def verify_executables()
@@ -354,7 +355,7 @@ def update_sources()
   puts "[INFO] Converting from gff to yml (this may take a while)..."
 
   remove_deleted_files(GFF_CACHE_DIR, SOURCES.sub(/\.yml$/, ''))
-  system "rake", "--rakefile", EXTRACT_RAKE.to_s, "flat=#{FLAT_LAYOUT}", "SRC_DIR=#{SRC_DIR}", "GFF_CACHE_DIR=#{GFF_CACHE_DIR}", "SCRIPTS_DIR=#{SCRIPTS_DIR}"
+  system "rake", "--rakefile", EXTRACT_RAKE.to_s, "flat=#{FLAT_LAYOUT}", "SRC_DIR=#{SRC_DIR}", "GFF_CACHE_DIR=#{GFF_CACHE_DIR}", "SCRIPTS_DIR=#{SCRIPTS_DIR}", "ENCODING=#{ENCODING}"
   update_files_based_on_timestamp(FileList[to_forward_slash GFF_CACHE_DIR.join("*.nss")], NSS_DIR)
 end
 
