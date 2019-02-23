@@ -127,6 +127,7 @@ OptionParser.new do |opts|
   opts.banner ="Usage:
     ruby build.rb [options] extract\t\t\tExtract .mod to src/
     ruby build.rb [options] pack\t\t\tPack src/ into .mod
+    ruby build.rb [options] pack-only\t\t\tPack src/ into .mod without compiling nss
     ruby build.rb [options] clean\t\t\tClean cache folder
     ruby build.rb [options] compile [file]\t\tCompile nss to ncs
     ruby build.rb [options] resman\t\t\tCreate/refresh resman symlinks
@@ -445,11 +446,12 @@ def extract_all()
   puts "[INFO] Done.\nTotal time: #{elapsed_time} seconds."
 end
 
-def pack_all()
+def pack_all(skip_compile=false)
   verify_executables
   init_directories()
-  should_compile = update_gffs()
-  puts "[INFO] No change in nss sources detected. Skipping compilation." unless should_compile
+  should_compile = update_gffs() && !skip_compile
+  puts "[INFO] No change in nss sources detected. Skipping compilation." unless should_compile && !skip_compile
+  puts "[INFO] Skipping compilation due to configuration" if skip_compile
   compile_nss(MODULE_FILE) if should_compile
   update_cache(GFF_CACHE_DIR, TMP_CACHE_DIR)
   pack_module(MODULE_FILE)
@@ -492,6 +494,8 @@ when "install-as"
   install_devbase ARGV.shift 
 when "extract"
   extract_all
+when "pack-only"
+  pack_all(true)
 when "pack"
   pack_all
 when "clean"
