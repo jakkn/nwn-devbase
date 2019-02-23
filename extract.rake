@@ -13,7 +13,7 @@ FLAT_LAYOUT = ENV['flat'] == "true"
 SRC_DIR = Pathname.new ENV['SRC_DIR']
 GFF_CACHE_DIR = Pathname.new ENV['GFF_CACHE_DIR']
 SCRIPTS_DIR = Pathname.new ENV['SCRIPTS_DIR']
-ENCODING = Pathname.new ENV['ENCODING']
+ENCODING = ENV['ENCODING']
 
 GFF_SOURCES = FileList[to_forward_slash GFF_CACHE_DIR.join("*.*")].exclude(/\.n[cs]s$/)
 YML_TARGETS = FLAT_LAYOUT ? GFF_SOURCES.pathmap("#{SRC_DIR}/%f.yml") : GFF_SOURCES.pathmap("#{SRC_DIR}/%{.*,*}x/%f.yml") { |ext| ext.delete('.') }
