@@ -42,9 +42,9 @@ _Note to windows users: chocolatey is a package manager for Windows that empower
 
 Everyone will need git
 
-* Arch: `pacman -S git`
-* Ubuntu: `apt install git`
-* Windows: `choco install git` [git-scm.com](https://git-scm.com/download/win)
+- Arch: `pacman -S git`
+- Ubuntu: `apt install git`
+- Windows: `choco install git` [git-scm.com](https://git-scm.com/download/win)
 
 ## Install and run
 
@@ -80,16 +80,16 @@ function nwn-build {docker run --rm -it -v \"$(pwd):/home/devbase/build\" jakkn/
 
 Limitations:
 
-* The command must be run in the project root, because docker cannot navigate to the parent of the mounted volume in the host directory tree
-* Linux host only: The container runs with UID 1000 by default if `--user` is not specified
+- The command must be run in the project root, because docker cannot navigate to the parent of the mounted volume in the host directory tree
+- Linux host only: The container runs with UID 1000 by default if `--user` is not specified
 
 Install Docker:
 
-* Arch: `pacman -S docker`
-* Ubuntu: See [https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/](https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/)
-* Windows: Depends on Hyper-V support (Windows Pro and above), please refer to [https://forums.docker.com/t/linux-container-on-windows-docker-host/25884/2](https://forums.docker.com/t/linux-container-on-windows-docker-host/25884/2) for details.
-  * No Hyper-V: `choco install virtualbox docker-toolbox`
-  * With Hyper-V: `choco install docker-for-windows`
+- Arch: `pacman -S docker`
+- Ubuntu: See [https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/](https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/)
+- Windows: Depends on Hyper-V support (Windows Pro and above), please refer to [https://forums.docker.com/t/linux-container-on-windows-docker-host/25884/2](https://forums.docker.com/t/linux-container-on-windows-docker-host/25884/2) for details.
+  - No Hyper-V: `choco install virtualbox docker-toolbox`
+  - With Hyper-V: `choco install docker-for-windows`
 
 Update the image by running `docker pull jakkn/nwn-devbase`
 
@@ -97,25 +97,25 @@ Update the image by running `docker pull jakkn/nwn-devbase`
 
 You will need
 
-* Ruby, to run the build script and nwn-lib to convert gff to yml
+- Ruby, to run the build script and nwn-lib to convert gff to yml
 
-  * Arch: `pacman -S ruby`
-  * Ubuntu: `apt install ruby`
-  * Windows: `choco install ruby` [rubyinstaller.org](https://rubyinstaller.org/downloads/)
+  - Arch: `pacman -S ruby`
+  - Ubuntu: `apt install ruby`
+  - Windows: `choco install ruby` [rubyinstaller.org](https://rubyinstaller.org/downloads/)
 
-* nwnsc, the nwscript compiler
+- nwnsc, the nwscript compiler
 
-  * All platforms: [https://neverwintervault.org/project/nwn1/other/tool/nwnsc-nwn-enhanced-edition-script-compiler](https://neverwintervault.org/project/nwn1/other/tool/nwnsc-nwn-enhanced-edition-script-compiler)
+  - All platforms: [https://neverwintervault.org/project/nwn1/other/tool/nwnsc-nwn-enhanced-edition-script-compiler](https://neverwintervault.org/project/nwn1/other/tool/nwnsc-nwn-enhanced-edition-script-compiler)
 
-* nim, to use neverwinter_utils.nim
+- nim, to use neverwinter_utils.nim
 
-  * Arch: `pacman -S nim`
-  * Ubuntu: [choosenim](https://github.com/dom96/choosenim)
-  * Windows: [choosenim](https://github.com/dom96/choosenim)
+  - Arch: `pacman -S nim`
+  - Ubuntu: [choosenim](https://github.com/dom96/choosenim)
+  - Windows: [choosenim](https://github.com/dom96/choosenim)
 
-* neverwinter_utils.nim for module packing and extracting
+- neverwinter_utils.nim for module packing and extracting
 
-  * All platforms: [https://github.com/niv/neverwinter_utils.nim](https://github.com/niv/neverwinter_utils.nim)
+  - All platforms: [https://github.com/niv/neverwinter_utils.nim](https://github.com/niv/neverwinter_utils.nim)
 
 Install nwn-devbase
 
@@ -194,12 +194,12 @@ VSCode is an excellent choice for scripting outside of the toolset. The editor w
 _TODO: OUTDATED INSTRUCTIONS_
 Setting up Sublime Text for scripting requires a few steps to set up the custom NWN script compiler (NWNScriptCompiler).
 
-* Install [Sublime Text 3](http://www.sublimetext.com/3)
-* Install [Package Control](https://packagecontrol.io/installation)
-* Install [STNeverwinterScript](https://github.com/CromFr/STNeverwinterScript) plugin
-* Open the Sublime project described by the file nwn-devbase.sublime-project located in the root directory of this repository
-* Tools->Build System->NWN compile
-* Hit ctrl+b to compile open nss files or ctrl+shift+b for all the other build options
+- Install [Sublime Text 3](http://www.sublimetext.com/3)
+- Install [Package Control](https://packagecontrol.io/installation)
+- Install [STNeverwinterScript](https://github.com/CromFr/STNeverwinterScript) plugin
+- Open the Sublime project described by the file nwn-devbase.sublime-project located in the root directory of this repository
+- Tools->Build System->NWN compile
+- Hit ctrl+b to compile open nss files or ctrl+shift+b for all the other build options
 
 ##### Windows PowerShell
 
@@ -210,8 +210,8 @@ Windows users may find this blog post titled [make powershell and git suck less 
 "Too many files open": nwn-lib opens all files for reading at the same time when packing the module. This can lead to an error stating too many files are open.
 Fix:
 
-* _Linux_ `ulimit -n 4096` (or any other number higher than the number of files in the module)
-* _Windows_ the Java library modpacker is used instead. If modpacker cannot be found build.rb will print out instructions.
+- _Linux_ `ulimit -n 4096` (or any other number higher than the number of files in the module)
+- _Windows_ the Java library modpacker is used instead. If modpacker cannot be found build.rb will print out instructions.
 
 I have installed Ruby but it does not work: This is most likely due the Ruby executable missing from your PATH environment variable. If this is new to you and you're on Windows, [please ask google first](https://www.google.com/search?q=windows+path&oq=windows+path&aqs=chrome.0.0l6.1280j0j1&sourceid=chrome&ie=UTF-8#q=windows+10+change+path). Linux users should not have this issue.
 
