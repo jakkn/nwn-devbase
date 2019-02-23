@@ -367,7 +367,7 @@ def update_gffs()
   gffs.each do |gff|
     FileUtils.rm(gff) unless srcs.detect{|src| File.basename(gff) == File.basename(src)}
   end
-  system "rake", "--rakefile", PACK_RAKE.to_s, "SRC_DIR=#{SRC_DIR}", "GFF_CACHE_DIR=#{GFF_CACHE_DIR}"
+  system "rake", "--rakefile", PACK_RAKE.to_s, "SRC_DIR=#{SRC_DIR}", "GFF_CACHE_DIR=#{GFF_CACHE_DIR}", "ENCODING=#{ENCODING}"
   return update_files_based_on_timestamp(FileList[to_forward_slash NSS_DIR.join("*.nss")], GFF_CACHE_DIR)
 end
 
