@@ -57,8 +57,9 @@ git add -A && git commit -m "Initial commit"
 
 ### With PATH
 Create if it does not exist, and add ```%USERPROFILE%\bin``` to PATH.
-Being in nwn-devbase folder, execute in PowerShell:
+Execute in PowerShell:
 ```posh
+cd path-to-nwn-devbase
 cmd /c MKLINK "$env:USERPROFILE\bin\nwn-build.rb" "$(pwd)\build.rb"
 ```
 And then:
