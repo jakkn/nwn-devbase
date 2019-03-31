@@ -35,7 +35,8 @@ nimble install neverwinter
 2. Extract in some folder under your watch like ```%USERPROFILE%\bin```
 3. Add nwnsc.exe folder to PATH (optional)
 
-### [Install nwn-devbase](https://github.com/jakkn/nwn-devbase)
+### Install nwn-devbase
+Navigate to where you want the nwn-devbase sources located on your system. `%USERPROFILE%\src\` is a good choice.
 ```bat
 git clone https://github.com/jakkn/nwn-devbase.git
 cd nwn-devbase
@@ -87,7 +88,7 @@ or set them permanently in system environment variables. Placing the compiler in
 The compiler run arguments specify game resources located in _NWN_USERDIR_ environment variable. This is needed to locate `nwscript.nss` and base game includes.
 
 #### PACK
-Close Aurora Toolset project before.
+First, close the Aurora Toolset, then run:
 ```bat
 nwn-build pack
 ```
