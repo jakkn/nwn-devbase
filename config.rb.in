@@ -30,4 +30,4 @@ SCRIPTS_DIR ||= file_exists(PROJECT_ROOT.join("scripts")) || file_exists(EXECUTI
 NSS_COMPILER ||= ENV["NSS_COMPILER"] || "nwnsc"
 NSS_BATCHOUTDIR ||= GFF_CACHE_DIR
 COMPILER_ARGS ||= ["-qo", "-n", "#{INSTALL_DIR}", "-y", "-b", "#{NSS_BATCHOUTDIR}"]
-ENCODING ||= "utf-8"
+ENCODING ||= "windows-1252"
