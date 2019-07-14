@@ -1,8 +1,8 @@
 #!/bin/bash
 TAG=$SOURCE_COMMIT
 docker tag $IMAGE_NAME $DOCKER_REPO:$TAG
-docker push $DOCKER_REPO:$SOURCE_COMMIT
+docker push $DOCKER_REPO:$TAG
 
 TAG=${SOURCE_COMMIT:0:7}
 docker tag $IMAGE_NAME $DOCKER_REPO:$TAG
-docker push $DOCKER_REPO:$SHORT_COMMIT_HASH
+docker push $DOCKER_REPO:$TAG
