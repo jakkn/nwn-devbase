@@ -1,4 +1,4 @@
-FROM jakkn/nwnsc as nwnsc
+FROM nwneetools/nwnsc as nwnsc
 FROM alpine/git as git
 WORKDIR /tmp
 RUN git clone --recursive https://github.com/niv/neverwinter_utils.nim
