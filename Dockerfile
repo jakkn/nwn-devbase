@@ -37,6 +37,7 @@ RUN echo '#!/usr/bin/env ruby\nINSTALL_DIR = ENV["NWN_INSTALLDIR"]' \
 RUN adduser devbase --disabled-password --gecos "" --uid 1000
 RUN echo "devbase ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 RUN sed -i "s|^#force_color_prompt=.*|force_color_prompt=yes|" /home/devbase/.bashrc
+RUN chown devbase:devbase .
 USER devbase
 WORKDIR /home/devbase/build
 ENTRYPOINT [ "nwn-build" ]
