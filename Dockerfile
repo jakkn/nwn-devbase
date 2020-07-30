@@ -14,7 +14,8 @@ LABEL maintainer "jakobknutsen@gmail.com"
 RUN apt-get update \
     && runDeps="g++-multilib" \
     && buildUtils="ruby" \
-    && apt-get install -y --no-install-recommends $runDeps $buildUtils \
+    && devTools="entr" \
+    && apt-get install -y --no-install-recommends $runDeps $buildUtils $devTools \
     && apt-get clean \
     && rm -r /var/lib/apt/lists /var/cache/apt
 COPY --from=nwnsc /usr/local/bin/nwnsc /usr/local/bin/
