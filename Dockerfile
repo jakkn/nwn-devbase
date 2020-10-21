@@ -1,15 +1,15 @@
-FROM nwneetools/nwnsc as nwnsc
-FROM alpine/git as git
+FROM index.docker.io/nwneetools/nwnsc as nwnsc
+FROM index.docker.io/alpine/git as git
 WORKDIR /tmp
 RUN git clone --recursive https://github.com/niv/neverwinter_utils.nim
-FROM nimlang/nim:latest as nim
+FROM index.docker.io/nimlang/nim:1.2.6-ubuntu as nim
 WORKDIR /tmp
 COPY --from=git /tmp/ /tmp
 RUN cd neverwinter_utils.nim \
     && nimble build -d:release \
     && mv bin/* /usr/local/bin/
 
-FROM ubuntu:latest
+FROM index.docker.io/ubuntu:latest
 LABEL maintainer "jakobknutsen@gmail.com"
 RUN apt-get update \
     && runDeps="g++-multilib" \
