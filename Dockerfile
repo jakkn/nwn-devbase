@@ -6,7 +6,7 @@ FROM index.docker.io/nimlang/nim:latest as nim
 WORKDIR /tmp
 COPY --from=git /tmp/ /tmp
 RUN cd neverwinter_utils.nim \
-  && nimble build -d:release \
+  && nimble build -d:release -y \
   && mv bin/* /usr/local/bin/
 
 FROM index.docker.io/ubuntu:latest
