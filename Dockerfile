@@ -12,7 +12,7 @@ RUN cd neverwinter_utils.nim \
 FROM index.docker.io/ubuntu:latest
 LABEL maintainer "jakobknutsen@gmail.com"
 RUN apt-get update \
-  && runDeps="g++-multilib" \
+  && runDeps="g++-multilib libsqlite3-0" \
   && buildUtils="ruby" \
   && devTools="entr" \
   && apt-get install -y --no-install-recommends $runDeps $buildUtils $devTools \
