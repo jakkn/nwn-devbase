@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1
 FROM index.docker.io/nwneetools/nwnsc as nwnsc
 FROM index.docker.io/alpine/git as git
 WORKDIR /tmp
