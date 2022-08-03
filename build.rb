@@ -354,7 +354,6 @@ end
 
 def update_sources()
   puts "[INFO] Converting from gff to yml (this may take a while)..."
-
   remove_deleted_files(GFF_CACHE_DIR, SOURCES.sub(/\.yml$/, ''))
   system "rake", "--rakefile", EXTRACT_RAKE.to_s, "flat=#{FLAT_LAYOUT}", "SRC_DIR=#{SRC_DIR}", "GFF_CACHE_DIR=#{GFF_CACHE_DIR}", "SCRIPTS_DIR=#{SCRIPTS_DIR}", "ENCODING=#{ENCODING}"
   update_files_based_on_timestamp(FileList[to_forward_slash GFF_CACHE_DIR.join("*.nss")], NSS_DIR)
@@ -364,11 +363,20 @@ def update_gffs()
   puts "[INFO] Converting from yml to gff (this may take a while)..."
 
   gffs = FileList[to_forward_slash GFF_CACHE_DIR.join("*")].exclude(/\.ncs$/)
-  srcs = FileList[to_forward_slash SRC_DIR.join("**", "*.*")].sub(/\.yml$/, '')
+
   gffs.each do |gff|
-    FileUtils.rm(gff) unless srcs.detect{|src| File.basename(gff) == File.basename(src)}
+    # extension is a name of the subfolder
+    type = File.extname(gff).delete('.')
+    # remove from gff cache if there is no associated file in src directory
+    # (taking into account subfolder with type and that nss files don't have an yml extension)
+    unless File.exist?(SRC_DIR.join(type, "#{File.basename(gff)}#{unless type == "nss" then ".yml" end }"))
+      puts "[INFO] %s removed from cache since it doesn't have a source" % File.basename(gff)
+      FileUtils.rm(gff)
+    end
   end
+
   system "rake", "--rakefile", PACK_RAKE.to_s, "SRC_DIR=#{SRC_DIR}", "GFF_CACHE_DIR=#{GFF_CACHE_DIR}", "ENCODING=#{ENCODING}"
+
   return update_files_based_on_timestamp(FileList[to_forward_slash NSS_DIR.join("*.nss")], GFF_CACHE_DIR)
 end
 
@@ -449,10 +457,17 @@ end
 def pack_all(skip_compile=false)
   verify_executables
   init_directories()
-  should_compile = update_gffs() && !skip_compile
-  puts "[INFO] No change in nss sources detected. Skipping compilation." unless should_compile && !skip_compile
-  puts "[INFO] Skipping compilation due to configuration" if skip_compile
-  compile_nss(MODULE_FILE) if should_compile
+
+  if skip_compile
+    puts "[INFO] Skipping compilation due to configuration"
+  end
+    
+  should_compile = update_gffs()
+  if should_compile && !skip_compile
+    puts "[INFO] No change in nss sources detected. Skipping compilation."
+  end
+
+  compile_nss(MODULE_FILE) unless skip_compile
   update_cache(GFF_CACHE_DIR, TMP_CACHE_DIR)
   pack_module(MODULE_FILE)
 
