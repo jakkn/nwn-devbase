@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 FROM index.docker.io/beamdog/nwserver:8193.34 as nwserver
 
-FROM index.docker.io/ubuntu:focal
+FROM index.docker.io/ubuntu:jammy
 LABEL maintainer "jakobknutsen@gmail.com"
 RUN apt-get update \
   && runDeps="g++-multilib libsqlite3-0" \
@@ -27,9 +27,6 @@ COPY --from=nwserver /nwn /nwn
 ENV NWN_INSTALLDIR=/nwn/data
 WORKDIR /usr/local/src/nwn-devbase/
 COPY . ./
-# Default Rubygems on debian is bugged and messes up paths.
-# Ref: https://github.com/rubygems/rubygems/issues/2180
-RUN gem update --system
 RUN gem install bundler \
   && bundle install
 RUN ln -s $(pwd)/build.rb /usr/local/bin/nwn-build
