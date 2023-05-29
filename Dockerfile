@@ -1,6 +1,4 @@
 # syntax=docker/dockerfile:1
-FROM index.docker.io/beamdog/nwserver:8193.34 as nwserver
-
 FROM index.docker.io/ubuntu:jammy
 LABEL maintainer "jakobknutsen@gmail.com"
 RUN apt-get update \
@@ -23,7 +21,12 @@ RUN wget https://github.com/nwneetools/nwnsc/releases/download/v${NWNSC_VERSION}
   && unzip ${NWNSC}.zip \
   && rm ${NWNSC}.zip \
   && mv nwnsc /usr/local/bin/
-COPY --from=nwserver /nwn /nwn
+# Download nwn data
+ENV NWSERVER_VERSION=8193.35-40
+RUN wget https://nwn.beamdog.net/downloads/nwnee-dedicated-${NWSERVER_VERSION}.zip \
+  && mkdir -p /nwn/data \
+  && unzip nwnee-dedicated-${NWSERVER_VERSION}.zip -d /nwn/data \
+  && rm nwnee-dedicated-${NWSERVER_VERSION}.zip
 ENV NWN_INSTALLDIR=/nwn/data
 WORKDIR /usr/local/src/nwn-devbase/
 COPY . ./
