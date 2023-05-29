@@ -21,7 +21,7 @@ RUN wget https://github.com/nwneetools/nwnsc/releases/download/v${NWNSC_VERSION}
   && unzip ${NWNSC}.zip \
   && rm ${NWNSC}.zip \
   && mv nwnsc /usr/local/bin/
-# Download nwn data
+# Download nwn data from https://forums.beamdog.com/discussion/67157/server-download-packages-and-docker-support
 ENV NWSERVER_VERSION=8193.35-40
 RUN wget https://nwn.beamdog.net/downloads/nwnee-dedicated-${NWSERVER_VERSION}.zip \
   && mkdir -p /nwn/data \
