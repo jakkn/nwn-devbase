@@ -17,9 +17,11 @@ RUN wget https://github.com/niv/neverwinter.nim/releases/download/${NIM_VERSION}
   && rm neverwinter.linux.amd64.zip \
   && mv nwn_* /usr/local/bin
 # Install nwnsc binary
-RUN wget https://github.com/nwneetools/nwnsc/releases/download/v1.1.3/nwnsc-linux-v1.1.3.zip \
-  && unzip nwnsc-linux-v1.1.3.zip \
-  && rm nwnsc-linux-v1.1.3.zip \
+ENV NWNSC_VERSION=1.1.5
+ENV NWNSC=nwnsc-linux-v${NWNSC_VERSION}
+RUN wget https://github.com/nwneetools/nwnsc/releases/download/v${NWNSC_VERSION}/${NWNSC}.zip \
+  && unzip ${NWNSC}.zip \
+  && rm ${NWNSC}.zip \
   && mv nwnsc /usr/local/bin/
 COPY --from=nwserver /nwn /nwn
 ENV NWN_INSTALLDIR=/nwn/data
