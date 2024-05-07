@@ -28,7 +28,7 @@ desc 'Create dir tree'
 task :create_folders => [SRC_DIR.to_s] do
 	Dir.chdir(to_forward_slash SRC_DIR) do
 		DIRS.each do |dir|
-			FileUtils.mkdir(dir) unless File.exists?(dir)
+			FileUtils.mkdir(dir) unless File.exist?(dir)
 		end
 	end unless FLAT_LAYOUT
 end
