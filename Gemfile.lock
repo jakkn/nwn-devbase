@@ -7,7 +7,7 @@ GEM
       ffi
     highline (3.0.1)
     nwn-lib (0.6.1)
-    os (0.9.6)
+    os (1.1.4)
     parallel (1.12.1)
     ptools (1.3.5)
     ptools (1.3.5-universal-mingw32)
@@ -30,7 +30,7 @@ PLATFORMS
 DEPENDENCIES
   highline (~> 3.0.1)
   nwn-lib (~> 0.6.1)
-  os (~> 0.9.6)
+  os (~> 1.1.4)
   parallel (~> 1.12.1)
   ptools (~> 1.3.5)
   rake (~> 12.3.3)
