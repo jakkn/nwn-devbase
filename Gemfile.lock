@@ -8,7 +8,7 @@ GEM
     highline (3.0.1)
     nwn-lib (0.6.1)
     os (1.1.4)
-    parallel (1.12.1)
+    parallel (1.24.0)
     ptools (1.5.0)
     ptools (1.5.0-universal-mingw32)
       win32-file
@@ -31,7 +31,7 @@ DEPENDENCIES
   highline (~> 3.0.1)
   nwn-lib (~> 0.6.1)
   os (~> 1.1.4)
-  parallel (~> 1.12.1)
+  parallel (~> 1.24.0)
   ptools (~> 1.5.0)
   rake (~> 13.2.1)
   systemu (~> 2.6.5)
