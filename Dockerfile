@@ -8,9 +8,10 @@ RUN apt-get update \
   && apt-get install -y --no-install-recommends $runDeps $buildUtils $devTools \
   && apt-get clean \
   && rm -r /var/lib/apt/lists /var/cache/apt
+
 # Install neverwinter.nim binaries
-ENV NIM_VERSION=1.5.9
-RUN wget https://github.com/niv/neverwinter.nim/releases/download/${NIM_VERSION}/neverwinter.linux.amd64.zip \
+ENV NWN_NIM_VERSION=1.8.0
+RUN wget https://github.com/niv/neverwinter.nim/releases/download/${NWN_NIM_VERSION}/neverwinter.linux.amd64.zip \
   && unzip neverwinter.linux.amd64.zip \
   && rm neverwinter.linux.amd64.zip \
   && mv nwn_* /usr/local/bin
