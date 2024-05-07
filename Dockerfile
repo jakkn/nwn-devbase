@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM index.docker.io/ubuntu:jammy
+FROM index.docker.io/ubuntu:noble-20240429
 LABEL maintainer "jakobknutsen@gmail.com"
 RUN apt-get update \
   && runDeps="g++-multilib libsqlite3-0" \
@@ -37,12 +37,9 @@ RUN ln -s $(pwd)/build.rb /usr/local/bin/nwn-build
 RUN echo '#!/usr/bin/env ruby\nINSTALL_DIR = ENV["NWN_INSTALLDIR"]' \
   | cat - build.rb > tmp.rb \
   && mv tmp.rb build.rb && chmod 755 build.rb
+
 # Configure devbase user
-RUN adduser devbase --disabled-password --gecos "" --uid 1000
-RUN echo "devbase ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-RUN sed -i "s|^#force_color_prompt=.*|force_color_prompt=yes|" /home/devbase/.bashrc
+USER ubuntu
 WORKDIR /home/devbase/build
-RUN chown devbase:devbase .
-USER devbase
 ENTRYPOINT [ "nwn-build" ]
 CMD [ "pack" ]
