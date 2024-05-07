@@ -17,7 +17,7 @@ RUN wget https://github.com/niv/neverwinter.nim/releases/download/${NWN_NIM_VERS
   && mv nwn_* /usr/local/bin
 
 # Download nwn data from https://forums.beamdog.com/discussion/67157/server-download-packages-and-docker-support
-ENV NWSERVER_VERSION=8193.35-40
+ENV NWSERVER_VERSION=8193.36-12
 RUN wget https://nwn.beamdog.net/downloads/nwnee-dedicated-${NWSERVER_VERSION}.zip \
   && mkdir -p /nwn/data \
   && unzip nwnee-dedicated-${NWSERVER_VERSION}.zip -d /nwn/data \
