@@ -373,20 +373,18 @@ def update_gffs()
 end
 
 # Compile nss scripts. Module file not parsed for hak includes at the time of writing.
-# Valid targets are any nss file names, including wildcards to process multiple files.
-def compile_nss(modfile, target="*.nss")
+# Valid targets are any nss file names or directories.
+def compile_nss(modfile, target="#{NSS_DIR}")
   puts "[INFO] Compiling nss"
   FileUtils.mkdir_p(NSS_BATCHOUTDIR)
-  Dir.chdir(to_forward_slash NSS_DIR) do
-    puts "[DEBUG] Changed to #{NSS_DIR}" if VERBOSE
-    command = [NSS_COMPILER,  *COMPILER_ARGS, *target]
-    puts "[DEBUG] #{command.join(" ")}" if VERBOSE # Print the command line we are using to compile
-    exit_code = system *command # Execute the printed commmand
-    if exit_code == nil # unknown command
-      abort "[ERROR] The compiler at \"#{NSS_COMPILER}\" does not exist. Nothing was compiled.\n\tPlease set the NSS_COMPILER environment variable.\n[ERROR] Aborting."
-    elsif !exit_code # nonzero exit
-      abort "[ERROR] Something went wrong during nss compilation. Check the compiler output.\n[ERROR] Aborting."
-    end
+
+  command = [NSS_COMPILER,  *COMPILER_ARGS, *target]
+  puts "[DEBUG] #{command.join(" ")}" if VERBOSE # Print the command line we are using to compile
+  exit_code = system *command # Execute the printed commmand
+  if exit_code == nil # unknown command
+    abort "[ERROR] The compiler at \"#{NSS_COMPILER}\" does not exist. Nothing was compiled.\n\tPlease set the NSS_COMPILER environment variable.\n[ERROR] Aborting."
+  elsif !exit_code # nonzero exit
+    abort "[ERROR] Something went wrong during nss compilation. Check the compiler output.\n[ERROR] Aborting."
   end
 end
 
@@ -501,8 +499,7 @@ when "pack"
 when "clean"
   clean
 when "compile"
-  target = ARGV.any? ? ARGV : "*.nss"
-  compile_nss(MODULE_FILE, target)
+  ARGV.any? ? compile_nss(MODULE_FILE, ARGV) : compile_nss(MODULE_FILE)
 when "resman"
   create_resman_symlinks
 when "verify"

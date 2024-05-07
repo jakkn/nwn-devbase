@@ -15,27 +15,24 @@ RUN wget https://github.com/niv/neverwinter.nim/releases/download/${NWN_NIM_VERS
   && unzip neverwinter.linux.amd64.zip \
   && rm neverwinter.linux.amd64.zip \
   && mv nwn_* /usr/local/bin
-# Install nwnsc binary
-ENV NWNSC_VERSION=1.1.5
-ENV NWNSC=nwnsc-linux-v${NWNSC_VERSION}
-RUN wget https://github.com/nwneetools/nwnsc/releases/download/v${NWNSC_VERSION}/${NWNSC}.zip \
-  && unzip ${NWNSC}.zip \
-  && rm ${NWNSC}.zip \
-  && mv nwnsc /usr/local/bin/
+
 # Download nwn data from https://forums.beamdog.com/discussion/67157/server-download-packages-and-docker-support
 ENV NWSERVER_VERSION=8193.35-40
 RUN wget https://nwn.beamdog.net/downloads/nwnee-dedicated-${NWSERVER_VERSION}.zip \
   && mkdir -p /nwn/data \
   && unzip nwnee-dedicated-${NWSERVER_VERSION}.zip -d /nwn/data \
   && rm nwnee-dedicated-${NWSERVER_VERSION}.zip
-ENV NWN_INSTALLDIR=/nwn/data
+ENV NWN_ROOT=/nwn/data
+ENV NWN_HOME=/home/ubuntu/nwn
+RUN mkdir -p $NWN_HOME
+
 WORKDIR /usr/local/src/nwn-devbase/
 COPY . ./
 RUN gem install bundler \
   && bundle install
 RUN ln -s $(pwd)/build.rb /usr/local/bin/nwn-build
 # Modify build.rb to ignore host environment configs
-RUN echo '#!/usr/bin/env ruby\nINSTALL_DIR = ENV["NWN_INSTALLDIR"]' \
+RUN echo '#!/usr/bin/env ruby\nINSTALL_DIR = ENV["NWN_ROOT"]' \
   | cat - build.rb > tmp.rb \
   && mv tmp.rb build.rb && chmod 755 build.rb
 

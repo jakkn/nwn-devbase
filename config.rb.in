@@ -10,7 +10,8 @@ def find_modfile()
 end
 
 HOME_DIR ||= file_exists(PROJECT_ROOT.join("homedir")) || PROJECT_ROOT.join("server")
-INSTALL_DIR ||= file_exists(PROJECT_ROOT.join("installdir")) || file_exists(PROJECT_ROOT.join("NWN")) || ENV["NWN_INSTALLDIR"]
+INSTALL_DIR ||= file_exists(PROJECT_ROOT.join("installdir")) || file_exists(PROJECT_ROOT.join("NWN")) || ENV["NWN_INSTALLDIR"] || ENV["NWN_ROOT"]
+NWN_HOME ||= ENV["NWN_HOME"]
 MODULE_DIR ||= HOME_DIR.join("modules")
 MODULE_FILENAME ||= "module"
 MODULE_FILE_EXT ||= ".mod"
@@ -27,7 +28,7 @@ SYMLINK_RAKE ||=  file_exists(PROJECT_ROOT.join("symlink.rake")) || file_exists(
 ERF_UTIL ||= "nwn_erf"
 GFF_UTIL ||= "nwn-gff"
 SCRIPTS_DIR ||= file_exists(PROJECT_ROOT.join("scripts")) || file_exists(EXECUTION_DIR.join("scripts"))
-NSS_COMPILER ||= ENV["NSS_COMPILER"] || "nwnsc"
+NSS_COMPILER ||= ENV["NSS_COMPILER"] || "nwn_script_comp"
 NSS_BATCHOUTDIR ||= GFF_CACHE_DIR
-COMPILER_ARGS ||= ["-qo", "-n", "#{INSTALL_DIR}", "-y", "-b", "#{NSS_BATCHOUTDIR}"]
+COMPILER_ARGS ||= ["--root", "#{INSTALL_DIR}", "--userdirectory", "#{NWN_HOME}", "-y", "-c", "-d", "#{NSS_BATCHOUTDIR}"]
 ENCODING ||= "utf-8"
