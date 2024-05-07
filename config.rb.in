@@ -27,7 +27,7 @@ SYMLINK_RAKE ||=  file_exists(PROJECT_ROOT.join("symlink.rake")) || file_exists(
 
 ERF_UTIL ||= "nwn_erf"
 GFF_UTIL ||= "nwn-gff"
-SCRIPTS_DIR ||= file_exists(PROJECT_ROOT.join("scripts")) || file_exists(EXECUTION_DIR.join("scripts"))
+SCRIPTS_DIR ||= file_exists(PROJECT_ROOT.join("devbase_scripts")) || file_exists(EXECUTION_DIR.join("devbase_scripts"))
 NSS_COMPILER ||= ENV["NSS_COMPILER"] || "nwn_script_comp"
 NSS_BATCHOUTDIR ||= GFF_CACHE_DIR
 COMPILER_ARGS ||= ["--root", "#{INSTALL_DIR}", "--userdirectory", "#{NWN_HOME}", "-y", "-c", "-d", "#{NSS_BATCHOUTDIR}"]
