@@ -5,7 +5,7 @@ GEM
     ffi (1.10.0-x86-mingw32)
     ffi-win32-extensions (1.0.3)
       ffi
-    highline (1.7.10)
+    highline (3.0.1)
     nwn-lib (0.6.1)
     os (0.9.6)
     parallel (1.12.1)
@@ -28,7 +28,7 @@ PLATFORMS
   x86-mingw32
 
 DEPENDENCIES
-  highline (~> 1.7.8)
+  highline (~> 3.0.1)
   nwn-lib (~> 0.6.1)
   os (~> 0.9.6)
   parallel (~> 1.12.1)
@@ -37,4 +37,4 @@ DEPENDENCIES
   systemu (~> 2.6.5)
 
 BUNDLED WITH
-   2.0.1
+   2.5.10
