@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM index.docker.io/ruby:3.1.5-bookworm
+FROM index.docker.io/ruby:3.0.2-slim-bullseye
 LABEL maintainer "jakobknutsen@gmail.com"
 RUN apt-get update \
   && runDeps="g++-multilib libsqlite3-0" \
@@ -31,10 +31,6 @@ COPY . ./
 RUN gem install bundler \
   && bundle install
 RUN ln -s $(pwd)/build.rb /usr/local/bin/nwn-build
-# Modify build.rb to ignore host environment configs
-RUN echo '#!/usr/bin/env ruby\nINSTALL_DIR = ENV["NWN_ROOT"]' \
-  | cat - build.rb > tmp.rb \
-  && mv tmp.rb build.rb && chmod 755 build.rb
 
 # Configure user
 ARG USER=devbase
