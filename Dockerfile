@@ -37,7 +37,7 @@ RUN echo '#!/usr/bin/env ruby\nINSTALL_DIR = ENV["NWN_ROOT"]' \
   && mv tmp.rb build.rb && chmod 755 build.rb
 
 # Configure user
-ARG USER=debian
+ARG USER=devbase
 RUN adduser --disabled-password --gecos "" --uid=1000 $USER
 RUN echo "$USER ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 RUN sed -i "s|^#force_color_prompt=.*|force_color_prompt=yes|" /home/$USER/.bashrc

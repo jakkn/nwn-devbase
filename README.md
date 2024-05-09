@@ -62,20 +62,20 @@ nwn-devbase has been containerized with the intention of easing up on the depend
 Use the following command to run devbase in a container
 
 ```
-docker run --rm -it --user $UID:$UID -v "$(pwd):/home/debian/build" jakkn/nwn-devbase
+docker run --rm -it --user $UID:$UID -v "$(pwd):/home/devbase/build" jakkn/nwn-devbase
 ```
 
 It is recommended to alias this command to something like `nwn-build`.
 Linux: append to ~/.bashrc
 
 ```bash
-alias nwn-build='docker run --rm -it --user $UID:$UID -v "$(pwd):/home/debian/build" jakkn/nwn-devbase'
+alias nwn-build='docker run --rm -it --user $UID:$UID -v "$(pwd):/home/devbase/build" jakkn/nwn-devbase'
 ```
 
 Windows: TODO - Figure out how to store PS functions. Help wanted!
 
 ```PowerShell
-function nwn-build {docker run --rm -it -v \"$(pwd):/home/debian/build\" jakkn/nwn-devbase}
+function nwn-build {docker run --rm -it -v \"$(pwd):/home/devbase/build\" jakkn/nwn-devbase}
 ```
 
 Limitations:
