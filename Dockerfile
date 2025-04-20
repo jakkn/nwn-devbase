@@ -10,7 +10,7 @@ RUN apt-get update \
   && rm -r /var/lib/apt/lists /var/cache/apt
 
 # Install neverwinter.nim binaries
-ENV NWN_NIM_VERSION=1.8.0
+ENV NWN_NIM_VERSION=2.0.3
 RUN wget https://github.com/niv/neverwinter.nim/releases/download/${NWN_NIM_VERSION}/neverwinter.linux.amd64.zip \
   && unzip neverwinter.linux.amd64.zip \
   && rm neverwinter.linux.amd64.zip \
