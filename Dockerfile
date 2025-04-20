@@ -20,7 +20,7 @@ ENV NWN_ROOT="/nwn/root"
 ENV NWN_HOME="/nwn/home"
 RUN mkdir -p $NWN_ROOT && mkdir -p $NWN_HOME
 # Download nwn data from https://forums.beamdog.com/discussion/67157/server-download-packages-and-docker-support
-ENV NWSERVER_VERSION=8193.36-12
+ENV NWSERVER_VERSION=8193.37-15
 RUN wget https://nwn.beamdog.net/downloads/nwnee-dedicated-${NWSERVER_VERSION}.zip \
   && mkdir -p $NWN_ROOT \
   && unzip nwnee-dedicated-${NWSERVER_VERSION}.zip -d $NWN_ROOT \
